@@ -13,8 +13,8 @@ from app.config import CONFIG
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-APP = FastAPI()
-APP.mount("/static", StaticFiles(directory="static"), name="static")
+APP = FastAPI(root_path=CONFIG.api.path)
+APP.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Простой словарь для проверки слов
 DICTIONARY = {"кот", "дом", "сад", "лес", "мир", "книга", "стол", "окно"}
