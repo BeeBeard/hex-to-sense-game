@@ -1,0 +1,239 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: #1C2526;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#game-container {
+    text-align: center;
+    max-width: 600px;
+    max-height: 100vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+#start-screen, #game-screen {
+    background: #2E3B3E;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#start-screen h1 {
+    color: #FFC107;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+#start-screen label {
+    color: #B0BEC5;
+    margin-right: 10px;
+}
+
+#start-screen input {
+    padding: 6px;
+    margin: 8px 0;
+    border: 1px solid #E65100;
+    border-radius: 5px;
+    background: #2E3B3E;
+    color: #FFFFFF;
+    font-size: 14px;
+}
+
+#start-screen button, #game-screen button {
+    padding: 8px 16px;
+    margin: 8px;
+    border: none;
+    border-radius: 5px;
+    background: #FF9800;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 14px;
+}
+
+#start-screen button:hover, #game-screen button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#game-screen {
+    display: none;
+    position: relative;
+}
+
+#word-input {
+    margin: 10px 0;
+}
+
+#word-input input {
+    padding: 8px;
+    width: 180px;
+    border: 1px solid #E65100;
+    border-radius: 5px;
+    background: #2E3B3E;
+    color: #FFFFFF;
+    font-size: 16px;
+    text-align: center;
+}
+
+#current-player-info {
+    color: #FFC107;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+#timer {
+    color: #FF5722;
+    font-size: 20px;
+    margin: 8px 0;
+}
+
+#grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: -8px;
+}
+
+.row.odd {
+    transform: translateX(25px);
+}
+
+/* Центрирование ячейки [3][3] */
+.row:nth-child(4) .hex:nth-child(4) {
+    position: relative;
+    left: 0;
+    transform: translateX(0);
+}
+
+.hex {
+    width: 50px;
+    height: 57.74px;
+    background: #FF9800;
+    margin: 0 2px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.hex.hidden {
+    visibility: hidden;
+}
+
+.hex:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.hex .letter {
+    font-size: 22px;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    position: relative;
+    top: -3px;
+}
+
+.hex .weight, .hex .clicks {
+    font-size: 11px;
+    color: #B0BEC5;
+    position: absolute;
+    top: 60%;
+}
+
+.hex .weight {
+    left: 8px;
+}
+
+.hex .clicks {
+    right: 8px;
+}
+
+.hex.selected {
+    background: #F44336;
+}
+
+#submit-button {
+    margin: 10px 0;
+}
+
+#submit-button button {
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 16px;
+    background: #FF9800;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#players-info {
+    margin: 10px 0;
+    color: #B0BEC5;
+    font-size: 14px;
+}
+
+#players-info div {
+    margin: 4px 0;
+}
+
+#message {
+    color: #FF5722;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+#share-button {
+    margin: 10px 0;
+}
+
+#share-button button {
+    padding: 8px 16px;
+    border-radius: 5px;
+    background: #FF9800;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2E3B3E;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    z-index: 1000;
+    font-size: 16px;
+}
+
+.notification.show {
+    opacity: 1;
+}
