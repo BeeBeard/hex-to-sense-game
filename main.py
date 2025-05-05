@@ -2,12 +2,15 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import random
+import uvicorn
 import json
 import asyncio
 from pydantic import BaseModel
 from typing import List, Dict
 import uuid
 import logging
+from config import CONFIG
+
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -377,3 +380,33 @@ async def join_game(request: JoinGameRequest):
     })
     logger.info(f"Player joined: game_id={request.game_id}, player_id={player_id}, player_name={player_name}")
     return {"game_id": request.game_id, "player_id": player_id}
+
+
+def main():
+
+    print()
+
+    try:
+
+        logger.info(f"Подключение и настройка базы данных")
+
+        logger.info(f"Запуск APP: http://{CONFIG.api.full_path}")
+        logger.info(f"Swagger: http://{CONFIG.api.docs}")
+        uvicorn.run(
+            app=app,
+            host=CONFIG.api.ip,
+            port=CONFIG.api.port,
+            log_level="debug",
+            # reload=True
+        )
+
+    except KeyboardInterrupt:
+        logger.info(f"Сервер остановлен")
+    except Exception as e:
+        logger.exception(e)
+    finally:
+        logger.info(f"Выключение APP")
+
+
+if __name__ == "__main__":
+    main()
