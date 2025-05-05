@@ -13,7 +13,7 @@ from app.config import CONFIG
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-APP = FastAPI(root_path=CONFIG.api.path,)
+APP = FastAPI()
 APP.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Простой словарь для проверки слов
