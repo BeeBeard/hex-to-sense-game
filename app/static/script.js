@@ -139,7 +139,7 @@ function reconnectWebSocket() {
 
 function shareGame() {
     console.log("Sharing game:", gameId);
-    const shareUrl = `${window.location.origin}/join/${gameId}`;
+    const shareUrl = `${window.location.origin}${rootPath}/join/${gameId}`;
     navigator.clipboard.writeText(shareUrl).then(() => {
         document.getElementById("message").textContent = "Ссылка скопирована!";
         setTimeout(() => document.getElementById("message").textContent = "", 2000);
