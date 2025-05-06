@@ -8,6 +8,9 @@ from app.storage import GAMES
 
 r_ws = APIRouter(tags=['WEB SOCKET'])
 
+@r_ws.get("/test")
+async def test():
+    return {"message": "ok"}
 
 @r_ws.websocket("/ws/{game_id}/{player_id}")
 async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str):
