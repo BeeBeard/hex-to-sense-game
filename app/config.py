@@ -97,12 +97,12 @@ class Config(BaseSettings):
 
     def set_api_path(self):
         port = f":{self.api.port}" if self.api.port else ""
-        self.api.full_path = self.api.ip + port + self.project.root + self.api.root + self.api.version
-        self.api.path = self.project.root + self.api.root + self.api.version
+        self.api.full_path = self.api.ip + port + self.project.root  # + self.api.root + self.api.version
+        self.api.path = self.project.root  # + self.api.root + self.api.version
 
     def set_api_docs(self):
         port = f":{self.api.port}" if self.api.port else ""
-        self.api.docs = self.api.ip + port + self.project.root + self.api.root + self.api.version + "/docs#"
+        self.api.docs = self.api.ip + port + self.project.root + "/docs#"  # + self.api.root + self.api.version + "/docs#"
 
     def __init__(self, **data):
         super().__init__(**data)
