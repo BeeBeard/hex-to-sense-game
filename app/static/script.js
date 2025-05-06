@@ -141,6 +141,7 @@ function shareGame() {
     console.log("Sharing game:", gameId);
     const shareUrl = `${window.location.origin}${rootPath}/join/${gameId}`;
     console.log("Проверить", shareUrl)
+    console.log("Проверить", navigator.clipboard)
     navigator.clipboard.writeText(shareUrl).then(() => {
         document.getElementById("message").textContent = "Ссылка скопирована!";
         setTimeout(() => document.getElementById("message").textContent = "", 2000);
