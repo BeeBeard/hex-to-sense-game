@@ -5,6 +5,7 @@ let myPlayerId;
 let creatorId;
 let timerInterval;
 let isGameStarted = false;
+let rootPath = "/hex-to-sense";
 
 window.onload = () => {
     console.log("Window loaded, checking URL");
@@ -22,7 +23,7 @@ async function createGame() {
     const playerName = document.getElementById("player-name").value || "";
     console.log("Creating game for:", playerName);
     try {
-        const response = await fetch("/create", {
+        const response = await fetch(rootPath + "/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ player_name: playerName })
@@ -56,7 +57,7 @@ async function joinGame() {
     }
     console.log("Joining game:", inputGameId, "as", playerName);
     try {
-        const response = await fetch("/join", {
+        const response = await fetch(rootPath + "/join", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ game_id: inputGameId, player_name: playerName })
