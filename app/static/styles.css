@@ -1,3 +1,17 @@
+:root {
+
+  --hex-width: 50px;
+  --hex-height: 57.74px;
+
+  --hex-width-shift: calc(var(--hex-width) * -1);
+
+  --hex-side-margin: 3px; /*Отступы слева и справа от ячейки*/
+
+  --row-vert-shift: -9px;  /*Вертикальный сдвиг между ячейками должен быть отрицательным*/
+  --odd-shift: 28px;  /*Сдвиг четных линий*/
+}
+
+
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
@@ -75,6 +89,9 @@ body {
 #game-screen {
     display: none;
     position: relative;
+    min-width: 600px;
+    max-width: 900px;
+    margin: auto;
 }
 
 #word-input {
@@ -108,40 +125,46 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 400px;
-    width: 100%;
-    margin: 0 auto;
+    max-width: 1px;
+    width: 1;
+    margin: auto;
     position: relative;
 }
 
 .row {
     display: flex;
     justify-content: center;
-    margin-bottom: -8px;
+    margin-bottom: var(--row-vert-shift);
+
+    z-index: 800;
+    transform: translateX(0px);
 }
 
 .row.odd {
-    transform: translateX(25px);
+    transform: translateX(var(--odd-shift));
 }
 
 /* Центрирование ячейки [3][3] */
 .row:nth-child(4) .hex:nth-child(4) {
     position: relative;
     left: 0;
-    transform: translateX(0);
+
 }
 
 .hex {
-    width: 50px;
-    height: 57.74px;
+    width: var(--hex-width);
+    height: var(--hex-height);
+
     background: #FF9800;
-    margin: 0 2px;
+    margin: 0 var(--hex-side-margin);  /* ВАЖНО */
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     transition: transform 0.2s;
+    z-index: 900;
+
 }
 
 .hex.hidden {
@@ -149,8 +172,12 @@ body {
 }
 
 .hex:hover {
-    transform: scale(1.1);
+    z-index: 1000;
+    transform: scale(1.4);
     cursor: pointer;
+    background-color: #FFCCEE;
+    position: relative;
+
 }
 
 .hex .letter {

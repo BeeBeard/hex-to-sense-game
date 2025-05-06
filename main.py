@@ -1,3 +1,5 @@
+import traceback
+
 import uvicorn
 from loguru import logger
 from app.config import CONFIG
@@ -24,7 +26,7 @@ def main():
     except KeyboardInterrupt:
         logger.info(f"Сервер остановлен")
     except Exception as e:
-        logger.exception(e)
+        logger.exception(f"{e} {traceback.format_exc()}")
     finally:
         logger.info(f"Выключение APP")
 
