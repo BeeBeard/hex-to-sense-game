@@ -1,33 +1,25 @@
 import random
 import uuid
-from typing import Dict
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
 from loguru import logger
+
+from app.classes import Game
 from app.models import CreateGameRequest, JoinGameRequest
 from app.storage import GAMES
-from app.classes import Game
-from fastapi import APIRouter
-from fastapi import WebSocket, WebSocketDisconnect
-from loguru import logger
-# # Настройка логирования
-# logging.basicConfig(level=logging.INFO)
-# logger = logging.getLogger(__name__)
-
-# APP = FastAPI(root_path=CONFIG.api.path)
+import os
 
 r_game = APIRouter(tags=['API'])
 
+index_path = os.path.join("app", "static", "index.html")
 
 
 @r_game.get("/", response_class=HTMLResponse)
 async def get():
     logger.info("Received GET request for /")
     try:
-        with open("app/static/index.html", encoding="utf-8") as f:
+        with open(index_path, encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
     except Exception as e:
         logger.error(f"Error reading index.html: {e}")
@@ -37,14 +29,14 @@ async def get():
 async def join_game_page(game_id: str):
     logger.info(f"Received GET request for /join/{game_id}")
     try:
-        with open("app/static/index.html", encoding="utf-8") as f:
+        with open(index_path, encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
     except Exception as e:
         logger.error(f"Error reading index.html: {e}")
         return HTMLResponse(content="Error loading page", status_code=500)
 
 
-@r_game.post("/create_game")
+@r_game.post("/create")
 async def create_game(request: CreateGameRequest):
     player_name = request.player_name.strip() or f"Игрок_{random.randint(1000, 9999)}"
     logger.info(f"Processing create_game request for player: {player_name}")
@@ -55,7 +47,7 @@ async def create_game(request: CreateGameRequest):
     logger.info(f"Game created: game_id={game.game_id}, player_id={player_id}, creator_id={player_id}, player_name={player_name}")
     return {"game_id": game.game_id, "player_id": player_id, "creator_id": player_id}
 
-@r_game.post("/join_game")
+@r_game.post("/join")
 async def join_game(request: JoinGameRequest):
     player_name = request.player_name.strip() or f"Игрок_{random.randint(1000, 9999)}"
     logger.info(f"Processing join_game request: game_id={request.game_id}, player_name={player_name}")

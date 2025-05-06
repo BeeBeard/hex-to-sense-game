@@ -22,7 +22,7 @@ async function createGame() {
     const playerName = document.getElementById("player-name").value || "";
     console.log("Creating game for:", playerName);
     try {
-        const response = await fetch("/create_game", {
+        const response = await fetch("/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ player_name: playerName })
@@ -56,7 +56,7 @@ async function joinGame() {
     }
     console.log("Joining game:", inputGameId, "as", playerName);
     try {
-        const response = await fetch("/join_game", {
+        const response = await fetch("/join", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ game_id: inputGameId, player_name: playerName })
@@ -149,11 +149,12 @@ function shareGame() {
 }
 
 function updateStartButton(playersCount) {
-    const showStartButton = myPlayerId === creatorId && !isGameStarted && playersCount >= 2;
+    const min_players = 2;
+    const showStartButton = myPlayerId === creatorId && !isGameStarted && playersCount >= min_players;
     console.log("Updating start button:", showStartButton, "Conditions:", {
         isCreator: myPlayerId === creatorId,
         notStarted: !isGameStarted,
-        enoughPlayers: playersCount >= 2,
+        enoughPlayers: playersCount >= min_players,
         playersCount,
         myPlayerId,
         creatorId
@@ -162,7 +163,7 @@ function updateStartButton(playersCount) {
         if (!showStartButton) {
             let reason = "";
             if (isGameStarted) reason = "Игра уже началась";
-            else if (playersCount < 2) reason = "Недостаточно игроков";
+            else if (playersCount < min_players) reason = "Недостаточно игроков";
             document.getElementById("message").textContent = reason ? `Кнопка "Начать игру" недоступна: ${reason}` : "";
         } else {
             document.getElementById("message").textContent = "Готово к началу игры";

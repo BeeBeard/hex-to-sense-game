@@ -3,17 +3,16 @@
 import ipaddress
 from typing import Optional, Union
 
-from pydantic import Field, SecretStr, EmailStr, computed_field
+from pydantic import Field, SecretStr, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class ConfigBase(BaseSettings):
-
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
-        json_encoders = {
+        json_encoders={
             ipaddress.IPv4Address: lambda v: str(v)
         }
     )
@@ -39,20 +38,16 @@ class Author(ConfigBase):
 class ApiConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="api_")
 
-    ip: Optional[str] = ""              # ip на API
-    host: Optional[str] = ""            # ip на API
-    port: Optional[int] = None          # Порт для API
-    root: Optional[str] = ""            # Путь к директории API
-    secret: Optional[SecretStr] = ""    # "секрет" для безопасности API
-    version: Optional[str] = ""         # Версия API
+    ip: Optional[str] = ""  # ip на API
+    host: Optional[str] = ""  # ip на API
+    port: Optional[int] = None  # Порт для API
+    root: Optional[str] = ""  # Путь к директории API
+    secret: Optional[SecretStr] = ""  # "секрет" для безопасности API
+    version: Optional[str] = ""  # Версия API
 
-    full_path: Optional[str] = ""       # Полный путь к API
-    path: Optional[str] = ""            # Путь после ip и порта
-    docs: Optional[str] = ""            # Полный путь к swagger
-
-
-
-
+    full_path: Optional[str] = ""  # Полный путь к API
+    path: Optional[str] = ""  # Путь после ip и порта
+    docs: Optional[str] = ""  # Полный путь к swagger
 
 
 # class DatabaseConfig(ConfigBase):
@@ -82,8 +77,10 @@ class ApiConfig(ConfigBase):
 #     def conn(self) -> SecretStr:
 #         return SecretStr(f"{self.dialect}://{self.pre_conn()}")
 
+class YaDictConfig(ConfigBase):
+    model_config = SettingsConfigDict(env_prefix="ya_")
 
-
+    token: str
 
 
 class Config(BaseSettings):
@@ -92,7 +89,7 @@ class Config(BaseSettings):
     project: Project = Field(default_factory=Project)
     author: Author = Field(default_factory=Author)
     api: ApiConfig = Field(default_factory=ApiConfig)
-
+    yandex: YaDictConfig = Field(default_factory=YaDictConfig)
 
     @classmethod
     def load(cls) -> "Config":
@@ -103,17 +100,14 @@ class Config(BaseSettings):
         self.api.full_path = self.api.ip + port + self.project.root + self.api.root + self.api.version
         self.api.path = self.project.root + self.api.root + self.api.version
 
-
     def set_api_docs(self):
         port = f":{self.api.port}" if self.api.port else ""
         self.api.docs = self.api.ip + port + self.project.root + self.api.root + self.api.version + "/docs#"
-
 
     def __init__(self, **data):
         super().__init__(**data)
         self.set_api_path()
         self.set_api_docs()
-
 
 
 CONFIG = Config()

@@ -2,8 +2,9 @@ import traceback
 
 import uvicorn
 from loguru import logger
+
 from app.config import CONFIG
-import pprint
+
 
 def main():
 
@@ -20,7 +21,7 @@ def main():
             host=CONFIG.api.ip,
             port=CONFIG.api.port,
             log_level="debug",
-            # reload=True
+            reload=True
         )
 
     except KeyboardInterrupt:

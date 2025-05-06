@@ -6,8 +6,8 @@ from fastapi import WebSocket
 
 
 class Player:
-    def __init__(self, id: str, name: str):
-        self.id = id
+    def __init__(self, uid: str, name: str):
+        self.id = uid
         self.name = name
         self.score = 0
         self.lives = 5

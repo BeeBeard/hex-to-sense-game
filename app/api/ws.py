@@ -1,3 +1,5 @@
+import traceback
+
 from fastapi import APIRouter
 from fastapi import WebSocket, WebSocketDisconnect
 from loguru import logger
@@ -39,13 +41,16 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
             data = await websocket.receive_json()
             action = data.get("action")
             logger.info(f"Received WebSocket action: {action}, from player_id={player_id}, game_id={game_id}")
+
             if action == "start_game":
                 received_player_id = data.get("player_id", player_id)
                 logger.info(f"Processing start_game: received_player_id={received_player_id}, websocket_player_id={player_id}")
                 result = game.start_game(received_player_id)
+
                 if result.get("error"):
                     logger.warning(f"Start game failed: {result['error']}")
                     await websocket.send_json({"type": "error", "message": result["error"]})
+
                 else:
                     game.is_started = True
                     logger.info(f"Game started successfully: game_id={game_id}")
@@ -58,6 +63,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                         "is_started": True,
                         "message": "Игра началась!"
                     })
+
             elif action == "submit_word":
                 word = data.get("word")
                 path = data.get("path")
@@ -73,6 +79,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     "is_started": True,
                     "message": f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
                 })
+
             elif action == "increment_click":
                 row = data.get("row")
                 col = data.get("col")
@@ -90,6 +97,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                         "type": "error",
                         "message": result["reason"]
                     })
+
             elif action == "timeout":
                 if game.players and game.players[game.current_player_index].id == player_id:
                     game.players[game.current_player_index].lives -= 1
@@ -104,6 +112,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                         "is_started": True,
                         "message": f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
                     })
+
     except WebSocketDisconnect:
         logger.info(f"WebSocket disconnected: player_id={player_id}, game_id={game_id}")
         disconnected_player = game.remove_player(player_id)
@@ -137,7 +146,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
                 })
     except Exception as e:
-        logger.error(f"WebSocket error: game_id={game_id}, player_id={player_id}, error={e}")
+        logger.error(f"WebSocket error: game_id={game_id}, player_id={player_id}, error={e} {traceback.format_exc()}")
         await websocket.send_json({"type": "error", "message": f"Server error: {str(e)}"})
         await websocket.close()
 
