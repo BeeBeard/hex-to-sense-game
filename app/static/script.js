@@ -197,9 +197,9 @@ function handleMessage(event) {
         console.log(`Current player: ${currentPlayerId}, My player: ${myPlayerId}, Game started: ${isGameStarted}, Players count: ${data.players.length}, Creator ID: ${creatorId}`);
         renderGrid(data.grid);
         renderPlayers(data.players);
-        document.getElementById("word-input").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
+        document.getElementById("timer-word").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
+        document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
         updateStartButton(data.players.length);
-        document.getElementById("current-player-info").textContent = isGameStarted && data.current_player_name ? `Сейчас ходит: ${data.current_player_name}` : isGameStarted ? "Игра началась" : "Ожидание начала игры";
         if (data.type === "start") {
             document.getElementById("message").textContent = data.message || "Игра началась!";
         } else if (data.type === "update") {
