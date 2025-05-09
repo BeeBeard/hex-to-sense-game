@@ -321,9 +321,9 @@ function isNeighbor(prev, curr) {
     const [cr, cc] = curr;
     let directions;
     if (pr % 2 === 0) {
-        directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1]];
+          directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1]];
     } else {
-        directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, 1], [1, 1]];
+        directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1], [-1, 1], [1, 1]];
     }
     const isNeighbor = directions.some(([dr, dc]) => pr + dr === cr && pc + dc === cc);
     console.log(`Checking neighbor: prev=(${pr},${pc}), curr=(${cr},${cc}), isNeighbor=${isNeighbor}`);
@@ -353,6 +353,24 @@ function submitWord() {
         document.getElementById("message").textContent = "Ошибка: нет слова, игра не началась или не ваш ход";
     }
 }
+
+function clearWord() {
+    // Очищаем поле ввода слова
+    const wordInput = document.getElementById("current-word");
+    wordInput.value = "";
+
+    // Снимаем выделение с ячеек
+    selectedCells.forEach(([row, col]) => {
+        const cell = document.querySelector(`.hex[data-row="${row}"][data-col="${col}"]`);
+        if (cell) {
+            cell.classList.remove("selected");
+        }
+    });
+
+    // Очищаем массив выбранных ячеек
+    selectedCells = [];
+}
+
 
 function startTimer() {
     const timerDiv = document.getElementById("timer");
