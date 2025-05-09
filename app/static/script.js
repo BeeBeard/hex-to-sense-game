@@ -140,8 +140,7 @@ function reconnectWebSocket() {
 function shareGame() {
     console.log("Sharing game:", gameId);
     const shareUrl = `${window.location.origin}${rootPath}/join/${gameId}`;
-    console.log("Проверить", shareUrl)
-    console.log("Проверить", navigator.clipboard)
+    console.log("Share URL:", shareUrl);
     navigator.clipboard.writeText(shareUrl).then(() => {
         document.getElementById("message").textContent = "Ссылка скопирована!";
         setTimeout(() => document.getElementById("message").textContent = "", 2000);
@@ -207,6 +206,7 @@ function handleMessage(event) {
             document.getElementById("current-word").value = "";
             document.getElementById("message").textContent = data.message || data.result?.reason || "";
             if (data.result && data.result.word) {
+                console.log("Backend response:", JSON.stringify(data.result));
                 const message = data.result.valid ?
                     `Слово "${data.result.word}" принято!` :
                     `Слово "${data.result.word}" неверно: ${data.result.reason}`;
@@ -321,9 +321,9 @@ function isNeighbor(prev, curr) {
     const [cr, cc] = curr;
     let directions;
     if (pr % 2 === 0) {
-          directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1]];
+        directions = [[0, -1], [1, 0], [0, 1], [-1, 1], [-1, -1], [-1, 0]];
     } else {
-        directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1], [-1, 1], [1, 1]];
+        directions = [[1, -1], [1, 0], [1, 1], [0, 1], [-1, 0], [0, -1]];
     }
     const isNeighbor = directions.some(([dr, dc]) => pr + dr === cr && pc + dc === cc);
     console.log(`Checking neighbor: prev=(${pr},${pc}), curr=(${cr},${cc}), isNeighbor=${isNeighbor}`);
@@ -332,7 +332,7 @@ function isNeighbor(prev, curr) {
 
 function submitWord() {
     const word = document.getElementById("current-word").value;
-    console.log(`Attempting to submit word: ${word}, ws.readyState=${ws.readyState}, isGameStarted=${isGameStarted}, isMyTurn=${currentPlayerId === myPlayerId}`);
+    console.log(`Submitting word: ${word}, Path: ${JSON.stringify(selectedCells)}, ws.readyState=${ws.readyState}, isGameStarted=${isGameStarted}, isMyTurn=${currentPlayerId === myPlayerId}`);
     if (word && isGameStarted && currentPlayerId === myPlayerId) {
         if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
@@ -342,7 +342,7 @@ function submitWord() {
             }));
             clearInterval(timerInterval);
             document.getElementById("timer").style.display = "none";
-            console.log("Word submitted:", word);
+            console.log("Word submitted:", word, "Path:", selectedCells);
         } else {
             console.log("WebSocket not open, cannot submit word");
             document.getElementById("message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
@@ -355,22 +355,17 @@ function submitWord() {
 }
 
 function clearWord() {
-    // Очищаем поле ввода слова
     const wordInput = document.getElementById("current-word");
     wordInput.value = "";
-
-    // Снимаем выделение с ячеек
     selectedCells.forEach(([row, col]) => {
         const cell = document.querySelector(`.hex[data-row="${row}"][data-col="${col}"]`);
         if (cell) {
             cell.classList.remove("selected");
         }
     });
-
-    // Очищаем массив выбранных ячеек
     selectedCells = [];
+    console.log("Word and selection cleared");
 }
-
 
 function startTimer() {
     const timerDiv = document.getElementById("timer");
@@ -391,5 +386,14 @@ function startTimer() {
                 }
             }
         }, 1000);
+    }
+}
+
+function togglePlayersInfo() {
+    const playersInfo = document.getElementById("players-info");
+    if (playersInfo.classList.contains("show")) {
+        playersInfo.classList.remove("show");
+    } else {
+        playersInfo.classList.add("show");
     }
 }

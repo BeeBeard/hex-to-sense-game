@@ -14,6 +14,16 @@ class Player:
         self.websocket: Union[WebSocket, None] = None
         self.words: List[str] = []  # Список правильных слов
 
+    def get_data(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "score": self.score,
+            "lives": self.lives,
+            "websocket": self.websocket,
+            "words": self.words,
+        }
+
 
 if __name__ == "__main__":
     pass

@@ -1,5 +1,5 @@
 # Модель игры
-
+import pprint
 import random
 import uuid
 from typing import List, Union
@@ -8,7 +8,8 @@ from fastapi import WebSocket
 from loguru import logger
 from app.classes.player import Player
 from app.classes import word_checker
-from app.models.game import Hex
+from app.models.game import Hex, SubmitWordResult
+from typing import List, Optional
 
 # Простой словарь для проверки слов
 
@@ -351,32 +352,40 @@ class Game:
         return {"valid": False, "reason": "Invalid cell"}
 
     def submit_word(self, player_id: str, word: str, path: List[List[int]]):
-        # global USED_WORDS
 
         word = word.upper()
 
-        current_player = self.players[self.current_player_index]
-        if current_player.id != player_id:
-            logger.warning(f"Invalid word submission: player_id={player_id} is not current player={current_player.id}")
-            return {"valid": False, "reason": "Ход противника", "word": word}
+        for i in self.players:
+            pprint.pprint(i.get_data())
 
-        if not self.is_valid_path(path):
-            current_player.lives -= 1
-            logger.info(f"Invalid path for word: {word}, player_id={player_id}, lives={current_player.lives}")
-            return {"valid": False, "reason": "Invalid path", "word": word}
+        current_player = self.players[self.current_player_index]
+
+        logger.error(f"{player_id=}")
+        logger.error(f"{current_player.get_data()=}")
+        if current_player.id != player_id or not self.is_started:
+
+            return SubmitWordResult(word=word, valid=False, reason="Not your turn or game not started").model_dump()
+
+        if len(word) < 2:
+            return SubmitWordResult(word=word, valid=False, reason="Word too short").model_dump()
+
+        logger.error(f"ПРОВЕРИТЬ!!! {path=}")
+        # if not self.is_valid_path(path):
+        #     return SubmitWordResult(word=word, valid=False, reason="Invalid path").model_dump()
+
+        if len(path) != len(word):
+            return SubmitWordResult(word=word, valid=False, reason="Path length does not match word length").model_dump()
+
 
         # Проверяем существует ли слово
         is_exist = word_checker.check_word(word).is_exist
 
         if word is is_exist:
             current_player.lives -= 1
-            logger.info(f"Word not in dictionary: {word}, player_id={player_id}, lives={current_player.lives}")
-            return {"valid": False, "reason": "Такое слово не найдено", "word": word}
+            return SubmitWordResult(word=word, valid=False, reason="Такое слово не найдено").model_dump()
 
         if word in USED_WORDS:
-            current_player.lives -= 1
-            logger.info(f"Word already used: {word}, player_id={player_id}, lives={current_player.lives}")
-            return {"valid": False, "reason": "Слово уже было найдено", "word": word}
+            return SubmitWordResult(word=word, valid=False, reason="Word already used").model_dump()
 
         score = sum(self.grid[r][c]["weight"] for r, c in path)
         current_player.score += score
@@ -386,10 +395,51 @@ class Game:
         for r in range(self.radius):
             for c in range(self.radius):
                 if self.grid[r][c] is not None:
-                    self.grid[r][c]["clicks"] = 0
+                    self.grid[r][c]["clics"] = 0
 
-        logger.info(f"Word accepted: {word}, score={score}, player_id={player_id}")
-        return {"valid": True, "score": score, "word": word}
+        return SubmitWordResult(word=word, valid=True, reason="Word accepted", score=score).model_dump()
+
+
+    # def submit_word(self, player_id: str, word: str, path: List[List[int]]):
+    #     # global USED_WORDS
+    #
+    #     word = word.upper()
+    #
+    #     current_player = self.players[self.current_player_index]
+    #     if current_player.id != player_id:
+    #         logger.warning(f"Invalid word submission: player_id={player_id} is not current player={current_player.id}")
+    #         return {"valid": False, "reason": "Ход противника", "word": word}
+    #
+    #     if not self.is_valid_path(path):
+    #         current_player.lives -= 1
+    #         logger.info(f"Invalid path for word: {word}, player_id={player_id}, lives={current_player.lives}")
+    #         return {"valid": False, "reason": "Invalid path", "word": word}
+    #
+    #     # Проверяем существует ли слово
+    #     is_exist = word_checker.check_word(word).is_exist
+    #
+    #     if word is is_exist:
+    #         current_player.lives -= 1
+    #         logger.info(f"Word not in dictionary: {word}, player_id={player_id}, lives={current_player.lives}")
+    #         return {"valid": False, "reason": "Такое слово не найдено", "word": word}
+    #
+    #     if word in USED_WORDS:
+    #         current_player.lives -= 1
+    #         logger.info(f"Word already used: {word}, player_id={player_id}, lives={current_player.lives}")
+    #         return {"valid": False, "reason": "Слово уже было найдено", "word": word}
+    #
+    #     score = sum(self.grid[r][c]["weight"] for r, c in path)
+    #     current_player.score += score
+    #     current_player.words.append(word)
+    #     USED_WORDS.add(word)
+    #
+    #     for r in range(self.radius):
+    #         for c in range(self.radius):
+    #             if self.grid[r][c] is not None:
+    #                 self.grid[r][c]["clicks"] = 0
+    #
+    #     logger.info(f"Word accepted: {word}, score={score}, player_id={player_id}")
+    #     return {"valid": True, "score": score, "word": word}
 
     def next_turn(self):
         if not self.players:
