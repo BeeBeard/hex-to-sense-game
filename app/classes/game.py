@@ -250,7 +250,7 @@ class Game:
             _row = []
             for i in row:
                 if i.show:
-                    i.letter = f"{i.number}"
+                    # i.letter = f"{i.number}"
                     _row.append(i.model_dump())
                 else:
                     _row.append(None)
