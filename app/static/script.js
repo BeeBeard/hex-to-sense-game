@@ -197,6 +197,7 @@ function handleMessage(event) {
         console.log(`Current player: ${currentPlayerId}, My player: ${myPlayerId}, Game started: ${isGameStarted}, Players count: ${data.players.length}, Creator ID: ${creatorId}`);
         renderGrid(data.grid);
         renderPlayers(data.players);
+        renderStats(data.players);
         document.getElementById("timer-word").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
         updateStartButton(data.players.length);
@@ -230,6 +231,7 @@ function handleMessage(event) {
     } else if (data.type === "info") {
         document.getElementById("message").textContent = data.message;
         renderPlayers(data.players || []);
+        renderStats(data.players || []);
         const playersCount = data.players ? data.players.length : document.getElementById("players-info").children.length;
         updateStartButton(playersCount);
     } else if (data.type === "error") {
@@ -288,6 +290,42 @@ function renderPlayers(players) {
             playerDiv.style.border = "2px solid #2196F3";
         }
         playersDiv.appendChild(playerDiv);
+    });
+}
+
+function renderStats(players) {
+    console.log("Rendering stats:", players);
+    const statsLeft = document.getElementById("stats-left");
+    const statsRight = document.getElementById("stats-right");
+    statsLeft.innerHTML = "";
+    statsRight.innerHTML = "";
+
+    if (!players || players.length === 0) return;
+
+    // Текущий игрок — в левую колонку, остальные — в правую
+    const currentPlayer = players.find(p => p.id === myPlayerId);
+    const otherPlayers = players.filter(p => p.id !== myPlayerId);
+
+    if (currentPlayer) {
+        const statDiv = document.createElement("div");
+        statDiv.className = `stat ${currentPlayer.id === currentPlayerId ? "current" : ""}`;
+        statDiv.innerHTML = `
+            <span>${currentPlayer.name}</span>
+            <span>Очки: ${currentPlayer.score}</span>
+            <span>Жизни: ${currentPlayer.lives}</span>
+        `;
+        statsLeft.appendChild(statDiv);
+    }
+
+    otherPlayers.forEach(p => {
+        const statDiv = document.createElement("div");
+        statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
+        statDiv.innerHTML = `
+            <span>${p.name}</span>
+            <span>Очки: ${p.score}</span>
+            <span>Жизни: ${p.lives}</span>
+        `;
+        statsRight.appendChild(statDiv);
     });
 }
 
