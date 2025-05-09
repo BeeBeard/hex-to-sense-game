@@ -1,253 +1,281 @@
-:root {
-
-  --hex-width: 50px;
-  --hex-height: 57.74px;
-
-  --hex-width-shift: calc(var(--hex-width) * -1);
-
-  --hex-side-margin: 3px; /*Отступы слева и справа от ячейки*/
-
-  --row-vert-shift: -9px;  /*Вертикальный сдвиг между ячейками должен быть отрицательным*/
-  --odd-shift: 28px;  /*Сдвиг четных линий*/
-}
-
-
 body {
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    background: #1C2526;
-    color: #FFFFFF;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
     overflow: hidden;
-}
-
-#game-container {
-    text-align: center;
-    max-width: 600px;
-    max-height: 100vh;
-    padding: 10px;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    overflow: hidden;
 }
 
 #start-screen, #game-screen {
-    background: #2E3B3E;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    height: 100vh;
+    width: 100%;
 }
 
-#start-screen h1 {
-    color: #FFC107;
-    margin-bottom: 15px;
-    font-size: 24px;
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    max-width: 100vw;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
-#start-screen label {
-    color: #B0BEC5;
-    margin-right: 10px;
-}
-
-#start-screen input {
-    padding: 6px;
-    margin: 8px 0;
-    border: 1px solid #E65100;
-    border-radius: 5px;
-    background: #2E3B3E;
-    color: #FFFFFF;
-    font-size: 14px;
-}
-
-#start-screen button, #game-screen button {
-    padding: 8px 16px;
-    margin: 8px;
-    border: none;
-    border-radius: 5px;
-    background: #FF9800;
-    color: #FFFFFF;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    font-size: 14px;
-}
-
-#start-screen button:hover, #game-screen button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-#game-screen {
-    display: none;
-    position: relative;
-    min-width: 600px;
-    max-width: 900px;
-    margin: auto;
-}
-
-#word-input {
-    margin: 10px 0;
-}
-
-#word-input input {
-    padding: 8px;
-    width: 180px;
-    border: 1px solid #E65100;
-    border-radius: 5px;
-    background: #2E3B3E;
-    color: #FFFFFF;
+#message {
     font-size: 16px;
+    color: #333;
     text-align: center;
-}
-
-#current-player-info {
-    color: #FFC107;
-    font-size: 16px;
     margin-bottom: 10px;
 }
 
-#timer {
-    color: #FF5722;
-    font-size: 20px;
-    margin: 8px 0;
+#word-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 10px;
+}
+
+#current-word {
+    padding: 5px;
+    font-size: 16px;
+    width: 150px;
+}
+
+.word-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 #grid {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 1px;
-    width: 1;
-    margin: 10px;
-    position: relative;
+    justify-content: center; /* Центрируем строки по вертикали */
+    width: 100%;
+    max-width: 500px;
+    flex-grow: 1;
 }
 
 .row {
     display: flex;
     justify-content: center;
-    margin-bottom: var(--row-vert-shift);
-
-    z-index: 800;
-    transform: translateX(0px);
+    margin-top: -16px;
 }
 
 .row.odd {
-    transform: translateX(var(--odd-shift));
-}
-
-/* Центрирование ячейки [3][3] */
-.row:nth-child(4) .hex:nth-child(4) {
-    position: relative;
-    left: 0;
-
+    transform: translateX(27px);
 }
 
 .hex {
-    width: var(--hex-width);
-    height: var(--hex-height);
-
-    background: #FF9800;
-    margin: 0 var(--hex-side-margin);  /* ВАЖНО */
+    width: 50px;
+    height: 58px;
+    background-color: #FFC107; /* Желто-оранжевый цвет */
+    margin: 2px;
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
     position: relative;
-    transition: transform 0.2s;
-    z-index: 900;
-
+    user-select: none;
 }
 
 .hex.hidden {
     visibility: hidden;
 }
 
-.hex:hover {
-    z-index: 1000;
-    transform: scale(1.4);
-    cursor: pointer;
-    background-color: #FFCCEE;
-    position: relative;
-
-}
-
 .hex .letter {
-    font-size: 22px;
-    color: #FFFFFF;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    font-size: 20px;
     position: relative;
-    top: -3px;
-}
-
-.hex .weight, .hex .clicks {
-    font-size: 11px;
-    color: #B0BEC5;
-    position: absolute;
-    top: 60%;
+    top: -5px; /* Сдвигаем букву чуть выше для центрирования */
 }
 
 .hex .weight {
-    left: 8px;
+    position: absolute;
+    left: 5px;
+    top: 25px; /* Чуть ниже буквы */
+    font-size: 12px;
 }
 
 .hex .clicks {
-    right: 8px;
+    position: absolute;
+    right: 5px;
+    top: 25px; /* Чуть ниже буквы */
+    font-size: 12px;
 }
 
 .hex.selected {
-    background: #F44336;
+    background-color: #2196F3;
 }
 
-
-#players-info {
-    margin: 10px 0;
-    color: #B0BEC5;
-    font-size: 14px;
+#info-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
 }
 
-#players-info div {
-    margin: 4px 0;
+#current-player-info, #timer {
+    font-size: 16px;
+    color: #333;
 }
-
-#message {
-    color: #FF5722;
-    margin: 10px 0;
-    font-size: 14px;
-}
-
-
 
 button {
-    padding: 8px 16px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
     border-radius: 5px;
-    background: #FF9800;
+    cursor: pointer;
+    width: 150px;
+    text-align: center;
 }
 
-.notification {
+button:hover {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#players-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#players-panel.show {
+    display: flex;
+}
+
+#close-players {
+    background-color: #f44336;
+    margin-bottom: 20px;
+}
+
+#close-players:hover {
+    background-color: #d32f2f;
+}
+
+#players-info {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#players-info > div {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#players-info h1 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    color: #333;
+}
+
+#players-info div div {
+    font-size: 14px;
+    color: #B0BEC5;
+}
+
+#notification {
     position: fixed;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: #2E3B3E;
-    color: #FFFFFF;
+    background-color: #333;
+    color: white;
     padding: 10px 20px;
     border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    display: none;
     z-index: 1000;
-    font-size: 16px;
 }
 
-.notification.show {
-    opacity: 1;
+#notification.show {
+    display: block;
+}
+
+@media (max-width: 600px) {
+    .hex {
+        width: 40px;
+        height: 46px;
+        font-size: 14px;
+    }
+
+    .hex .letter {
+        font-size: 16px;
+        top: -3px;
+    }
+
+    .hex .weight, .hex .clicks {
+        font-size: 10px;
+        top: 20px;
+    }
+
+    .row.odd {
+        transform: translateX(12px);
+    }
+
+    #grid {
+        max-width: 100%;
+        padding: 0 10px;
+    }
+
+    button {
+        width: 120px;
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    #current-word {
+        width: 120px;
+        font-size: 14px;
+    }
+
+    #current-player-info, #timer, #message {
+        font-size: 14px;
+    }
+
+    #players-info h1 {
+        font-size: 20px;
+    }
+
+    #players-info div div {
+        font-size: 12px;
+    }
 }

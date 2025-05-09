@@ -88,8 +88,8 @@ function showJoinForm() {
 }
 
 async function startGame() {
-    console.log("Starting game, WebSocket state:", ws.readyState, "myPlayerId:", myPlayerId, "creatorId:", creatorId);
-    if (ws.readyState === WebSocket.OPEN) {
+    console.log("Start Game button clicked, WebSocket state:", ws?.readyState, "myPlayerId:", myPlayerId, "creatorId:", creatorId);
+    if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ action: "start_game", player_id: myPlayerId }));
         document.getElementById("message").textContent = "Запуск игры...";
     } else {
@@ -138,7 +138,7 @@ function reconnectWebSocket() {
 }
 
 function shareGame() {
-    console.log("Sharing game:", gameId);
+    console.log("Share Game button clicked");
     const shareUrl = `${window.location.origin}${rootPath}/join/${gameId}`;
     console.log("Share URL:", shareUrl);
     navigator.clipboard.writeText(shareUrl).then(() => {
@@ -177,6 +177,7 @@ function updateStartButton(playersCount) {
 }
 
 function showNotification(message) {
+    console.log("Showing notification:", message);
     const notification = document.getElementById("notification");
     notification.textContent = message;
     notification.classList.add("show");
@@ -196,7 +197,7 @@ function handleMessage(event) {
         console.log(`Current player: ${currentPlayerId}, My player: ${myPlayerId}, Game started: ${isGameStarted}, Players count: ${data.players.length}, Creator ID: ${creatorId}`);
         renderGrid(data.grid);
         renderPlayers(data.players);
-        document.getElementById("word-input").style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
+        document.getElementById("word-input").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
         updateStartButton(data.players.length);
         document.getElementById("current-player-info").textContent = isGameStarted && data.current_player_name ? `Сейчас ходит: ${data.current_player_name}` : isGameStarted ? "Игра началась" : "Ожидание начала игры";
         if (data.type === "start") {
@@ -240,6 +241,7 @@ function handleMessage(event) {
 }
 
 function renderGrid(grid) {
+    console.log("Rendering grid");
     const gridDiv = document.getElementById("grid");
     gridDiv.innerHTML = "";
     grid.forEach((row, r) => {
@@ -269,25 +271,28 @@ function renderGrid(grid) {
 }
 
 function renderPlayers(players) {
+    console.log("Rendering players:", players);
     const playersDiv = document.getElementById("players-info");
     playersDiv.innerHTML = "";
     players.forEach(p => {
         const playerDiv = document.createElement("div");
-        playerDiv.textContent = `${p.name}: ${p.score} очков, ${p.lives} жизней`;
-        if (p.id === currentPlayerId) playerDiv.style.fontWeight = "bold";
+        const nameHeader = document.createElement("h1");
+        nameHeader.textContent = `${p.name} (${p.score} очков, ${p.lives} жизней)`;
+        playerDiv.appendChild(nameHeader);
         if (p.words && p.words.length > 0) {
             const wordsDiv = document.createElement("div");
             wordsDiv.textContent = `Слова: ${p.words.join(", ")}`;
-            wordsDiv.style.fontSize = "14px";
-            wordsDiv.style.color = "#B0BEC5";
             playerDiv.appendChild(wordsDiv);
+        }
+        if (p.id === currentPlayerId) {
+            playerDiv.style.border = "2px solid #2196F3";
         }
         playersDiv.appendChild(playerDiv);
     });
 }
 
 function selectCell(row, col, letter) {
-    console.log(`Attempting to select cell: row=${row}, col=${col}, letter=${letter}, ws.readyState=${ws.readyState}, isGameStarted=${isGameStarted}, isMyTurn=${currentPlayerId === myPlayerId}`);
+    console.log(`Attempting to select cell: row=${row}, col=${col}, letter=${letter}, ws.readyState=${ws?.readyState}, isGameStarted=${isGameStarted}, isMyTurn=${currentPlayerId === myPlayerId}`);
     if (!isGameStarted || currentPlayerId !== myPlayerId) {
         console.log("Cannot select cell: game not started or not my turn");
         document.getElementById("message").textContent = "Ошибка: игра не началась или не ваш ход";
@@ -298,7 +303,7 @@ function selectCell(row, col, letter) {
         const wordInput = document.getElementById("current-word");
         wordInput.value += letter;
         document.querySelector(`.hex[data-row="${row}"][data-col="${col}"]`).classList.add("selected");
-        if (ws.readyState === WebSocket.OPEN) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
                 action: "increment_click",
                 row: row,
@@ -331,10 +336,11 @@ function isNeighbor(prev, curr) {
 }
 
 function submitWord() {
-    const word = document.getElementById("current-word").value;
-    console.log(`Submitting word: ${word}, Path: ${JSON.stringify(selectedCells)}, ws.readyState=${ws.readyState}, isGameStarted=${isGameStarted}, isMyTurn=${currentPlayerId === myPlayerId}`);
+    console.log("Submit Word button clicked");
+    const word = document.getElementById("current-word").value.toLowerCase();
+    console.log(`Submitting word: ${word}, Path: ${JSON.stringify(selectedCells)}, ws.readyState=${ws?.readyState}, isGameStarted=${isGameStarted}, isMyTurn=${currentPlayerId === myPlayerId}`);
     if (word && isGameStarted && currentPlayerId === myPlayerId) {
-        if (ws.readyState === WebSocket.OPEN) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
                 action: "submit_word",
                 word: word,
@@ -355,6 +361,7 @@ function submitWord() {
 }
 
 function clearWord() {
+    console.log("Clear Word button clicked");
     const wordInput = document.getElementById("current-word");
     wordInput.value = "";
     selectedCells.forEach(([row, col]) => {
@@ -368,6 +375,7 @@ function clearWord() {
 }
 
 function startTimer() {
+    console.log("Starting timer");
     const timerDiv = document.getElementById("timer");
     timerDiv.style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
     clearInterval(timerInterval);
@@ -381,7 +389,7 @@ function startTimer() {
             if (time <= 0) {
                 clearInterval(timerInterval);
                 timerDiv.style.display = "none";
-                if (ws.readyState === WebSocket.OPEN) {
+                if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({ action: "timeout" }));
                 }
             }
@@ -390,10 +398,14 @@ function startTimer() {
 }
 
 function togglePlayersInfo() {
-    const playersInfo = document.getElementById("players-info");
-    if (playersInfo.classList.contains("show")) {
-        playersInfo.classList.remove("show");
+    console.log("Toggle Players button clicked");
+    const playersPanel = document.getElementById("players-panel");
+    const toggleButton = document.getElementById("toggle-players");
+    if (playersPanel.classList.contains("show")) {
+        playersPanel.classList.remove("show");
+        toggleButton.textContent = "Показать игроков";
     } else {
-        playersInfo.classList.add("show");
+        playersPanel.classList.add("show");
+        toggleButton.textContent = "Скрыть игроков";
     }
 }
