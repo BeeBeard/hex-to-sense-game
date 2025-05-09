@@ -8,6 +8,7 @@ from fastapi import WebSocket
 from loguru import logger
 from app.classes.player import Player
 from app.classes import word_checker
+from app.models.game import Hex
 
 # Простой словарь для проверки слов
 
@@ -20,7 +21,13 @@ class Game:
         self.players: List[Player] = []
         self.current_player_index = 0
         self.radius = self.prepare_radius(radius)
-        self.grid = self.generate_grid()
+        self.center = int((self.radius + 1) / 2) - 1
+        self.grid = []
+        self.words = []
+        # self.letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЧЦШЩЪЫЬЭЮЯ"
+        self.generate_grid()
+
+        self.fill_grid(["ГАЗООБРАЗОВАНИЕ", "ГАЗООБРАЗОВАНИЕ", "МЕНЕДЖЕР", "ПРИЮТ", "БЕТОН", "КОЛЛЕГА", "КОТ", "НУГА", "ПРАВИЛО", "ТРАВА"])
         self.game_id = str(uuid.uuid4())
         self.is_started = False
         self.creator_id = creator_id
@@ -36,23 +43,10 @@ class Game:
 
         if _r < 5:
             _r = 5
-        print(f"{_r=}")
+        # print(f"{_r=}")
         return _r
 
     def generate_grid(self):
-
-        letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЧЦШЩЪЫЬЭЮЯ"
-
-        center = int((self.radius + 1) / 2)
-        # shift = self.radius // 2 + 1
-        # row_lengths = [self.radius - abs((i + 1) - shift) for i in range(self.radius)]
-        # center_indices = [shift - 1 - abs((i + 1) - shift) * 0.5 for i in range(self.radius)]
-
-        # mapping = []
-        # for i in range(self.radius):
-        #     row = [1 if k < row_lengths[i] else 0 for k in range(self.radius)]
-        #     n = row_lengths[i] + 1
-        #     mapping.append(row[n:] + row[:n]) if n >= 0 else mapping.append(row)
 
         mapping = [
             [0, 1, 1, 1, 0],
@@ -87,23 +81,185 @@ class Game:
                 [0, 0, 1, 1, 1, 1, 1, 0, 0],
             ]
 
-        grid = []
-        for row in mapping:
+        c = 0
+        for y, row in enumerate(mapping):
 
             new_row = []
-            for k in row:
-                if k:
-                    letter = random.choice(letters)
-                    weight = random.randint(1, 5)
-                    # new_row.append({"letter": f"{row[k]} {k}", "weight": weight, "clicks": 0})
-                    new_row.append({"letter": letter, "weight": weight, "clicks": 0})
+            for x, k in enumerate(row):
+                _hex = Hex(number=c, x=x, y=y)
+                if not k:
+                    _hex.show = False
+                new_row.append(_hex)
+                c += 1
+
+            self.grid.append(new_row)
+
+        # logger.info(f"Generated grid, cell [{center}][{center}]: {grid[center][center].number}")
+        return self.grid
+
+    @staticmethod
+    def get_keys_from_hex_list(row: List[Hex], key: str):
+        return [k.model_dump().get(key) for k in row]
+
+    def get_grid_info(self, key: str = "number"):
+        _grid = []
+        for y, row in enumerate(self.grid):
+            # _row = [k.model_dump().get(key) for k in row]
+            _row = self.get_keys_from_hex_list(row, key)
+            _grid.append(_row)
+            if y % 2:
+                print("  ", _row)
+            else:
+                print(_row)
+
+        return _grid
+
+    def get_neighbors(self, x: int, y: int):
+
+        if y % 2 == 0:
+            directions = [(0, -1), (1, 0),  (0, 1),  (-1, 1), (-1, -1), (-1, 0),]
+        else:
+            directions = [(1, -1), (1, 0), (1, 1),  (0, 1), (-1, 0), (0, -1), ]
+
+        neighbors: List[Hex] = []
+        for dr, dc in directions:
+            _x, _y = x + dr, y + dc
+            if 0 <= _x < self.radius and 0 <= _y < self.radius:
+                neighbors.append(self.grid[_y][_x])
+
+        # print(f"СОСЕДИ: {x}/{y}")
+        #
+        # # self.get_grid_info("letter")
+        # # print()
+        #
+        # _grid = []
+        # for row in range(self.radius):
+        #     _row = []
+        #     for k in range(self.radius):
+        #         _row.append(" ")
+        #     _grid.append(_row)
+        #
+        # for i, v in enumerate(neighbors):
+        #     # print(f"{_grid[i.x][i.y]=}")
+        #     _grid[v.y][v.x] = i
+        # _grid[y][x] = "X"
+        #
+        # for i, row in enumerate(_grid):
+        #     if i % 2:
+        #         print("  ", row)
+        #     else:
+        #         print(row)
+        #
+        # print(f"END")
+
+        return neighbors
+
+    def get_empty_neighbors(self, x: int, y: int):
+        neighbors = self.get_neighbors(x, y)
+        return [i for i in neighbors if i.letter == " " and i.show]
+
+    def find_free_hex(self, count: int = 6):
+
+        # Ищем сначала самые свободные ячейки от 6 затем меньше
+        for _m in reversed(range(0, count + 1)):
+
+            for y, row in enumerate(self.grid):
+                for x, k in enumerate(row):
+                    if k.letter == " " and k.show:
+                        neighbors = self.get_empty_neighbors(k.x, k.y)
+                        if len(neighbors) == _m or _m == 0:
+                            return x, y
+
+        return False
+
+    def add_word(self, word: str):
+        """
+        word - несколько слов подряд
+        при "-" ищем место где свободны 6 соседей
+        """
+
+        self.words.append(word)
+        print(word)
+
+        # Выбор начальной точки
+        free_hex = self.find_free_hex()
+
+        if not free_hex:
+            return
+
+        x, y = free_hex[0], free_hex[1]
+        # print(f"КООРДИНАТЫ для слова {word}: {x}/{y}")
+
+        for i, letter in enumerate(word):
+
+            if i == 0:
+                self.grid[y][x].letter = letter
+                continue
+
+            neighbors = self.get_empty_neighbors(x, y)
+            # if not neighbors:
+            #     self.words = self.words[:-1]
+            #     return
+
+            duble = False
+            for k in neighbors + [self.grid[y][x]]:
+                if k.letter == letter:
+                    x, y = k.x, k.y
+                    # print(f"КООРДИНАТЫ: {x}/{y}")
+                    self.grid[y][x].letter = letter
+                    duble = True
+                    break
+
+            if duble:
+                continue
+
+            neighbors = self.get_empty_neighbors(x, y)
+            if neighbors:
+
+                # Что бы выбирать случайное направление
+                # cur_neighbors = empty_neighbors[random.randint(0, len(empty_neighbors) - 1)]
+                # if not len(empty_neighbors) - 1 > next_index:
+                #     next_index = 0
+                next_index = 0
+
+                cur_neighbors = neighbors[next_index]
+
+                x, y = cur_neighbors.x, cur_neighbors.y
+                # print(f"КООРДИНАТЫ: {x}/{y}")
+                self.grid[y][x].letter = letter
+            else:
+                # self.words = self.words[:-1]
+                return
+
+        # print(self.words)
+
+    def fill_grid(self, words: List[str]):
+
+        words = list(set(words))
+        words.sort()
+        print(words)
+        for word in words:
+            self.add_word(word)
+            self.get_grid_info(key="letter")
+
+        print("RESULT")
+        self.get_grid_info(key="letter")
+
+        _grid = []
+        for row in self.grid:
+            _row = []
+            for i in row:
+                if i.show:
+                    _row.append(i.model_dump())
                 else:
-                    new_row.append(None)
+                    _row.append(None)
+            # _row = [i.model_dump() for i in row]
+            # print(_row)
+            _r = [i["letter"] for i in _row if i]
+            print(_r)
+            _grid.append(_row)
 
-            grid.append(new_row)
-
-        logger.info(f"Generated grid, cell [{center}][{center}]: {grid[center][center]}")
-        return grid
+        self.grid = _grid
 
     def add_player(self, player_id: str, name: str, websocket: Union[WebSocket, None]):
 
@@ -151,19 +307,19 @@ class Game:
         logger.info(f"Game started successfully: game_id={self.game_id}")
         return {"success": True}
 
-    def get_neighbors(self, row: int, col: int):
-        neighbors = []
-        if row % 2 == 0:
-            directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1)]
-        else:
-            directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, 1)]
-
-        for dr, dc in directions:
-            r, c = row + dr, col + dc
-            if 0 <= r < self.radius and 0 <= c < self.radius and self.grid[r][c] is not None:
-                neighbors.append((r, c))
-
-        return neighbors
+    # def get_neighbors(self, row: int, col: int):
+    #     neighbors = []
+    #     if row % 2 == 0:
+    #         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1)]
+    #     else:
+    #         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, 1)]
+    #
+    #     for dr, dc in directions:
+    #         r, c = row + dr, col + dc
+    #         if 0 <= r < self.radius and 0 <= c < self.radius and self.grid[r][c] is not None:
+    #             neighbors.append((r, c))
+    #
+    #     return neighbors
 
     def is_valid_path(self, path: List[List[int]]):
         if not path:
