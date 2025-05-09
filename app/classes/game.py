@@ -118,9 +118,9 @@ class Game:
     def get_neighbors(self, x: int, y: int):
 
         if y % 2 == 0:
-            directions = [(0, -1), (1, 0),  (0, 1),  (-1, 1), (-1, -1), (-1, 0),]
+            directions = [(0, -1), (1, 0),  (0, 1),  (1, -1), (-1, -1), (-1, 0),]
         else:
-            directions = [(1, -1), (1, 0), (1, 1),  (0, 1), (-1, 0), (0, -1), ]
+            directions = [(-1, 1), (1, 0), (1, 1),  (0, 1), (-1, 0), (0, -1), ]
 
         neighbors: List[Hex] = []
         for dr, dc in directions:

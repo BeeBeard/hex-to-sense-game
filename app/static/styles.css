@@ -108,7 +108,7 @@ body {
     width: 100%;
     max-width: 500px;
     flex-grow: 1;
-    margin-left: -64px;
+    margin-left: -64px; /* По твоему изменению */
 }
 
 .row {
@@ -296,7 +296,7 @@ button:disabled {
     #grid {
         max-width: 100%;
         padding: 0 10px;
-        margin-left: -48px;
+        margin-left: -48px; /* По твоему изменению */
     }
 
     button {

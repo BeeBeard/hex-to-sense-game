@@ -302,28 +302,29 @@ function renderStats(players) {
 
     if (!players || players.length === 0) return;
 
-    // Текущий игрок — в левую колонку, остальные — в правую
-    const currentPlayer = players.find(p => p.id === myPlayerId);
-    const otherPlayers = players.filter(p => p.id !== myPlayerId);
+    // Равномерное распределение игроков
+    const leftCount = Math.ceil(players.length / 2);
+    const leftPlayers = players.slice(0, leftCount);
+    const rightPlayers = players.slice(leftCount);
 
-    if (currentPlayer) {
-        const statDiv = document.createElement("div");
-        statDiv.className = `stat ${currentPlayer.id === currentPlayerId ? "current" : ""}`;
-        statDiv.innerHTML = `
-            <span>${currentPlayer.name}</span>
-            <span>Очки: ${currentPlayer.score}</span>
-            <span>Жизни: ${currentPlayer.lives}</span>
-        `;
-        statsLeft.appendChild(statDiv);
-    }
-
-    otherPlayers.forEach(p => {
+    leftPlayers.forEach(p => {
         const statDiv = document.createElement("div");
         statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
             <span>${p.name}</span>
             <span>Очки: ${p.score}</span>
-            <span>Жизни: ${p.lives}</span>
+            <span>${'❤️'.repeat(p.lives)}</span>
+        `;
+        statsLeft.appendChild(statDiv);
+    });
+
+    rightPlayers.forEach(p => {
+        const statDiv = document.createElement("div");
+        statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
+        statDiv.innerHTML = `
+            <span>${p.name}</span>
+            <span>Очки: ${p.score}</span>
+            <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsRight.appendChild(statDiv);
     });
@@ -364,10 +365,11 @@ function isNeighbor(prev, curr) {
     const [cr, cc] = curr;
     let directions;
     if (pr % 2 === 0) {
-        directions = [[0, -1], [1, 0], [0, 1], [-1, 1], [-1, -1], [-1, 0]];
+        directions = [[0, -1], [1, 0], [0, 1], [1, -1], [-1, -1], [-1, 0]];
     } else {
-        directions = [[1, -1], [1, 0], [1, 1], [0, 1], [-1, 0], [0, -1]];
+        directions = [[-1, 1], [1, 0], [1, 1], [0, 1], [-1, 0], [0, -1]];
     }
+
     const isNeighbor = directions.some(([dr, dc]) => pr + dr === cr && pc + dc === cc);
     console.log(`Checking neighbor: prev=(${pr},${pc}), curr=(${cr},${cc}), isNeighbor=${isNeighbor}`);
     return isNeighbor;
