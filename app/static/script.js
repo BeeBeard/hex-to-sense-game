@@ -337,9 +337,13 @@ function selectCell(row, col, letter) {
         document.getElementById("message").textContent = "Ошибка: игра не началась или не ваш ход";
         return;
     }
-    if (selectedCells.length === 0 || isNeighbor(selectedCells[selectedCells.length - 1], [row, col])) {
+
+    const wordInput = document.getElementById("current-word");
+    const currentCell = [row, col];
+    const isAlreadySelected = selectedCells.some(([r, c]) => r === row && c === col);
+
+    if (isAlreadySelected || selectedCells.length === 0 || isNeighbor(selectedCells[selectedCells.length - 1], currentCell)) {
         selectedCells.push([row, col]);
-        const wordInput = document.getElementById("current-word");
         wordInput.value += letter;
         document.querySelector(`.hex[data-row="${row}"][data-col="${col}"]`).classList.add("selected");
         if (ws && ws.readyState === WebSocket.OPEN) {
@@ -365,11 +369,10 @@ function isNeighbor(prev, curr) {
     const [cr, cc] = curr;
     let directions;
     if (pr % 2 === 0) {
-        directions = [[0, -1], [1, 0], [0, 1], [1, -1], [-1, -1], [-1, 0]];
+        directions = [[0, -1], [1, 0], [0, 1], [1, -1], [-1, -1], [-1, 0]]; // По твоему изменению
     } else {
-        directions = [[-1, 1], [1, 0], [1, 1], [0, 1], [-1, 0], [0, -1]];
+        directions = [[-1, 1], [1, 0], [1, 1], [0, 1], [-1, 0], [0, -1]]; // По твоему изменению
     }
-
     const isNeighbor = directions.some(([dr, dc]) => pr + dr === cr && pc + dc === cc);
     console.log(`Checking neighbor: prev=(${pr},${pc}), curr=(${cr},${cc}), isNeighbor=${isNeighbor}`);
     return isNeighbor;
