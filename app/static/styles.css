@@ -1,16 +1,11 @@
 :root {
-
-  --hex-width: 50px;
-  --hex-height: 57.74px;
-
-  --hex-width-shift: calc(var(--hex-width) * -1);
-
-  --hex-side-margin: 3px; /*Отступы слева и справа от ячейки*/
-
-  --row-vert-shift: -9px;  /*Вертикальный сдвиг между ячейками должен быть отрицательным*/
-  --odd-shift: 28px;  /*Сдвиг четных линий*/
+    --hex-width: 50px;
+    --hex-height: 57.74px;
+    --hex-width-shift: calc(var(--hex-width) * -1);
+    --hex-side-margin: 3px;
+    --row-vert-shift: -9px;
+    --odd-shift: 28px;
 }
-
 
 body {
     margin: 0;
@@ -21,18 +16,18 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden;
+    overflow: auto;
 }
 
 #game-container {
     text-align: center;
-    max-width: 600px;
-    max-height: 100vh;
+    width: 100%;
+    max-width: 900px;
     padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    box-sizing: border-box;
 }
 
 #start-screen, #game-screen {
@@ -67,6 +62,8 @@ body {
     background: #2E3B3E;
     color: #FFFFFF;
     font-size: 14px;
+    width: 100%;
+    max-width: 200px;
 }
 
 #start-screen button, #game-screen button {
@@ -87,11 +84,12 @@ body {
 }
 
 #game-screen {
+    height: 100vh;
     display: none;
-    position: relative;
-    min-width: 600px;
-    max-width: 900px;
-    margin: auto;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 #word-input {
@@ -100,7 +98,8 @@ body {
 
 #word-input input {
     padding: 8px;
-    width: 180px;
+    width: 100%;
+    max-width: 180px;
     border: 1px solid #E65100;
     border-radius: 5px;
     background: #2E3B3E;
@@ -125,9 +124,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 1px;
-    width: 1;
-    margin: 10px;
+    width: 100%;
+    margin: 10px 0;
     position: relative;
 }
 
@@ -135,36 +133,23 @@ body {
     display: flex;
     justify-content: center;
     margin-bottom: var(--row-vert-shift);
-
-    z-index: 800;
-    transform: translateX(0px);
 }
 
 .row.odd {
     transform: translateX(var(--odd-shift));
 }
 
-/* Центрирование ячейки [3][3] */
-.row:nth-child(4) .hex:nth-child(4) {
-    position: relative;
-    left: 0;
-
-}
-
 .hex {
     width: var(--hex-width);
     height: var(--hex-height);
-
     background: #FF9800;
-    margin: 0 var(--hex-side-margin);  /* ВАЖНО */
+    margin: 0 var(--hex-side-margin);
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     transition: transform 0.2s;
-    z-index: 900;
-
 }
 
 .hex.hidden {
@@ -172,12 +157,9 @@ body {
 }
 
 .hex:hover {
-    z-index: 1000;
     transform: scale(1.4);
     cursor: pointer;
     background-color: #FFCCEE;
-    position: relative;
-
 }
 
 .hex .letter {
@@ -207,29 +189,38 @@ body {
     background: #F44336;
 }
 
+#players-info-container {
+    width: 100%;
+    margin: 10px 0;
+}
 
 #players-info {
-    margin: 10px 0;
     color: #B0BEC5;
     font-size: 14px;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+#players-info.show {
+    max-height: 200px;
+    opacity: 1;
 }
 
 #players-info div {
     margin: 4px 0;
 }
 
+#toggle-players-info {
+    width: 100%;
+    max-width: 200px;
+}
+
 #message {
     color: #FF5722;
     margin: 10px 0;
     font-size: 14px;
-}
-
-
-
-button {
-    padding: 8px 16px;
-    border-radius: 5px;
-    background: #FF9800;
 }
 
 .notification {
@@ -250,4 +241,53 @@ button {
 
 .notification.show {
     opacity: 1;
+}
+
+/* Адаптивность для смартфонов */
+@media (max-width: 600px) {
+    :root {
+        --hex-width: 40px;
+        --hex-height: 46.19px;
+        --hex-side-margin: 2px;
+        --row-vert-shift: -7px;
+        --odd-shift: 22px;
+    }
+
+    #game-container {
+        padding: 5px;
+    }
+
+    #game-screen {
+        padding: 10px;
+    }
+
+    #start-screen h1 {
+        font-size: 20px;
+    }
+
+    #start-screen input, #word-input input, #toggle-players-info {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    #start-screen button, #game-screen button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    #current-player-info, #message {
+        font-size: 12px;
+    }
+
+    #timer {
+        font-size: 16px;
+    }
+
+    .hex .letter {
+        font-size: 18px;
+    }
+
+    .hex .weight, .hex .clicks {
+        font-size: 9px;
+    }
 }

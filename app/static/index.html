@@ -38,19 +38,24 @@
             <div id="clear-button">
                 <button type="button" onclick="clearWord()">Очистить поле</button>
             </div>
-            <div id="players-info"></div>
+            <div id="players-info-container">
+                <button id="toggle-players-info" onclick="togglePlayersInfo()">Показать/Скрыть игроков</button>
+                <div id="players-info" style="display: none;"></div>
+            </div>
             <div id="start-game-button" style="display: none;">
                 <button onclick="startGame()">Начать игру</button>
             </div>
             <div id="share-button"></div>
-
             <div id="notification" class="notification"></div>
         </div>
     </div>
 
     <script src="/hex-to-sense/static/script.js"></script>
     <script>
-
+        function togglePlayersInfo() {
+            const playersInfo = document.getElementById("players-info");
+            playersInfo.style.display = playersInfo.style.display === "none" ? "block" : "none";
+        }
     </script>
 </body>
 </html>

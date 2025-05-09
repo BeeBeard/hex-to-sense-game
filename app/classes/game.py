@@ -114,19 +114,20 @@ class Game:
 
         return _grid
 
-    def get_neighbors(self, x: int, y: int):
-
-        if y % 2 == 0:
-            directions = [(0, -1), (1, 0),  (0, 1),  (-1, 1), (-1, -1), (-1, 0),]
-        else:
-            directions = [(1, -1), (1, 0), (1, 1),  (0, 1), (-1, 0), (0, -1), ]
-
-        neighbors: List[Hex] = []
-        for dr, dc in directions:
-            _x, _y = x + dr, y + dc
-            if 0 <= _x < self.radius and 0 <= _y < self.radius:
-                neighbors.append(self.grid[_y][_x])
-
+    # def get_neighbors(self, x: int, y: int):
+    #
+    #     if y % 2 == 0:
+    #         directions = [(0, -1), (1, 0),  (0, 1),  (-1, 1), (-1, -1), (-1, 0),]
+    #     else:
+    #         directions = [(1, -1), (1, 0), (1, 1),  (0, 1), (-1, 0), (0, -1), ]
+    #
+    #     neighbors: List[Hex] = []
+    #     for dr, dc in directions:
+    #         _x, _y = x + dr, y + dc
+    #         if 0 <= _x < self.radius and 0 <= _y < self.radius:
+    #             neighbors.append(self.grid[_y][_x])
+    #
+    #     return neighbors
         # print(f"СОСЕДИ: {x}/{y}")
         #
         # # self.get_grid_info("letter")
@@ -151,6 +152,23 @@ class Game:
         #         print(row)
         #
         # print(f"END")
+
+        # return neighbors
+
+
+
+    def get_neighbors(self, x: int, y: int):
+        # Направления уже корректны, оставляем как есть
+        if y % 2 == 0:
+            directions = [(0, -1), (1, 0), (0, 1), (-1, 1), (-1, -1), (-1, 0)]
+        else:
+            directions = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 0), (0, -1)]
+
+        neighbors = []
+        for dr, dc in directions:
+            _x, _y = x + dr, y + dc
+            if 0 <= _x < self.radius and 0 <= _y < self.radius:
+                neighbors.append(self.grid[_y][_x])
 
         return neighbors
 
@@ -250,7 +268,7 @@ class Game:
             _row = []
             for i in row:
                 if i.show:
-                    i.letter = f"{i.number}"
+                    # i.letter = f"{i.number}"
                     _row.append(i.model_dump())
                 else:
                     _row.append(None)
@@ -322,16 +340,45 @@ class Game:
     #
     #     return neighbors
 
-    def is_valid_path(self, path: List[List[int]]):
-        if not path:
+    # def is_valid_path(self, path: List[List[int]]):
+    #     if not path:
+    #         return False
+    #
+    #     for i in range(1, len(path)):
+    #         prev_r, prev_c = path[i - 1]
+    #         curr_r, curr_c = path[i]
+    #         if (curr_r, curr_c) not in self.get_neighbors(prev_c, prev_r) + [self.grid[prev_c][prev_r]]:
+    #             return False
+    #
+    #     return True
+
+    @staticmethod
+    def is_valid_path(path: List[List[int]]):
+        if not path or len(path) < 1:
+            print("Path is empty or too short")
             return False
 
-        for i in range(1, len(path)):
-            prev_r, prev_c = path[i - 1]
-            curr_r, curr_c = path[i]
-            if (curr_r, curr_c) not in self.get_neighbors(prev_r, prev_c):
+        for i in range(len(path) - 1):
+            prev = path[i]  # [row, col]
+            curr = path[i + 1]
+            pr, pc = prev
+            cr, cc = curr
+            print(f"Checking step: from ({pr}, {pc}) to ({cr}, {cc})")
+
+            # Направления для четных и нечетных строк, синхронизированы с get_neighbors
+            if pr % 2 == 0:
+                directions = [(0, -1), (1, 0), (0, 1), (-1, 1), (-1, -1), (-1, 0)]
+            else:
+                directions = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 0), (0, -1)]
+
+            # Проверяем, является ли текущая ячейка соседом предыдущей
+            is_neighbor = any(pr + dr == cr and pc + dc == cc for dr, dc in directions)
+            print(f"Is neighbor: {is_neighbor}, Directions: {directions}")
+            if not is_neighbor:
+                print(f"Invalid step: ({pr}, {pc}) to ({cr}, {cc})")
                 return False
 
+        print("Path is valid")
         return True
 
     def increment_click(self, player_id: str, row: int, col: int):
@@ -367,8 +414,9 @@ class Game:
 
         # Проверяем существует ли слово
         is_exist = word_checker.check_word(word).is_exist
+        print(f"!!!!!!!!!!!!! {is_exist}")
 
-        if word is is_exist:
+        if word is not is_exist:
             current_player.lives -= 1
             logger.info(f"Word not in dictionary: {word}, player_id={player_id}, lives={current_player.lives}")
             return {"valid": False, "reason": "Такое слово не найдено", "word": word}
