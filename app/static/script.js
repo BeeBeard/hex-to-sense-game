@@ -455,8 +455,8 @@ function renderStats(players) {
         const statDiv = document.createElement("div");
         statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
-            <span>${p.name}</span>
-            <span>Очки: ${p.score}</span>
+            <span>${p.name}</span><br>
+            <span>Очки: ${p.score}</span><br>
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsLeft.appendChild(statDiv);
@@ -466,8 +466,8 @@ function renderStats(players) {
         const statDiv = document.createElement("div");
         statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
-            <span>${p.name}</span>
-            <span>Очки: ${p.score}</span>
+            <span>${p.name}</span><br>
+            <span>Очки: ${p.score}</span><br>
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsRight.appendChild(statDiv);
@@ -590,7 +590,7 @@ function togglePlayersInfo() {
     const toggleButton = document.getElementById("toggle-players");
     if (playersPanel.classList.contains("show")) {
         playersPanel.classList.remove("show");
-        toggleButton.textContent = "Показать игроков";
+        toggleButton.textContent = "Статистика игроков";
     } else {
         playersPanel.classList.add("show");
         toggleButton.textContent = "Скрыть игроков";
