@@ -442,7 +442,7 @@ function renderPlayers(players) {
 
              nameHeader.innerHTML = `
             <span>${p.name}</span>
-            <span>✨ ${p.score}</span>
+            <span>✨ ${p.score}</span><br>
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
 
@@ -622,9 +622,9 @@ function togglePlayersInfo() {
     const toggleButton = document.getElementById("toggle-players");
     if (playersPanel.classList.contains("show")) {
         playersPanel.classList.remove("show");
-        toggleButton.textContent = "Статистика игроков";
+        toggleButton.textContent = "Показать статистику";
     } else {
         playersPanel.classList.add("show");
-        toggleButton.textContent = "Скрыть игроков";
+        toggleButton.textContent = "Скрыть статистику";
     }
 }
