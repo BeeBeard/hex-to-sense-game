@@ -1,3 +1,5 @@
+console.log("script.js loaded");
+
 let gameId, playerId, ws;
 let selectedCells = [];
 let currentPlayerId;
@@ -15,6 +17,19 @@ window.onload = () => {
         console.log("Join URL detected, game_id:", pathParts[2]);
         document.getElementById("game-id").value = pathParts[2];
         showJoinForm();
+        const playerNameInput = document.getElementById("player-name-join");
+        if (playerNameInput) {
+            playerNameInput.focus();
+            playerNameInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter" && playerNameInput.value.trim().length >= 2) {
+                    console.log("Enter pressed, calling joinGame");
+                    joinGame();
+                }
+            });
+            // Убрали input-событие, чтобы избежать преждевременного вызова
+        } else {
+            console.error("player-name-join input not found");
+        }
     }
 };
 
@@ -48,11 +63,24 @@ async function createGame() {
 
 async function joinGame() {
     console.log("Join Game button clicked");
-    const playerName = document.getElementById("player-name").value || "";
-    const inputGameId = document.getElementById("game-id").value.trim();
+    const playerNameInput = document.getElementById("player-name-join");
+    const gameIdInput = document.getElementById("game-id");
+    if (!playerNameInput || !gameIdInput) {
+        console.error("Input elements not found", { playerNameInput, gameIdInput });
+        document.getElementById("message").textContent = "Ошибка: элементы формы не найдены";
+        return;
+    }
+    const playerName = playerNameInput.value.trim();
+    const inputGameId = gameIdInput.value.trim();
+    console.log("joinGame inputs:", { playerName, inputGameId });
     if (!inputGameId) {
         console.error("No game ID provided");
         document.getElementById("message").textContent = "Ошибка: введите код игры";
+        return;
+    }
+    if (!playerName || playerName.length < 2) {
+        console.error("No valid player name provided", playerName);
+        document.getElementById("message").textContent = "Ошибка: введите имя (минимум 2 символа)";
         return;
     }
     console.log("Joining game:", inputGameId, "as", playerName);
@@ -84,7 +112,59 @@ async function joinGame() {
 
 function showJoinForm() {
     console.log("Show Join Form button clicked");
-    document.getElementById("join-form").style.display = "block";
+    document.getElementById("create-form").style.display = "none";
+    document.getElementById("join-form").style.display = "flex";
+    document.getElementById("rooms-form").style.display = "none";
+    document.getElementById("message").textContent = "";
+}
+
+function showMainMenu() {
+    console.log("Show Main Menu button clicked");
+    document.getElementById("create-form").style.display = "flex";
+    document.getElementById("join-form").style.display = "none";
+    document.getElementById("rooms-form").style.display = "none";
+    document.getElementById("message").textContent = "";
+}
+
+async function showRoomsForm() {
+    console.log("Show Rooms Form button clicked");
+    document.getElementById("create-form").style.display = "none";
+    document.getElementById("join-form").style.display = "none";
+    document.getElementById("rooms-form").style.display = "flex";
+    document.getElementById("message").textContent = "";
+
+    try {
+        const response = await fetch(rootPath + "/api/rooms");
+        console.log("Fetch rooms response status:", response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("Rooms data:", data);
+        const roomsList = document.getElementById("rooms-list");
+        roomsList.innerHTML = "";
+        if (data.rooms.length === 0) {
+            roomsList.innerHTML = "<p>Нет доступных комнат</p>";
+        } else {
+            data.rooms.forEach(room => {
+                const button = document.createElement("button");
+                button.textContent = `Комната ${room.game_id} (${room.players} игроков)`;
+                button.onclick = () => joinRoom(room.game_id);
+                roomsList.appendChild(button);
+            });
+        }
+    } catch (error) {
+        console.error("Error fetching rooms:", error);
+        document.getElementById("message").textContent = `Ошибка при загрузке комнат: ${error.message}`;
+    }
+}
+
+async function joinRoom(gameId) {
+    console.log("Join Room button clicked, game_id:", gameId);
+    document.getElementById("game-id").value = gameId;
+    showJoinForm();
+    const playerNameInput = document.getElementById("player-name-join");
+    playerNameInput.focus();
 }
 
 async function startGame() {
@@ -122,6 +202,7 @@ function startWebSocket() {
     const shareButtonDiv = document.getElementById("share-button");
     shareButtonDiv.innerHTML = `
         <button onclick="shareGame()">Поделиться</button>
+        <a href="${rootPath}/join/${gameId}" target="_blank">Присоединиться к игре</a>
     `;
 }
 
@@ -302,7 +383,6 @@ function renderStats(players) {
 
     if (!players || players.length === 0) return;
 
-    // Равномерное распределение игроков
     const leftCount = Math.ceil(players.length / 2);
     const leftPlayers = players.slice(0, leftCount);
     const rightPlayers = players.slice(leftCount);
@@ -369,9 +449,9 @@ function isNeighbor(prev, curr) {
     const [cr, cc] = curr;
     let directions;
     if (pr % 2 === 0) {
-        directions = [[0, -1], [1, 0], [0, 1], [1, -1], [-1, -1], [-1, 0]]; // По твоему изменению
+        directions = [[0, -1], [1, 0], [0, 1], [1, -1], [-1, -1], [-1, 0]];
     } else {
-        directions = [[-1, 1], [1, 0], [1, 1], [0, 1], [-1, 0], [0, -1]]; // По твоему изменению
+        directions = [[-1, 1], [1, 0], [1, 1], [0, 1], [-1, 0], [0, -1]];
     }
     const isNeighbor = directions.some(([dr, dc]) => pr + dr === cr && pc + dc === cc);
     console.log(`Checking neighbor: prev=(${pr},${pc}), curr=(${cr},${cc}), isNeighbor=${isNeighbor}`);

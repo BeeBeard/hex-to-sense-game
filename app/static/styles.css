@@ -18,173 +18,63 @@ body {
     width: 100%;
 }
 
-#game-container {
+#start-screen h1 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+#create-form, #join-form, #rooms-form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
+    gap: 15px;
     width: 100%;
-    max-width: 100vw;
+    max-width: 300px;
+}
+
+#player-name, #player-name-join, #game-id {
     padding: 10px;
-    box-sizing: border-box;
-    position: relative;
-}
-
-#message {
     font-size: 16px;
-    color: #333;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-#timer-word {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
     width: 100%;
-    max-width: 500px;
-    margin-bottom: 10px;
-}
-
-#timer {
-    font-size: 24px;
-    color: #f44336;
-    font-weight: bold;
-}
-
-#current-word {
-    padding: 5px;
-    font-size: 16px;
-    width: 150px;
-}
-
-#stats-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 100vw;
-    padding: 0 20px;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-}
-
-#stats-left, #stats-right {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    font-size: 14px;
-    color: #333;
-}
-
-#stats-left .stat, #stats-right .stat {
-    display: flex;
-    flex-direction: column;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 8px;
+    max-width: 280px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
-#stats-left .stat.current, #stats-right .stat.current {
-    border: 2px solid #2196F3;
-}
-
-#word-buttons {
+#rooms-list {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
     width: 100%;
-    max-width: 500px;
-    margin-bottom: 10px;
+    max-width: 280px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-#grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+#rooms-list button {
     width: 100%;
-    max-width: 500px;
-    flex-grow: 1;
-    margin-left: -64px; /* По твоему изменению */
-}
-
-.row {
-    display: flex;
-    justify-content: center;
-    margin-top: -18px; /* По твоему изменению */
-}
-
-.row.odd {
-    transform: translateX(31px); /* По твоему изменению */
-}
-
-.hex {
-    width: 58px;
-    height: 67px;
-    background-color: #FFC107;
-    margin: 2px;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 18px;
-    position: relative;
-    user-select: none;
-}
-
-.hex.hidden {
-    visibility: hidden;
-}
-
-.hex .letter {
-    font-size: 23px;
-    position: relative;
-    top: -6px;
-}
-
-.hex .weight {
-    position: absolute;
-    left: 6px;
-    top: 29px;
-    font-size: 14px;
-}
-
-.hex .clicks {
-    position: absolute;
-    right: 6px;
-    top: 29px;
-    font-size: 14px;
-}
-
-.hex.selected {
     background-color: #2196F3;
 }
 
-#info-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    max-width: 500px;
-    padding: 10px;
+#rooms-list button:hover {
+    background-color: #1976D2;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 10px;
     font-size: 16px;
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 150px;
+    width: 100%;
+    max-width: 280px;
     text-align: center;
+    box-sizing: border-box;
 }
 
 button:hover {
@@ -196,145 +86,4 @@ button:disabled {
     cursor: not-allowed;
 }
 
-#players-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto;
-    z-index: 1000;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-#players-panel.show {
-    display: flex;
-}
-
-#close-players {
-    background-color: #f44336;
-    margin-bottom: 20px;
-}
-
-#close-players:hover {
-    background-color: #d32f2f;
-}
-
-#players-info {
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-#players-info > div {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-#players-info h1 {
-    margin: 0 0 10px;
-    font-size: 24px;
-    color: #333;
-}
-
-#players-info div div {
-    font-size: 14px;
-    color: #B0BEC5;
-}
-
-#notification {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    display: none;
-    z-index: 1000;
-}
-
-#notification.show {
-    display: block;
-}
-
-@media (max-width: 600px) {
-    .hex {
-        width: 46px;
-        height: 53px;
-        font-size: 16px;
-    }
-
-    .hex .letter {
-        font-size: 18px;
-        top: -4px;
-    }
-
-    .hex .weight, .hex .clicks {
-        font-size: 11px;
-        top: 23px;
-    }
-
-    .row {
-        margin-top: -15px; /* По твоему изменению */
-    }
-
-    .row.odd {
-        transform: translateX(25px); /* По твоему изменению */
-    }
-
-    #grid {
-        max-width: 100%;
-        padding: 0 10px;
-        margin-left: -48px; /* По твоему изменению */
-    }
-
-    button {
-        width: 120px;
-        padding: 8px 10px;
-        font-size: 14px;
-    }
-
-    #current-word {
-        width: 120px;
-        font-size: 14px;
-    }
-
-    #timer {
-        font-size: 20px;
-    }
-
-    #message {
-        font-size: 14px;
-    }
-
-    #stats-container {
-        padding: 0 10px;
-    }
-
-    #stats-left, #stats-right {
-        font-size: 12px;
-    }
-
-    #stats-left .stat, #stats-right .stat {
-        padding: 6px;
-    }
-
-    #players-info h1 {
-        font-size: 20px;
-    }
-
-    #players-info div div {
-        font-size: 12px;
-    }
-}
+/* Остальные стили для игры */

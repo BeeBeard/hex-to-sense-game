@@ -15,8 +15,15 @@
             <button onclick="showJoinForm()">Присоединиться</button>
         </div>
         <div id="join-form" style="display: none;">
+            <input type="text" id="player-name-join" placeholder="Ваше имя">
             <input type="text" id="game-id" placeholder="Код игры">
             <button onclick="joinGame()">Войти</button>
+            <button onclick="showRoomsForm()">Все комнаты</button>
+            <button onclick="showMainMenu()">Назад</button>
+        </div>
+        <div id="rooms-form" style="display: none;">
+            <div id="rooms-list"></div>
+            <button onclick="showJoinForm()">Назад</button>
         </div>
     </div>
 

@@ -263,7 +263,7 @@ class Game:
 
         self.grid = _grid
 
-    def add_player(self, player_id: str, name: str, websocket: Union[WebSocket, None]):
+    def add_player(self, player_id: str, name: str, websocket: Union[WebSocket, None] = None):
 
         if len(self.players) < 4 and not self.is_started:
             player = Player(player_id, name)

@@ -7,8 +7,9 @@ from loguru import logger
 
 from app.classes import Game
 from app.models import CreateGameRequest, JoinGameRequest
-from app.storage import GAMES
+from app.storage import GM
 import os
+
 
 r_game = APIRouter(tags=['API'])
 
@@ -25,6 +26,20 @@ async def get():
         logger.error(f"Error reading index.html: {e}")
         return HTMLResponse(content="Error loading page", status_code=500)
 
+
+@r_game.post("/create")
+async def create_game(request: CreateGameRequest):
+    player_name = request.player_name.strip() or f"Игрок_{random.randint(1000, 9999)}"
+    logger.info(f"Processing create_game request for player: {player_name}")
+    player_id = str(uuid.uuid4())
+
+    game = GM.create_game(player_id, radius=7)
+    game.add_player(player_id, request.player_name)
+    # GM.games[game.game_id] = game
+    logger.info(f"Game created: game_id={game.game_id}, player_id={player_id}, creator_id={player_id}, player_name={player_name}")
+    return {"game_id": game.game_id, "player_id": player_id, "creator_id": player_id}
+
+
 @r_game.get("/join/{game_id}", response_class=HTMLResponse)
 async def join_game_page(game_id: str):
     logger.info(f"Received GET request for /join/{game_id}")
@@ -36,22 +51,11 @@ async def join_game_page(game_id: str):
         return HTMLResponse(content="Error loading page", status_code=500)
 
 
-@r_game.post("/create")
-async def create_game(request: CreateGameRequest):
-    player_name = request.player_name.strip() or f"Игрок_{random.randint(1000, 9999)}"
-    logger.info(f"Processing create_game request for player: {player_name}")
-    player_id = str(uuid.uuid4())
-    game = Game(creator_id=player_id, radius=7)
-    game.add_player(player_id, player_name, None)
-    GAMES[game.game_id] = game
-    logger.info(f"Game created: game_id={game.game_id}, player_id={player_id}, creator_id={player_id}, player_name={player_name}")
-    return {"game_id": game.game_id, "player_id": player_id, "creator_id": player_id}
-
 @r_game.post("/join")
 async def join_game(request: JoinGameRequest):
     player_name = request.player_name.strip() or f"Игрок_{random.randint(1000, 9999)}"
     logger.info(f"Processing join_game request: game_id={request.game_id}, player_name={player_name}")
-    game = GAMES.get(request.game_id.strip())
+    game = GM.games.get(request.game_id.strip())
     if not game:
         logger.error(f"Game not found: {request.game_id}")
         return {"error": "Game not found"}
@@ -70,6 +74,11 @@ async def join_game(request: JoinGameRequest):
     })
     logger.info(f"Player joined: game_id={request.game_id}, player_id={player_id}, player_name={player_name}")
     return {"game_id": request.game_id, "player_id": player_id}
+
+@r_game.get("/api/rooms")
+async def get_rooms():
+    rooms = GM.get_active_rooms()
+    return {"rooms": rooms}
 
 
 if __name__ == "__main__":

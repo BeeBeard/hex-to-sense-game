@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi import WebSocket, WebSocketDisconnect
 from loguru import logger
 
-from app.storage import GAMES
+from app.storage import GM
 
 r_ws = APIRouter(tags=['WEB SOCKET'])
 
@@ -16,7 +16,7 @@ async def test():
 async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str):
     await websocket.accept()
     logger.info(f"WebSocket connected: game_id={game_id}, player_id={player_id}")
-    game = GAMES.get(game_id)
+    game = GM.games.get(game_id)
     if not game:
         logger.error(f"WebSocket error: Game {game_id} not found")
         await websocket.send_json({"type": "error", "message": "Game not found"})
@@ -123,7 +123,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
             message = f"Игрок {disconnected_player.name} покинул игру"
             if not game.players:
                 logger.info(f"No players left in game {game_id}, removing game")
-                del GAMES[game_id]
+                del GM.games[game_id]
                 return
             if game.is_started and game.players and game.current_player_index < len(game.players) and game.players[game.current_player_index].id == player_id:
                 game.next_turn()
