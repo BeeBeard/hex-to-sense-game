@@ -13,7 +13,6 @@ from typing import List, Optional
 
 # Простой словарь для проверки слов
 
-DICTIONARY = {"кот", "дом", "сад", "лес", "мир", "книга", "стол", "окно"}
 USED_WORDS = set()
 
 
@@ -21,6 +20,13 @@ class Game:
     def __init__(self, creator_id: str, radius: int = 7):
         self.players: List[Player] = []
         self.current_player_index = 0
+        self.weights = {
+            'Ч': 3, 'Е': 1, 'Л': 2, 'О': 1, 'В': 2, 'К': 2, 'Г': 3, 'Д': 2, 'Р': 2,
+            'М': 3, 'Я': 3, 'Н': 2, 'Ь': 3, 'Ж': 3, 'И': 1, 'З': 3, 'А': 1, 'Б': 3,
+            'Т': 2, 'У': 3, 'П': 2, 'С': 2, 'Ё': 4, 'Й': 4, 'Ц': 3, 'Щ': 4, 'Ш': 4,
+            'Ы': 3, 'Ф': 3, 'Ю': 4, 'Х': 4, 'Ъ': 4, 'Э': 4
+        }
+
         self.radius = self.prepare_radius(radius)
         self.center = int((self.radius + 1) / 2) - 1
         self.grid = []
@@ -32,6 +38,7 @@ class Game:
         self.game_id = str(uuid.uuid4())
         self.is_started = False
         self.creator_id = creator_id
+
 
     @staticmethod
     def prepare_radius(radius: int):
@@ -252,6 +259,7 @@ class Game:
             for i in row:
                 if i.show:
                     # i.letter = f"{i.number}"
+                    i.weight = self.weights[i.letter]
                     _row.append(i.model_dump())
                 else:
                     _row.append(None)
@@ -308,20 +316,6 @@ class Game:
         self.is_started = True
         logger.info(f"Game started successfully: game_id={self.game_id}")
         return {"success": True}
-
-    # def get_neighbors(self, row: int, col: int):
-    #     neighbors = []
-    #     if row % 2 == 0:
-    #         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1)]
-    #     else:
-    #         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (1, 1)]
-    #
-    #     for dr, dc in directions:
-    #         r, c = row + dr, col + dc
-    #         if 0 <= r < self.radius and 0 <= c < self.radius and self.grid[r][c] is not None:
-    #             neighbors.append((r, c))
-    #
-    #     return neighbors
 
     def is_valid_path(self, path: List[List[int]]):
         if not path:
@@ -389,6 +383,7 @@ class Game:
 
         score = sum(self.grid[r][c]["weight"] for r, c in path)
         current_player.score += score
+        logger.debug(f"CHECK!! {current_player.score=}")
         current_player.words.append(word)
         USED_WORDS.add(word)
 
@@ -398,48 +393,6 @@ class Game:
                     self.grid[r][c]["clics"] = 0
 
         return SubmitWordResult(word=word, valid=True, reason="Word accepted", score=score).model_dump()
-
-
-    # def submit_word(self, player_id: str, word: str, path: List[List[int]]):
-    #     # global USED_WORDS
-    #
-    #     word = word.upper()
-    #
-    #     current_player = self.players[self.current_player_index]
-    #     if current_player.id != player_id:
-    #         logger.warning(f"Invalid word submission: player_id={player_id} is not current player={current_player.id}")
-    #         return {"valid": False, "reason": "Ход противника", "word": word}
-    #
-    #     if not self.is_valid_path(path):
-    #         current_player.lives -= 1
-    #         logger.info(f"Invalid path for word: {word}, player_id={player_id}, lives={current_player.lives}")
-    #         return {"valid": False, "reason": "Invalid path", "word": word}
-    #
-    #     # Проверяем существует ли слово
-    #     is_exist = word_checker.check_word(word).is_exist
-    #
-    #     if word is is_exist:
-    #         current_player.lives -= 1
-    #         logger.info(f"Word not in dictionary: {word}, player_id={player_id}, lives={current_player.lives}")
-    #         return {"valid": False, "reason": "Такое слово не найдено", "word": word}
-    #
-    #     if word in USED_WORDS:
-    #         current_player.lives -= 1
-    #         logger.info(f"Word already used: {word}, player_id={player_id}, lives={current_player.lives}")
-    #         return {"valid": False, "reason": "Слово уже было найдено", "word": word}
-    #
-    #     score = sum(self.grid[r][c]["weight"] for r, c in path)
-    #     current_player.score += score
-    #     current_player.words.append(word)
-    #     USED_WORDS.add(word)
-    #
-    #     for r in range(self.radius):
-    #         for c in range(self.radius):
-    #             if self.grid[r][c] is not None:
-    #                 self.grid[r][c]["clicks"] = 0
-    #
-    #     logger.info(f"Word accepted: {word}, score={score}, player_id={player_id}")
-    #     return {"valid": True, "score": score, "word": word}
 
     def next_turn(self):
         if not self.players:

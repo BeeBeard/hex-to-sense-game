@@ -127,7 +127,7 @@ button:disabled {
 .hex {
     width: var(--hex-width);
     height: var(--hex-height);
-
+    color: #000;
     background: #FF9800;
     margin: 0 var(--hex-side-margin);  /* ВАЖНО */
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -163,7 +163,7 @@ button:disabled {
 
 .hex .weight, .hex .clicks {
     font-size: 11px;
-    color: #B0BEC5;
+
     position: absolute;
     top: 60%;
 }
@@ -193,6 +193,7 @@ button:disabled {
     font-size: 18px;
     color: #333;
     margin: 10px 0;
+    position: relative;
 }
 
 #timer-word {
