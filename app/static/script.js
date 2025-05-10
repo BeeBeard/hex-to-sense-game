@@ -75,8 +75,6 @@ async function createGame() {
     }
 
 
-
-
     console.log("Creating game for:", playerName);
     try {
         const response = await fetch(rootPath + "/create", {
@@ -162,6 +160,7 @@ async function joinGame() {
 
 function showJoinForm() {
     console.log("Show Join Form");
+    const mainForm = document.getElementById("main-form");
     const createForm = document.getElementById("create-form");
     const joinForm = document.getElementById("join-form");
     const roomsForm = document.getElementById("rooms-form");
@@ -171,15 +170,39 @@ function showJoinForm() {
         message.textContent = "Ошибка: форма присоединения не найдена";
         return;
     }
+
+    mainForm.style.display = "none";
     createForm.style.display = "none";
     joinForm.style.display = "flex";
     roomsForm.style.display = "none";
     message.textContent = "";
 }
 
+function showCreateForm() {
+    console.log("Show Join Form");
+    const mainForm = document.getElementById("main-form");
+    const createForm = document.getElementById("create-form");
+    const joinForm = document.getElementById("join-form");
+    const roomsForm = document.getElementById("rooms-form");
+    const message = document.getElementById("message");
+
+    if (!joinForm) {
+        console.error("join-form not found");
+        message.textContent = "Ошибка: форма присоединения не найдена";
+        return;
+    }
+    mainForm.style.display = "none";
+    createForm.style.display = "flex";
+    joinForm.style.display = "none";
+    roomsForm.style.display = "none";
+    message.textContent = "";
+}
+
+
 function showMainMenu() {
     console.log("Show Main Menu button clicked");
-    document.getElementById("create-form").style.display = "flex";
+    document.getElementById("main-form").style.display = "flex";
+    document.getElementById("create-form").style.display = "none";
     document.getElementById("join-form").style.display = "none";
     document.getElementById("rooms-form").style.display = "none";
     document.getElementById("message").textContent = "";
@@ -265,10 +288,10 @@ function startWebSocket() {
         reconnectWebSocket();
     };
     const shareButtonDiv = document.getElementById("share-button");
-    shareButtonDiv.innerHTML = `
-        <button onclick="shareGame()">Поделиться</button>
-        <a href="${rootPath}/join/${gameId}" target="_blank">Присоединиться к игре</a>
-    `;
+//    shareButtonDiv.innerHTML = `
+//        <button onclick="shareGame()">Поделиться</button>
+//        <a href="${rootPath}/join/${gameId}" target="_blank">Присоединиться к игре</a>
+//    `;
 }
 
 function reconnectWebSocket() {
@@ -311,8 +334,8 @@ function updateStartButton(playersCount) {
         if (!showStartButton) {
             let reason = "";
             if (isGameStarted) reason = "Игра уже началась";
-            else if (playersCount < min_players) reason = "Недостаточно игроков";
-            document.getElementById("message").textContent = reason ? `Кнопка "Начать игру" недоступна: ${reason}` : "";
+            else if (playersCount < min_players) reason = "Ожидаем игроков";
+            document.getElementById("message").textContent = reason ? `${reason}` : "";
         } else {
             document.getElementById("message").textContent = "Готово к началу игры";
         }
@@ -419,7 +442,7 @@ function renderPlayers(players) {
 
              nameHeader.innerHTML = `
             <span>${p.name}</span>
-            <span>Очки: ${p.score}</span>
+            <span>✨ ${p.score}</span>
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
 
@@ -456,7 +479,7 @@ function renderStats(players) {
         statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
             <span>${p.name}</span><br>
-            <span>Очки: ${p.score}</span><br>
+            <span>✨ ${p.score}</span><br>
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsLeft.appendChild(statDiv);
@@ -467,7 +490,7 @@ function renderStats(players) {
         statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
             <span>${p.name}</span><br>
-            <span>Очки: ${p.score}</span><br>
+            <span>✨ ${p.score}</span><br>
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsRight.appendChild(statDiv);
@@ -555,6 +578,15 @@ function clearWord() {
         const cell = document.querySelector(`.hex[data-row="${row}"][data-col="${col}"]`);
         if (cell) {
             cell.classList.remove("selected");
+
+
+            cell.querySelectorAll('.clicks').forEach(element => {
+              // Преобразуем textContent в число и вычитаем 1
+              let currentValue = parseInt(element.textContent);
+              if (!isNaN(currentValue)) { // Проверяем, является ли содержимое числом
+                element.textContent = currentValue - 1;
+              }
+            });
         }
     });
     selectedCells = [];

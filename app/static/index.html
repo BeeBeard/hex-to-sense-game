@@ -7,20 +7,30 @@
     <link rel="stylesheet" href="/hex-to-sense/static/styles.css">
 </head>
 <body>
-    <div>
+    <div  class="container">
     <div style="message">
 
         <div id="message"></div>
     </div>
+
+
+
     <div id="start-screen">
 
         <h1>Hex to Sense</h1>
-        <div id="create-form">
+
+        <div id="main-form" style="display: flex;">
+            <button onclick="showCreateForm()">Новая игра</button>
+            <button onclick="showJoinForm()">Присоединиться</button>
+        </div>
+
+        <div id="create-form" style="display: none;">
             <input type="text" id="player-name" placeholder="Ваше имя">
             <input type="text" id="room-name" placeholder="Название комнаты">
             <button onclick="createGame()">Создать игру</button>
-            <button onclick="showJoinForm()">Присоединиться</button>
+            <button onclick="showMainMenu()">Назад</button>
         </div>
+
         <div id="join-form" style="display: none;">
             <input type="text" id="player-name-join" placeholder="Ваше имя">
             <input type="text" id="game-id" placeholder="Код игры">
@@ -28,6 +38,7 @@
             <button onclick="showRoomsForm()">Все комнаты</button>
             <button onclick="showMainMenu()">Назад</button>
         </div>
+
         <div id="rooms-form" style="display: none;">
             <div id="rooms-list"></div>
             <button onclick="showJoinForm()">Назад</button>
@@ -57,7 +68,7 @@
                 <div id="start-game-button" style="display: none;">
                     <button onclick="startGame()">Начать игру</button>
                 </div>
-                <button id="toggle-players" onclick="togglePlayersInfo()">Показать игроков</button>
+                <button id="toggle-players" onclick="togglePlayersInfo()">Статистика игроков</button>
                 <div id="share-button"></div>
             </div>
 

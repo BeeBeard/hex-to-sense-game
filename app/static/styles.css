@@ -21,6 +21,14 @@
     animation: shake 0.3s ease-in-out;
 }
 
+
+.container {
+      width: 90%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+
 body {
     margin: 0;
     padding: 0;
@@ -32,7 +40,7 @@ body {
     flex-direction: column;
 }
 
-#start-screen, #game-screen {
+#start-screen, #game-screen, #main-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,13 +49,13 @@ body {
     width: 100%;
 }
 
-#start-screen h1 {
+#start-screen h1, #main-screen h1 {
     font-size: 36px;
     color: #333;
     margin-bottom: 20px;
 }
 
-#create-form, #join-form, #rooms-form {
+#create-form, #join-form, #rooms-form, #main-form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -207,7 +215,7 @@ button:disabled {
     align-items: center;
     align-text: center;
     justify-content: center;
-    width: 100%;
+
 
 }
 

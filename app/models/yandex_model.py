@@ -23,8 +23,8 @@ class Translation(BaseModel):
 
 class Definition(BaseModel):
     text: str
-    pos: str
-    tr: List[Translation]
+    # pos: str
+    # tr: List[Translation]
 
 
 class YaAnswer(BaseModel):

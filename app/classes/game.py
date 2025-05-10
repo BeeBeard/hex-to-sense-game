@@ -14,7 +14,7 @@ from typing import List, Optional
 
 # Простой словарь для проверки слов
 
-USED_WORDS = set()
+
 
 BASE_WORDS = [
     "ЖИЗНЬ",
@@ -230,6 +230,7 @@ BASE_WORDS = [
 class Game:
     def __init__(self, creator_id: str, room_name: str, radius: int = 7):
         self.players: List[Player] = []
+        self.used_words = []  # USED_WORDS = set()
         self.current_player_index = 0
         self.weights = {
             'Ч': 3, 'Е': 1, 'Л': 2, 'О': 1, 'В': 2, 'К': 2, 'Г': 3, 'Д': 2, 'Р': 2,
@@ -559,38 +560,42 @@ class Game:
 
     def submit_word(self, player_id: str, word: str, path: List[List[int]]):
 
+        # Обнуляем нажатия
+        for r in range(self.radius):
+            for c in range(self.radius):
+                if self.grid[r][c] is not None:
+                    self.grid[r][c]["clics"] = 0
+
         word = word.upper()
 
         for i in self.players:
             pprint.pprint(i.get_data())
 
         current_player = self.players[self.current_player_index]
+        # logger.error(f"{player_id=}")
+        # logger.error(f"{current_player.get_data()=}")
 
-        logger.error(f"{player_id=}")
-        logger.error(f"{current_player.get_data()=}")
         if current_player.id != player_id or not self.is_started:
-
             return SubmitWordResult(word=word, valid=False, reason="Not your turn or game not started").model_dump()
 
         if len(word) < 2:
             return SubmitWordResult(word=word, valid=False, reason="Word too short").model_dump()
 
-        logger.error(f"ПРОВЕРИТЬ!!! {path=}")
         # if not self.is_valid_path(path):
         #     return SubmitWordResult(word=word, valid=False, reason="Invalid path").model_dump()
 
         if len(path) != len(word):
             return SubmitWordResult(word=word, valid=False, reason="Path length does not match word length").model_dump()
 
-
         # Проверяем существует ли слово
-        is_exist = word_checker.check_word(word).is_exist
+        ya_result = word_checker.check_word(word)
+        logger.error(f"Данные от яндекс {ya_result}")
 
-        if word is not is_exist:
+        if not ya_result.is_exist:
             current_player.lives -= 1
             return SubmitWordResult(word=word, valid=False, reason="Такое слово не найдено").model_dump()
 
-        if word in USED_WORDS:
+        if word in self.used_words:
             current_player.lives -= 1
             return SubmitWordResult(word=word, valid=False, reason="Word already used").model_dump()
 
@@ -598,12 +603,7 @@ class Game:
         current_player.score += score
         logger.debug(f"CHECK!! {current_player.score=}")
         current_player.words.append(word)
-        USED_WORDS.add(word)
-
-        for r in range(self.radius):
-            for c in range(self.radius):
-                if self.grid[r][c] is not None:
-                    self.grid[r][c]["clics"] = 0
+        self.used_words.append(word)
 
         return SubmitWordResult(word=word, valid=True, reason="Word accepted", score=score).model_dump()
 
