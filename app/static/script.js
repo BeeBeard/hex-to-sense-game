@@ -15,20 +15,26 @@ window.onload = () => {
     const pathParts = url.pathname.split('/');
     if (pathParts[1] === 'join' && pathParts[2]) {
         console.log("Join URL detected, game_id:", pathParts[2]);
-        document.getElementById("game-id").value = pathParts[2];
+        const gameIdInput = document.getElementById("game-id");
+        if (gameIdInput) {
+            gameIdInput.value = pathParts[2];
+        } else {
+            console.error("game-id input not found");
+        }
         showJoinForm();
         const playerNameInput = document.getElementById("player-name-join");
         if (playerNameInput) {
+            console.log("player-name-join found, focusing");
             playerNameInput.focus();
             playerNameInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter" && playerNameInput.value.trim().length >= 2) {
-                    console.log("Enter pressed, calling joinGame");
+                    console.log("Enter pressed, calling joinGame with name:", playerNameInput.value);
                     joinGame();
                 }
             });
-            // Убрали input-событие, чтобы избежать преждевременного вызова
         } else {
             console.error("player-name-join input not found");
+            document.getElementById("message").textContent = "Ошибка: поле имени не найдено";
         }
     }
 };
@@ -76,21 +82,24 @@ async function joinGame() {
     if (!inputGameId) {
         console.error("No game ID provided");
         document.getElementById("message").textContent = "Ошибка: введите код игры";
+        gameIdInput.focus();
         return;
     }
     if (!playerName || playerName.length < 2) {
-        console.error("No valid player name provided", playerName);
+        console.error("No valid player name provided", { playerName, length: playerName.length });
         document.getElementById("message").textContent = "Ошибка: введите имя (минимум 2 символа)";
+        playerNameInput.focus();
         return;
     }
-    console.log("Joining game:", inputGameId, "as", playerName);
+    console.log("Attempting to join game:", inputGameId, "as", playerName);
+    document.getElementById("message").textContent = "Присоединение к игре...";
     try {
         const response = await fetch(rootPath + "/join", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ game_id: inputGameId, player_name: playerName })
         });
-        console.log("Fetch response status:", response.status);
+        console.log("Fetch response status:", response.status, "Response:", response);
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
@@ -103,6 +112,7 @@ async function joinGame() {
         console.log("Join game response:", data);
         gameId = data.game_id;
         myPlayerId = data.player_id;
+        creatorId = data.creator_id;
         startWebSocket();
     } catch (error) {
         console.error("Error joining game:", error);
@@ -111,11 +121,20 @@ async function joinGame() {
 }
 
 function showJoinForm() {
-    console.log("Show Join Form button clicked");
-    document.getElementById("create-form").style.display = "none";
-    document.getElementById("join-form").style.display = "flex";
-    document.getElementById("rooms-form").style.display = "none";
-    document.getElementById("message").textContent = "";
+    console.log("Show Join Form");
+    const createForm = document.getElementById("create-form");
+    const joinForm = document.getElementById("join-form");
+    const roomsForm = document.getElementById("rooms-form");
+    const message = document.getElementById("message");
+    if (!joinForm) {
+        console.error("join-form not found");
+        message.textContent = "Ошибка: форма присоединения не найдена";
+        return;
+    }
+    createForm.style.display = "none";
+    joinForm.style.display = "flex";
+    roomsForm.style.display = "none";
+    message.textContent = "";
 }
 
 function showMainMenu() {
@@ -164,7 +183,9 @@ async function joinRoom(gameId) {
     document.getElementById("game-id").value = gameId;
     showJoinForm();
     const playerNameInput = document.getElementById("player-name-join");
-    playerNameInput.focus();
+    if (playerNameInput) {
+        playerNameInput.focus();
+    }
 }
 
 async function startGame() {
@@ -324,7 +345,7 @@ function handleMessage(event) {
 }
 
 function renderGrid(grid) {
-    console.log("Rendering grid");
+    console.log("Rendering grid", grid);
     const gridDiv = document.getElementById("grid");
     gridDiv.innerHTML = "";
     grid.forEach((row, r) => {

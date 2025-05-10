@@ -1,3 +1,16 @@
+:root {
+
+  --hex-width: 50px;
+  --hex-height: 57.74px;
+
+  --hex-width-shift: calc(var(--hex-width) * -1);
+
+  --hex-side-margin: 3px; /*Отступы слева и справа от ячейки*/
+
+  --row-vert-shift: -9px;  /*Вертикальный сдвиг между ячейками должен быть отрицательным*/
+  --odd-shift: 28px;  /*Сдвиг четных линий*/
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -86,4 +99,197 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* Остальные стили для игры */
+/* Гексагональная сетка (адаптировано из ветки dev) */
+#grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    margin-top: -10px;
+    margin-left: -64px;
+
+}
+
+.row.even {
+    transform: translateX(0);
+}
+
+.row.odd {
+    transform: translateX(28px); /* Смещение для нечётных строк */
+
+}
+
+.hex {
+    width: var(--hex-width);
+    height: var(--hex-height);
+
+    background: #FF9800;
+    margin: 0 var(--hex-side-margin);  /* ВАЖНО */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: transform 0.2s;
+    z-index: 900;
+
+}
+
+.hex.hidden {
+    visibility: hidden;
+}
+
+.hex:hover {
+    z-index: 1000;
+    transform: scale(1.4);
+    cursor: pointer;
+    background-color: #FFCCEE;
+    position: relative;
+
+}
+
+.hex .letter {
+    font-size: 22px;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    position: relative;
+    top: -3px;
+}
+
+.hex .weight, .hex .clicks {
+    font-size: 11px;
+    color: #B0BEC5;
+    position: absolute;
+    top: 60%;
+}
+
+.hex .weight {
+    left: 8px;
+}
+
+.hex .clicks {
+    right: 8px;
+}
+
+.hex.selected {
+    background: #F44336;
+}
+
+/* Игровое поле */
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+#message {
+    font-size: 18px;
+    color: #333;
+    margin: 10px 0;
+}
+
+#timer-word {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+#timer {
+    font-size: 18px;
+    color: #d32f2f;
+}
+
+#current-word {
+    padding: 8px;
+    font-size: 16px;
+    width: 150px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#stats-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px;
+    margin: 10px 0;
+}
+
+#stats-left, #stats-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stat {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+}
+
+.stat.current {
+    border: 2px solid #2196F3;
+}
+
+#word-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+#info-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+#players-panel {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#players-panel.show {
+    display: block;
+}
+
+#players-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#notification.show {
+    opacity: 1;
+}
