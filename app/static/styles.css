@@ -47,7 +47,6 @@ body {
 .container {
     height:50%;
     width: 90%;
-    top: 20px;
     max-width: 480px;
     margin: 10px auto   ;
     border: 1px solid black;
@@ -60,7 +59,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 120px;
     height: 86vh;
     width: 100%;
 }
