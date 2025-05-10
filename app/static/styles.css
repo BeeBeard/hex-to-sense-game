@@ -22,30 +22,46 @@
 }
 
 
-.container {
-      width: 90%;
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 10px;
-    }
+#message {
+    font-size: 22px;
+    color: red;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-text: center;
+    justify-content: center;
+}
+
 
 body {
-    margin: 0;
-    padding: 0;
+    margin: 0px;
+    padding: 0px;
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #2A2A2A;
     overflow: hidden;
-    height: 100vh;
     display: flex;
     flex-direction: column;
 }
+
+.container {
+    height:50%;
+    width: 90%;
+    top: 20px;
+    max-width: 480px;
+    margin: 10px auto   ;
+    border: 1px solid black;
+    border-radius: 15px;
+    background-color: #3A3A3A;
+}
+
 
 #start-screen, #game-screen, #main-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    margin-top: 120px;
+    height: 86vh;
     width: 100%;
 }
 
@@ -53,6 +69,17 @@ body {
     font-size: 36px;
     color: #333;
     margin-bottom: 20px;
+}
+
+
+ #app-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #FF9800;
+    margin: 10px auto;
+    width: 100%;
 }
 
 #create-form, #join-form, #rooms-form, #main-form {
@@ -207,17 +234,7 @@ button:disabled {
     max-width: 800px;
 }
 
-.message {
-    font-size: 18px;
-    color: #333;
-    margin: auto;
-    flex-direction: column;
-    align-items: center;
-    align-text: center;
-    justify-content: center;
 
-
-}
 
 #timer-word {
     display: flex;
@@ -255,6 +272,7 @@ button:disabled {
 .stat {
     background-color: #fff;
     padding: 10px;
+    margin: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     font-size: 14px;
