@@ -7,10 +7,17 @@
     <link rel="stylesheet" href="/hex-to-sense/static/styles.css">
 </head>
 <body>
+    <div>
+    <div style="message">
+
+        <div id="message"></div>
+    </div>
     <div id="start-screen">
+
         <h1>Hex to Sense</h1>
         <div id="create-form">
             <input type="text" id="player-name" placeholder="Ваше имя">
+            <input type="text" id="room-name" placeholder="Название комнаты">
             <button onclick="createGame()">Создать игру</button>
             <button onclick="showJoinForm()">Присоединиться</button>
         </div>
@@ -28,8 +35,9 @@
     </div>
 
     <div id="game-screen" style="display: none;">
+
         <div id="game-container">
-            <div id="message"></div>
+
             <div id="timer-word" style="display: none;">
                 <div id="timer" style="display: none;">30</div>
 
@@ -52,14 +60,18 @@
                 <button id="toggle-players" onclick="togglePlayersInfo()">Показать игроков</button>
                 <div id="share-button"></div>
             </div>
-            <div id="players-panel" class="hidden">
-                <button id="close-players" onclick="togglePlayersInfo()">Закрыть</button>
-                <div id="players-info"></div>
-            </div>
+
             <div id="notification"></div>
         </div>
+
+            <div id="players-panel" class="hidden">
+                <button id="close-players" onclick="togglePlayersInfo()">Закрыть</button>
+            <div id="players-info"></div>
+            </div>
+
     </div>
 
     <script src="/hex-to-sense/static/script.js"></script>
+    </div>
 </body>
 </html>

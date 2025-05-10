@@ -17,7 +17,7 @@ USED_WORDS = set()
 
 
 class Game:
-    def __init__(self, creator_id: str, radius: int = 7):
+    def __init__(self, creator_id: str, room_name: str, radius: int = 7):
         self.players: List[Player] = []
         self.current_player_index = 0
         self.weights = {
@@ -26,7 +26,7 @@ class Game:
             'Т': 2, 'У': 3, 'П': 2, 'С': 2, 'Ё': 4, 'Й': 4, 'Ц': 3, 'Щ': 4, 'Ш': 4,
             'Ы': 3, 'Ф': 3, 'Ю': 4, 'Х': 4, 'Ъ': 4, 'Э': 4
         }
-
+        self.room_name = room_name
         self.radius = self.prepare_radius(radius)
         self.center = int((self.radius + 1) / 2) - 1
         self.grid = []

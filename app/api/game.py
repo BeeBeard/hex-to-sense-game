@@ -30,14 +30,22 @@ async def get():
 @r_game.post("/create")
 async def create_game(request: CreateGameRequest):
     player_name = request.player_name.strip() or f"Игрок_{random.randint(1000, 9999)}"
+    room_name = request.room_name.strip()
     logger.info(f"Processing create_game request for player: {player_name}")
     player_id = str(uuid.uuid4())
 
-    game = GM.create_game(player_id, radius=7)
-    game.add_player(player_id, request.player_name)
+    # Находим все названия комнат
+    for game_id, game in GM.games.items():
+        if room_name == game.room_name:
+            logger.error("!!! E:T CEOTCNDETN")
+            # return HTMLResponse(content="Такая комната уже существует", status_code=500)
+            return {"error": "Такая комната уже существует"}
+
+    game = GM.create_game(creator_id=player_id, room_name=room_name, radius=7)
+    game.add_player(player_id=player_id, name=request.player_name)
     # GM.games[game.game_id] = game
-    logger.info(f"Game created: game_id={game.game_id}, player_id={player_id}, creator_id={player_id}, player_name={player_name}")
-    return {"game_id": game.game_id, "player_id": player_id, "creator_id": player_id}
+    logger.info(f"Game created: game_id={game.game_id}, room_name={room_name}, player_id={player_id}, creator_id={player_id}, player_name={player_name}")
+    return {"game_id": game.game_id, "room_name": room_name, "player_id": player_id, "creator_id": player_id}
 
 
 @r_game.get("/join/{game_id}", response_class=HTMLResponse)
@@ -56,17 +64,21 @@ async def join_game(request: JoinGameRequest):
     player_name = request.player_name.strip() or f"Игрок_{random.randint(1000, 9999)}"
     logger.info(f"Processing join_game request: game_id={request.game_id}, player_name={player_name}")
     game = GM.games.get(request.game_id.strip())
+
     if not game:
         logger.error(f"Game not found: {request.game_id}")
         return {"error": "Game not found"}
+
     if game.is_started:
         logger.error("Game has already started")
         return {"error": "Game has already started"}
+
     player_id = str(uuid.uuid4())
     added_player_id = game.add_player(player_id, player_name, None)
     if not added_player_id:
         logger.error("Game is full")
         return {"error": "Game is full"}
+
     await game.broadcast({
         "type": "info",
         "message": f"Игрок {player_name} присоединился",

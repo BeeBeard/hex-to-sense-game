@@ -39,15 +39,50 @@ window.onload = () => {
     }
 };
 
+function showNotification(message) {
+    console.log("Showing notification:", message);
+    const notification = document.getElementById("notification");
+    notification.textContent = message;
+    notification.classList.add("show");
+    setTimeout(() => {
+        notification.classList.remove("show");
+        notification.textContent = "";
+    }, 3000);
+}
+
 async function createGame() {
     console.log("Create Game button clicked");
-    const playerName = document.getElementById("player-name").value || "";
+    const playerNameElem = document.getElementById("player-name")
+    const roomNameElem = document.getElementById("room-name");
+    const playerName = playerNameElem.value;
+    const roomName = roomNameElem.value;
+
+    if (!playerName || playerName.length < 2) {
+        showNotification("'Имя' должно быть более 2х символов", true);
+        playerNameElem.classList.add("shake");
+        playerNameElem.focus();
+        document.getElementById("message").textContent = _info;
+        setTimeout(() => playerNameElem.classList.remove("shake"), 300);
+        return;
+    }
+
+    if (!roomName || roomName.length < 2) {
+        showNotification("'Название комнаты' должно быть более 2х символов", true);
+        roomNameElem.classList.add("shake");
+        roomNameElem.focus();
+        setTimeout(() => roomNameElem.classList.remove("shake"), 300);
+        return;
+    }
+
+
+
+
     console.log("Creating game for:", playerName);
     try {
         const response = await fetch(rootPath + "/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ player_name: playerName })
+            body: JSON.stringify({ player_name: playerName, room_name: roomName})
         });
         console.log("Fetch response status:", response.status);
         if (!response.ok) {
@@ -55,6 +90,11 @@ async function createGame() {
             throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
         }
         const data = await response.json();
+
+        if (data.error) {
+            document.getElementById("message").textContent = "Такое название комнаты уже существует";
+            return
+        }
         console.log("Create game response:", data);
         gameId = data.game_id;
         myPlayerId = data.player_id;
@@ -167,7 +207,11 @@ async function showRoomsForm() {
         } else {
             data.rooms.forEach(room => {
                 const button = document.createElement("button");
-                button.textContent = `Комната ${room.game_id} (${room.players} игроков)`;
+//                const short_id = room.game_id.substr(room.game_id.length - 12);
+                const room_name = room.room_name;
+                const player_num = '👾'.repeat(room.players)
+
+                button.textContent = `${room_name} [${player_num}]`; // Название комнаты и количество игроков
                 button.onclick = () => joinRoom(room.game_id);
                 roomsList.appendChild(button);
             });
@@ -278,16 +322,7 @@ function updateStartButton(playersCount) {
     document.getElementById("start-game-button").style.display = showStartButton ? "block" : "none";
 }
 
-function showNotification(message) {
-    console.log("Showing notification:", message);
-    const notification = document.getElementById("notification");
-    notification.textContent = message;
-    notification.classList.add("show");
-    setTimeout(() => {
-        notification.classList.remove("show");
-        notification.textContent = "";
-    }, 3000);
-}
+
 
 function handleMessage(event) {
     const data = JSON.parse(event.data);
@@ -381,8 +416,16 @@ function renderPlayers(players) {
     players.forEach(p => {
         const playerDiv = document.createElement("div");
         const nameHeader = document.createElement("h1");
-        nameHeader.textContent = `${p.name} (${p.score} очков, ${p.lives} жизней)`;
+
+             nameHeader.innerHTML = `
+            <span>${p.name}</span>
+            <span>Очки: ${p.score}</span>
+            <span>${'❤️'.repeat(p.lives)}</span>
+        `;
+
+//        nameHeader.textContent = `${p.name} (${p.score} очков, ${p.lives} жизней)`;
         playerDiv.appendChild(nameHeader);
+
         if (p.words && p.words.length > 0) {
             const wordsDiv = document.createElement("div");
             wordsDiv.textContent = `Слова: ${p.words.join(", ")}`;

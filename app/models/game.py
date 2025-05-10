@@ -5,6 +5,7 @@ from typing import List, Optional
 # Настройка логирования
 class CreateGameRequest(BaseModel):
     player_name: str
+    room_name: str = ""
 
 class JoinGameRequest(BaseModel):
     game_id: str
