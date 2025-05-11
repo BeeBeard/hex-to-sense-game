@@ -1,7 +1,11 @@
 :root {
 
   --hex-width: 50px;
+  /*--hex-height: calc(var(--hex-width)  1,155)  /*50 / 57.74px;*/
   --hex-height: 57.74px;
+
+    --hex-width: 48px;
+  --hex-height: 55.54px;
 
   --hex-width-shift: calc(var(--hex-width) * -1);
 
