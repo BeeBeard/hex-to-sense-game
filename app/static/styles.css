@@ -262,6 +262,7 @@ button:disabled {
 
 .stat {
     background-color: #fff;
+    min-width: 100px;
     padding: 10px;
     margin: 10px;
     border-radius: 5px;
