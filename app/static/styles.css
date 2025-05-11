@@ -157,7 +157,7 @@ button:disabled {
     align-items: center;
     flex-direction: row;
     margin: auto;
-    margin-top: -10px;
+    margin-top: var(--row-vert-shift);
 
 
 }
