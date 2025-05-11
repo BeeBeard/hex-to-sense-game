@@ -481,6 +481,13 @@ function renderStats(players) {
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsLeft.appendChild(statDiv);
+
+        if (p.id === currentPlayerId) {
+            statDiv.classList.add("shake");
+            statDiv.focus();
+            setTimeout(() => statDiv.classList.remove("shake"), 300);
+        }
+
     });
 
     rightPlayers.forEach(p => {
@@ -492,6 +499,12 @@ function renderStats(players) {
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsRight.appendChild(statDiv);
+
+        if (p.id === currentPlayerId) {
+            statDiv.classList.add("shake");
+            statDiv.focus();
+            setTimeout(() => statDiv.classList.remove("shake"), 300);
+        }
     });
 }
 
