@@ -271,7 +271,7 @@ function startWebSocket() {
     console.log("Starting WebSocket for game:", gameId, "player:", myPlayerId);
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "flex";
-    const wsUrl = `ws://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
+    const wsUrl = `wss://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
     console.log("WebSocket URL:", wsUrl);
     ws = new WebSocket(wsUrl);
     ws.onmessage = handleMessage;
