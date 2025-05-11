@@ -287,7 +287,7 @@ function startWebSocket() {
         document.getElementById("message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
         reconnectWebSocket();
     };
-    const shareButtonDiv = document.getElementById("share-button");
+//    const shareButtonDiv = document.getElementById("share-button");
 //    shareButtonDiv.innerHTML = `
 //        <button onclick="shareGame()">Поделиться</button>
 //        <a href="${rootPath}/join/${gameId}" target="_blank">Присоединиться к игре</a>
@@ -411,9 +411,7 @@ function renderGrid(grid) {
         rowDiv.className = `row ${r % 2 === 0 ? "even" : "odd"}`;
         row.forEach((cell, c) => {
             const cellDiv = document.createElement("div");
-            if (cell === null) {
-                cellDiv.className = "hex hidden";
-            } else {
+            if (cell != null) {
                 cellDiv.className = "hex";
                 cellDiv.dataset.row = r;
                 cellDiv.dataset.col = c;
@@ -438,7 +436,7 @@ function renderPlayers(players) {
     playersDiv.innerHTML = "";
     players.forEach(p => {
         const playerDiv = document.createElement("div");
-        const nameHeader = document.createElement("h1");
+        const nameHeader = document.createElement("h2");
 
              nameHeader.innerHTML = `
             <span>${p.name}</span>
@@ -478,8 +476,8 @@ function renderStats(players) {
         const statDiv = document.createElement("div");
         statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
-            <span>${p.name}</span><br>
-            <span>✨ ${p.score}</span><br>
+            <span><b>${p.name}</b></span>
+            <span>✨ ${p.score}</span>
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsLeft.appendChild(statDiv);
@@ -489,8 +487,8 @@ function renderStats(players) {
         const statDiv = document.createElement("div");
         statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
-            <span>${p.name}</span><br>
-            <span>✨ ${p.score}</span><br>
+            <span><b>${p.name}</b></span>
+            <span>✨ ${p.score}</span>
             <span>${'❤️'.repeat(p.lives)}</span>
         `;
         statsRight.appendChild(statDiv);
