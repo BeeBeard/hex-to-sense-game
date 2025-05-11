@@ -226,8 +226,7 @@ button:disabled {
 
 #timer-word {
     display: flex;
-    min-height: 50px;
-    max-height: 50px;
+    min-height: 20px;
     margin: auto;
 }
 
