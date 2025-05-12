@@ -148,6 +148,7 @@ button:disabled {
 /* Гексагональная сетка (адаптировано из ветки dev) */
 #grid {
     max-width: 480px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
