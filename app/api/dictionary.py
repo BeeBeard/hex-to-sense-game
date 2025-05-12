@@ -1,9 +1,7 @@
-import requests
 from fastapi import APIRouter
 
-from app.config import CONFIG
-from app.models import YaAnswer
 from app.classes import word_checker
+from app.models import YaAnswer
 
 r_dictionary = APIRouter(tags=['YANDEX DICTIONARY'])
 

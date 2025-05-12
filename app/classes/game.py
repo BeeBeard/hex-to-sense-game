@@ -2,15 +2,15 @@
 import pprint
 import random
 import uuid
-from typing import List, Union
+from typing import List
+from typing import Union
 
 from fastapi import WebSocket
 from loguru import logger
-from app.classes.player import Player
-from app.classes import word_checker
-from app.models.game import Hex, SubmitWordResult
-from typing import List, Optional
 
+from app.classes import word_checker
+from app.classes.player import Player
+from app.models.game import Hex, SubmitWordResult
 
 # Простой словарь для проверки слов
 
@@ -241,7 +241,7 @@ class Game:
         self.room_name = room_name
         self.radius = self.prepare_radius(radius)
         self.center = int((self.radius + 1) / 2) - 1
-        self.grid = []
+        self.grid: List[List[Union[dict, Hex]]] = []
         self.words = []
         # self.letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЧЦШЩЪЫЬЭЮЯ"
         self.generate_grid()
@@ -421,16 +421,16 @@ class Game:
             #     self.words = self.words[:-1]
             #     return
 
-            duble = False
+            double = False
             for k in neighbors + [self.grid[y][x]]:
                 if k.letter == letter:
                     x, y = k.x, k.y
                     # print(f"КООРДИНАТЫ: {x}/{y}")
                     self.grid[y][x].letter = letter
-                    duble = True
+                    double = True
                     break
 
-            if duble:
+            if double:
                 continue
 
             neighbors = self.get_empty_neighbors(x, y)

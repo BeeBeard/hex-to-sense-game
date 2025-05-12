@@ -1,16 +1,10 @@
 # Хранилище игр
 
-from typing import Dict
-import json
-import random
 from typing import Dict, List, Optional
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from .classes.game import Game,  Player
-from app.classes import Game
+
 from loguru import logger
-# GAMES: Dict[str, Game] = {}
+
+from app.classes import Game
 
 
 class GameManager:
@@ -27,7 +21,7 @@ class GameManager:
 
     def get_active_rooms(self) -> List[dict]:
 
-        logger.error(f"! WARNONG ! {self.games.items()}")
+        logger.error(f"! WARNING ! {self.games.items()}")
 
         return [
             {"game_id": game_id, "room_name": game.room_name, "players": len(game.players)}

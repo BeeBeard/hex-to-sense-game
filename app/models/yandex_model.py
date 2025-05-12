@@ -31,7 +31,7 @@ class YaAnswer(BaseModel):
     head: Optional[dict] = None
     nmt_code: Optional[int] = None
     code: Optional[int] = None
-    def_: List[Definition] = Field(alias='def')
+    def_: List[Definition] = Field(alias='def', default=None)
 
     @computed_field
     def is_exist(self) -> bool:

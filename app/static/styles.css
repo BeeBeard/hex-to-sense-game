@@ -96,7 +96,7 @@ input {
     flex-direction: column;
     align-items: center;
     /*margin: 10px auto;*/
-    /* gap: 15px;  Расстояние между елементами?*/
+    /* gap: 15px;  Расстояние между элементами?*/
     width: 100%;
     max-width: 300px;
 }

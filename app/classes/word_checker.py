@@ -1,9 +1,9 @@
 import requests
-from fastapi import APIRouter
+from loguru import logger
 
 from app.config import CONFIG
 from app.models import YaAnswer
-from loguru import logger
+
 
 def check_word(word: str, lang: str = "ru-ru") -> YaAnswer:
 

@@ -1,3 +1,4 @@
+import os
 import random
 import uuid
 
@@ -5,11 +6,8 @@ from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from loguru import logger
 
-from app.classes import Game
 from app.models import CreateGameRequest, JoinGameRequest
 from app.storage import GM
-import os
-
 
 r_game = APIRouter(tags=['API'])
 
@@ -37,7 +35,6 @@ async def create_game(request: CreateGameRequest):
     # Находим все названия комнат
     for game_id, game in GM.games.items():
         if room_name == game.room_name:
-            logger.error("!!! E:T CEOTCNDETN")
             # return HTMLResponse(content="Такая комната уже существует", status_code=500)
             return {"error": "Такая комната уже существует"}
 

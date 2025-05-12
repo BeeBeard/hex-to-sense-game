@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from app.classes.player import Player
-from typing import List, Optional
+
 
 # Настройка логирования
 class CreateGameRequest(BaseModel):
@@ -16,6 +15,7 @@ class SubmitWordResult(BaseModel):
     word: str
     valid: bool = False
     reason: str = ""
+    score: int  = 0
 
 
 class Hex(BaseModel):
