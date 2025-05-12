@@ -6,9 +6,10 @@
 
   /*--hex-width: 44px;*/
   /*--hex-height: 50.82px;*/
-  --hex-width: calc(91vw / 7);
+  --hex-width2: calc(91vw / 7);
+  --hex-height2: calc(var(--hex-width2) * 1.155);
 
-  --hex-width-shift: calc(var(--hex-width) * -1);
+  --hex-width-shift: calc(var(--hex-width2) * -1);
 
   --hex-side-margin: 3px; /*Отступы слева и справа от ячейки*/
 
@@ -165,10 +166,10 @@ button:disabled {
 
 .hex {
 
-  width: var(--hex-width);
+  width: var(--hex-width2);
   /*height: calc(var(--hex-width) * 1.155);*/
-    /*height: var(--hex-height);*/
-     aspect-ratio:  1.155 / 1
+    height: var(--hex-height2);
+
     color: #000;
     background: #FF9800;
     margin: 0 var(--hex-side-margin);  /* ВАЖНО */
