@@ -166,8 +166,9 @@ button:disabled {
 .hex {
 
   width: var(--hex-width);
-  height: calc(var(--hex-width) * 1.155);
+  /*height: calc(var(--hex-width) * 1.155);*/
     /*height: var(--hex-height);*/
+     aspect-ratio:  1.155 / 1
     color: #000;
     background: #FF9800;
     margin: 0 var(--hex-side-margin);  /* ВАЖНО */
