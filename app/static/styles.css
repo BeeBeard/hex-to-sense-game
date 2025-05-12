@@ -157,6 +157,8 @@ button:disabled {
 }
 
 .row {
+    max-width: 480px;
+    width: 100%;
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -166,13 +168,10 @@ button:disabled {
 
 
 .hex {
+    flex: 0 0 calc(100% / 7); /* Каждый элемент занимает 1/7 ширины контейнера */
+    aspect-ratio: 1 / 1.155; /* Пропорция ширина/высота = 1 / 1.155 */
 
-
-
-   --hex-width3: calc((100% - 6 * 5px) / 7); /* Ширина одного элемента = 1/7 ширины контейнера */
-  width: var(--hex-width3);
-  height: calc(var(--hex-width3) * 1.155); /* Высота = ширина * 1.155 */
-  box-sizing: border-box; /* Учитывает padding и border в размерах */
+    box-sizing: border-box;
 
     color: #000;
     background: #FF9800;
