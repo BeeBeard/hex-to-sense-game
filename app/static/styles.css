@@ -4,9 +4,9 @@
   /*--hex-height: calc(var(--hex-width)  1,155)  /*50 / 57.74px;*/
   --hex-height: 57.74px;
 
-  --hex-width: 44px;
+  /*--hex-width: 44px;*/
   /*--hex-height: 50.82px;*/
-  --hex-height: calc(91vv / 7);
+  --hex-width: calc(91vv / 7);
 
   --hex-width-shift: calc(var(--hex-width) * -1);
 
@@ -165,7 +165,7 @@ button:disabled {
 
 .hex {
     width: var(--hex-width);
-    aspect-ratio: 1 / 1.155;
+    aspect-ratio:  1.155 / 1;
     /*height: var(--hex-height);*/
     color: #000;
     background: #FF9800;
