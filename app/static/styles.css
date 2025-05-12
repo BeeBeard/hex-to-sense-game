@@ -162,6 +162,7 @@ button:disabled {
     display: flex;
     align-items: center;
     flex-direction: row;
+    justify-content: center;
     margin: auto;
     margin-top: var(--row-vert-shift);
 }
