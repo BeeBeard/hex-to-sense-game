@@ -7,8 +7,8 @@
 
   /*--hex-width: 44px;*/
   /*--hex-height: 50.82px;*/
-  --hex-width2: calc(var(--general-max-width) / 7);
-  --hex-height2: calc(var(--hex-width2) * 1.155);
+  --hex-width2: 42px;
+  --hex-height2: 48.51px;
 
   --hex-width-shift: calc(var(--hex-width2) * -1);
 
@@ -167,8 +167,12 @@ button:disabled {
 
 .hex {
 
-    width: var(--hex-width2);
-    height: var(--hex-height2);
+
+
+    --hex-width: calc(100% / 7 - 10px); /* Ширина одного элемента = 1/7 ширины контейнера */
+  width: var(--hex-width);
+  height: calc(var(--hex-width) * 1.155); /* Высота = ширина * 1.155 */
+  box-sizing: border-box; /* Учитывает padding и border в размерах */
 
     color: #000;
     background: #FF9800;
