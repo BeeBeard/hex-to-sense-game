@@ -147,6 +147,8 @@ button:disabled {
 
 /* Гексагональная сетка (адаптировано из ветки dev) */
 #grid {
+    max-width: 480px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -160,8 +162,6 @@ button:disabled {
     flex-direction: row;
     margin: auto;
     margin-top: var(--row-vert-shift);
-
-
 }
 
 
@@ -169,9 +169,9 @@ button:disabled {
 
 
 
-    --hex-width: calc(100% / 7 - 10px); /* Ширина одного элемента = 1/7 ширины контейнера */
-  width: var(--hex-width);
-  height: calc(var(--hex-width) * 1.155); /* Высота = ширина * 1.155 */
+   --hex-width3: calc((100% - 6 * 5px) / 7); /* Ширина одного элемента = 1/7 ширины контейнера */
+  width: var(--hex-width3);
+  height: calc(var(--hex-width3) * 1.155); /* Высота = ширина * 1.155 */
   box-sizing: border-box; /* Учитывает padding и border в размерах */
 
     color: #000;
