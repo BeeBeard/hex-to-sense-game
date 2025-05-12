@@ -576,16 +576,17 @@ class Game:
         # logger.error(f"{current_player.get_data()=}")
 
         if current_player.id != player_id or not self.is_started:
-            return SubmitWordResult(word=word, valid=False, reason="Not your turn or game not started").model_dump()
+            return SubmitWordResult(word=word, valid=False, reason="Не ваша очередь ходить").model_dump()
 
         if len(word) < 2:
-            return SubmitWordResult(word=word, valid=False, reason="Word too short").model_dump()
+            current_player.lives -= 1
+            return SubmitWordResult(word=word, valid=False, reason="Слово слишком короткое").model_dump()
 
         # if not self.is_valid_path(path):
         #     return SubmitWordResult(word=word, valid=False, reason="Invalid path").model_dump()
 
         if len(path) != len(word):
-            return SubmitWordResult(word=word, valid=False, reason="Path length does not match word length").model_dump()
+            return SubmitWordResult(word=word, valid=False, reason="Длина пути не равна длине слова").model_dump()
 
         # Проверяем существует ли слово
         ya_result = word_checker.check_word(word)
@@ -597,15 +598,15 @@ class Game:
 
         if word in self.used_words:
             current_player.lives -= 1
-            return SubmitWordResult(word=word, valid=False, reason="Word already used").model_dump()
+            return SubmitWordResult(word=word, valid=False, reason="Слово уже было найдено").model_dump()
 
         score = sum(self.grid[r][c]["weight"] for r, c in path)
         current_player.score += score
-        logger.debug(f"CHECK!! {current_player.score=}")
+
         current_player.words.append(word)
         self.used_words.append(word)
 
-        return SubmitWordResult(word=word, valid=True, reason="Word accepted", score=score).model_dump()
+        return SubmitWordResult(word=word, valid=True, reason="Слово засчитано", score=score).model_dump()
 
     def next_turn(self):
         if not self.players:
