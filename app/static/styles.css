@@ -6,7 +6,7 @@
 
   /*--hex-width: 44px;*/
   /*--hex-height: 50.82px;*/
-  --hex-width: calc(91vv / 7);
+  --hex-width: calc(91vw / 7);
 
   --hex-width-shift: calc(var(--hex-width) * -1);
 
