@@ -614,7 +614,7 @@ function submitWord() {
                 path: selectedCells
             }));
             clearInterval(timerInterval);
-            document.getElementById("timer").style.display = "none";
+//            document.getElementById("timer").style.display = "none";
             console.log("Word submitted:", word, "Path:", selectedCells);
         } else {
             console.log("WebSocket not open, cannot submit word");
@@ -653,7 +653,8 @@ function clearWord() {
 function startTimer(_time) {
     console.log("Starting timer");
     const timerDiv = document.getElementById("timer");
-    timerDiv.style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
+//    timerDiv.style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
+    timerDiv.style.display = isGameStarted ? "block" : "none";
     clearInterval(timerInterval);
     if (currentPlayerId === myPlayerId && isGameStarted) {
         timerDiv.textContent = _time;
