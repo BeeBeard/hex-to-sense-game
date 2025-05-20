@@ -55,9 +55,12 @@ async function createGame() {
     const playerNameElem = document.getElementById("player-name")
     const roomNameElem = document.getElementById("room-name");
     const timerCountElem = document.getElementById("timer-count");
+    const livesCountElem = document.getElementById("lives-count");
+
     const playerName = playerNameElem.value;
     const roomName = roomNameElem.value;
     const timerCount = timerCountElem.value;
+    const livesCount = livesCountElem.value;
 
     if (!playerName || playerName.length < 2) {
         showNotification("'Имя' должно быть более 2х символов", true);
@@ -92,7 +95,7 @@ async function createGame() {
         const response = await fetch(rootPath + "/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ player_name: playerName, room_name: roomName, timer_count: timerCount})
+            body: JSON.stringify({ player_name: playerName, room_name: roomName, timer: timerCount, lives: livesCount})
         });
         console.log("Fetch response status:", response.status);
         if (!response.ok) {
@@ -174,6 +177,7 @@ async function joinGame() {
         myPlayerId = data.player_id;
         creatorId = data.creator_id;
         startWebSocket();
+
     } catch (error) {
         console.error("Error joining game:", error);
         document.getElementById("message").textContent = `Ошибка: ${error.message}`;
@@ -383,7 +387,8 @@ function handleMessage(event) {
         renderGrid(data.grid);
         renderPlayers(data.players);
         renderStats(data.players);
-        document.getElementById("timer-word").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
+//        document.getElementById("timer-word").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
+        document.getElementById("timer-word").style.display = isGameStarted ? "flex" : "none";
 
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
         document.getElementById("toggle-buttons").style.display = isGameStarted ? "flex" : "none";
@@ -556,7 +561,15 @@ function selectCell(row, col, letter) {
     if (isAlreadySelected || selectedCells.length === 0 || isNeighbor(selectedCells[selectedCells.length - 1], currentCell)) {
         selectedCells.push([row, col]);
         wordInput.value += letter;
-        document.querySelector(`.hex[data-row="${row}"][data-col="${col}"]`).classList.add("selected");
+
+//        document.querySelector(`.hex[data-row="${row}"][data-col="${col}"]`)
+
+        const hex = document.querySelector(`.hex[data-row="${row}"][data-col="${col}"]`);
+        hex.classList.add("selected");
+        const clicksSpan = hex.querySelector('.clicks');
+        clicksSpan.textContent = parseInt(clicksSpan.textContent) + 1;
+
+
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
                 action: "increment_click",
@@ -624,13 +637,13 @@ function clearWord() {
             cell.classList.remove("selected");
 
 
-            cell.querySelectorAll('.clicks').forEach(element => {
-              // Преобразуем textContent в число и вычитаем 1
-              let currentValue = parseInt(element.textContent);
-              if (!isNaN(currentValue)) { // Проверяем, является ли содержимое числом
-                element.textContent = currentValue - 1;
-              }
-            });
+//            cell.querySelectorAll('.clicks').forEach(element => {
+//              // Преобразуем textContent в число и вычитаем 1
+//              let currentValue = parseInt(element.textContent);
+//              if (!isNaN(currentValue)) { // Проверяем, является ли содержимое числом
+//                element.textContent = currentValue - 1;
+//              }
+//            });
         }
     });
     selectedCells = [];
