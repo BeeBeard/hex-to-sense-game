@@ -79,7 +79,7 @@ async def join_game(request: JoinGameRequest):
     await game.broadcast({
         "type": "info",
         "message": f"Игрок {player_name} присоединился",
-        "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
+        "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
     })
     logger.info(f"Player joined: game_id={request.game_id}, player_id={player_id}, player_name={player_name}")
     return {"game_id": request.game_id, "player_id": player_id}

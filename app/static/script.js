@@ -271,7 +271,9 @@ function startWebSocket() {
     console.log("Starting WebSocket for game:", gameId, "player:", myPlayerId);
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "flex";
-    const wsUrl = `wss://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
+
+
+    const wsUrl = `ws://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
     console.log("WebSocket URL:", wsUrl);
     ws = new WebSocket(wsUrl);
     ws.onmessage = handleMessage;
@@ -452,7 +454,7 @@ function renderPlayers(players) {
             wordsDiv.textContent = `Слова: ${p.words.join(", ")}`;
             playerDiv.appendChild(wordsDiv);
         }
-        if (p.id === currentPlayerId) {
+        if (p.user_id === currentPlayerId) {
             playerDiv.style.border = "2px solid #2196F3";
         }
         playersDiv.appendChild(playerDiv);
@@ -474,7 +476,7 @@ function renderStats(players) {
 
     leftPlayers.forEach(p => {
         const statDiv = document.createElement("div");
-        statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
+        statDiv.className = `stat ${p.user_id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
             <span><b>${p.name}</b></span>
             <span>✨ ${p.score}</span>
@@ -482,7 +484,7 @@ function renderStats(players) {
         `;
         statsLeft.appendChild(statDiv);
 
-        if (p.id === currentPlayerId) {
+        if (p.user_id === currentPlayerId) {
             statDiv.classList.add("shake");
             statDiv.focus();
             setTimeout(() => statDiv.classList.remove("shake"), 300);
@@ -492,7 +494,7 @@ function renderStats(players) {
 
     rightPlayers.forEach(p => {
         const statDiv = document.createElement("div");
-        statDiv.className = `stat ${p.id === currentPlayerId ? "current" : ""}`;
+        statDiv.className = `stat ${p.user_id === currentPlayerId ? "current" : ""}`;
         statDiv.innerHTML = `
             <span><b>${p.name}</b></span>
             <span>✨ ${p.score}</span>
@@ -500,7 +502,7 @@ function renderStats(players) {
         `;
         statsRight.appendChild(statDiv);
 
-        if (p.id === currentPlayerId) {
+        if (p.user_id === currentPlayerId) {
             statDiv.classList.add("shake");
             statDiv.focus();
             setTimeout(() => statDiv.classList.remove("shake"), 300);

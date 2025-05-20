@@ -7,10 +7,12 @@ from typing import Union
 
 from fastapi import WebSocket
 from loguru import logger
+from pyexpat.errors import messages
 
-from app.classes import word_checker
+from app.worker import word_checker
 from app.classes.player import Player
-from app.models.game import Hex, SubmitWordResult
+from app.models.game import Hex, SubmitWordResult, StartGameResponce
+
 
 # Простой словарь для проверки слов
 
@@ -229,6 +231,7 @@ BASE_WORDS = [
 
 class Game:
     def __init__(self, creator_id: str, room_name: str, radius: int = 7):
+        self.min_player_count = 2                           # Минимальное количество игроков
         self.players: List[Player] = []
         self.used_words = []  # USED_WORDS = set()
         self.current_player_index = 0
@@ -499,7 +502,7 @@ class Game:
 
     def remove_player(self, player_id: str):
 
-        player = next((p for p in self.players if p.id == player_id), None)
+        player = next((p for p in self.players if p.player_id == player_id), None)
         if player:
             self.players.remove(player)
             logger.info(f"Player removed: id={player_id}, name={player.name}, game_id={self.game_id}")
@@ -511,24 +514,31 @@ class Game:
 
         logger.info(
             f"Attempting to start game: game_id={self.game_id}, player_id={player_id}, creator_id={self.creator_id}, players_count={len(self.players)}")
-        player = next((p for p in self.players if p.id == player_id), None)
+        player = next((p for p in self.players if p.player_id == player_id), None)
 
         if not player:
             logger.warning(f"Start game failed: player_id={player_id} not found in game {self.game_id}")
             return {"error": f"Player {player_id} not found in game"}
 
         if player_id != self.creator_id:
-            logger.warning(f"Start game failed: player_id={player_id} is not creator_id={self.creator_id}")
-            return {
-                "error": f"Only the creator can start the game. Received player_id={player_id}, expected creator_id={self.creator_id}"}
 
-        if len(self.players) < 2:
+            logger.warning(f"Не удалось запустить игру. Игрок {player_id} не создатель комнаты {self.room_name}")
+
+            error = f"Только создатель может начать игру."
+            return StartGameResponce(success=False, error=error)
+
+
+        if len(self.players) < self.min_player_count:
             logger.warning(f"Start game failed: not enough players in game {self.game_id}")
-            return {"error": "At least two players are required"}
+            response = StartGameResponce(success=False, error=f"Требуется минимум {self.min_player_count} игрока.")
+            return response.model_dump()
 
         self.is_started = True
-        logger.info(f"Game started successfully: game_id={self.game_id}")
-        return {"success": True}
+        message = f"Игра успешно создана: game_id={self.game_id}"
+        logger.info(message)
+        response = StartGameResponce(success=True, message=f"Игра успешно создана").model_dump()
+        return response.model_dump()
+
 
     def is_valid_path(self, path: List[List[int]]):
         if not path:
@@ -545,8 +555,8 @@ class Game:
     def increment_click(self, player_id: str, row: int, col: int):
 
         current_player = self.players[self.current_player_index]
-        if current_player.id != player_id:
-            logger.warning(f"Invalid click: player_id={player_id} is not current player={current_player.id}")
+        if current_player.player_id != player_id:
+            logger.warning(f"Invalid click: player_id={player_id} is not current player={current_player.player_id}")
             return {"valid": False, "reason": "Not your turn"}
 
         if 0 <= row < self.radius and 0 <= col < self.radius and self.grid[row][col] is not None:
@@ -575,7 +585,7 @@ class Game:
         # logger.error(f"{player_id=}")
         # logger.error(f"{current_player.get_data()=}")
 
-        if current_player.id != player_id or not self.is_started:
+        if current_player.player_id != player_id or not self.is_started:
             return SubmitWordResult(word=word, valid=False, reason="Не ваша очередь ходить").model_dump()
 
         if len(word) < 2:
@@ -627,10 +637,10 @@ class Game:
             if player.websocket:
                 try:
                     await player.websocket.send_json(message)
-                    logger.info(f"Broadcast sent to player {player.id}, name={player.name}: {message.get('type')}")
+                    logger.info(f"Broadcast sent to player {player.player_id}, name={player.name}: {message.get('type')}")
 
                 except Exception as e:
-                    logger.error(f"Broadcast error to player {player.id}: {e}")
+                    logger.error(f"Broadcast error to player {player.player_id}: {e}")
                     player.websocket = None
 
 

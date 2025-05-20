@@ -23,7 +23,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         await websocket.close()
         return
 
-    player = next((p for p in game.players if p.id == player_id), None)
+    player = next((p for p in game.players if p.player_id == player_id), None)
     if not player:
         logger.error(f"WebSocket error: Player {player_id} not found in game {game_id}")
         await websocket.send_json({"type": "error", "message": f"Player {player_id} not found"})
@@ -35,8 +35,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         await game.broadcast({
             "type": "init",
             "grid": game.grid,
-            "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-            "current_player": game.players[game.current_player_index].id if game.is_started and game.players else None,
+            "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
+            "current_player": game.players[game.current_player_index].player_id if game.is_started and game.players else None,
             "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
             "is_started": game.is_started
         })
@@ -60,8 +60,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     await game.broadcast({
                         "type": "start",
                         "grid": game.grid,
-                        "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-                        "current_player": game.players[game.current_player_index].id if game.players else None,
+                        "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
+                        "current_player": game.players[game.current_player_index].player_id if game.players else None,
                         "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
                         "is_started": True,
                         "message": "Игра началась!"
@@ -76,8 +76,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     "type": "update",
                     "result": result,
                     "grid": game.grid,
-                    "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-                    "current_player": game.players[game.current_player_index].id if game.players else None,
+                    "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
+                    "current_player": game.players[game.current_player_index].player_id if game.players else None,
                     "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
                     "is_started": True,
                     "message": f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
@@ -102,15 +102,15 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     })
 
             elif action == "timeout":
-                if game.players and game.players[game.current_player_index].id == player_id:
+                if game.players and game.players[game.current_player_index].player_id == player_id:
                     game.players[game.current_player_index].lives -= 1
                     game.next_turn()
                     await game.broadcast({
                         "type": "update",
                         "result": {"valid": False, "reason": "Time out"},
                         "grid": game.grid,
-                        "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-                        "current_player": game.players[game.current_player_index].id if game.players else None,
+                        "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
+                        "current_player": game.players[game.current_player_index].player_id if game.players else None,
                         "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
                         "is_started": True,
                         "message": f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
@@ -125,13 +125,13 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 logger.info(f"No players left in game {game_id}, removing game")
                 del GM.games[game_id]
                 return
-            if game.is_started and game.players and game.current_player_index < len(game.players) and game.players[game.current_player_index].id == player_id:
+            if game.is_started and game.players and game.current_player_index < len(game.players) and game.players[game.current_player_index].player_id == player_id:
                 game.next_turn()
                 await game.broadcast({
                     "type": "update",
                     "grid": game.grid,
-                    "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-                    "current_player": game.players[game.current_player_index].id if game.players else None,
+                    "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
+                    "current_player": game.players[game.current_player_index].player_id if game.players else None,
                     "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
                     "is_started": True,
                     "message": f"{message}. Ход игрока {game.players[game.current_player_index].name}" if game.players else message
@@ -140,13 +140,13 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 await game.broadcast({
                     "type": "info",
                     "message": message,
-                    "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
+                    "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
                 })
             if len(game.players) == 1 and game.is_started:
                 await game.broadcast({
                     "type": "info",
                     "message": "Вы остались один. Продолжить игру?",
-                    "players": [{"id": p.id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
+                    "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
                 })
     except Exception as e:
         logger.error(f"WebSocket error: game_id={game_id}, player_id={player_id}, error={e} {traceback.format_exc()}")

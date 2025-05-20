@@ -1,4 +1,9 @@
 from pydantic import BaseModel
+from typing import Annotated
+from typing import List, Optional
+
+from pydantic import BaseModel
+from pydantic import Field
 
 
 # Настройка логирования
@@ -26,6 +31,14 @@ class Hex(BaseModel):
     weight: int = 0
     clicks: int = 0
     show: bool = True
+
+
+class StartGameResponce(BaseModel):
+    """Ответ на создание игры"""
+
+    message: Optional[str] = ""
+    success: bool
+    error: Optional[str] = ""
 
 
 # class GameState(BaseModel):

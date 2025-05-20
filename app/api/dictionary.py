@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.classes import word_checker
+from app.worker import word_checker
 from app.models import YaAnswer
 
 r_dictionary = APIRouter(tags=['YANDEX DICTIONARY'])
