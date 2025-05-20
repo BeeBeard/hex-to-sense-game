@@ -30,6 +30,7 @@ async def get():
 async def create_game(request: CreateGameRequest):
     player_name = request.player_name.strip() or f"Игрок_{random.randint(1000, 9999)}"
     room_name = request.room_name.strip()
+    timer_count = request.timer_count
     logger.info(f"Processing create_game request for player: {player_name}")
     player_id = str(uuid.uuid4())
 
@@ -39,7 +40,7 @@ async def create_game(request: CreateGameRequest):
             # return HTMLResponse(content="Такая комната уже существует", status_code=500)
             return {"error": "Такая комната уже существует"}
 
-    game = GM.create_game(creator_id=player_id, room_name=room_name, radius=7)
+    game = GM.create_game(creator_id=player_id, room_name=room_name, timer=timer_count, radius=7)
     game.add_player(player_id=player_id, name=request.player_name)
     # GM.games[game.game_id] = game
     logger.info(f"Game created: game_id={game.game_id}, room_name={room_name}, player_id={player_id}, creator_id={player_id}, player_name={player_name}")

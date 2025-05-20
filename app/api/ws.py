@@ -39,6 +39,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         wa_broadcast = WsBroadcast(
             type="init",
             grid=game.grid,
+            timer=game.timer,
             players=[player.get_data() for player in game.players],
             current_player=game.players[game.current_player_index].player_id if game.is_started and game.players else "",
             current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
@@ -67,6 +68,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     wa_broadcast = WsBroadcast(
                         type="start",
                         grid=game.grid,
+                        timer=game.timer,
                         players=[player.get_data() for player in game.players],
                         current_player=game.players[game.current_player_index].player_id if game.players else "",
                         current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
@@ -86,6 +88,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     type="update",
                     result=result,
                     grid=game.grid,
+                    timer=game.timer,
                     players=[player.get_data() for player in game.players],
                     current_player=game.players[game.current_player_index].player_id if game.players else "",
                     current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
@@ -105,6 +108,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     wa_broadcast = WsClickBroadcast(
                         type="click_update",
                         grid=game.grid,
+                        result=result,
                         row=row,
                         col=col,
                         clicks=game.grid[row][col].clicks,
@@ -129,6 +133,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                         type="update",
                         result=SubmitWordResult(valid=False, reason="Время вышло"),
                         grid=game.grid,
+                        timer=game.timer,
                         players=[player.get_data() for player in game.players],
                         current_player=game.players[game.current_player_index].player_id if game.players else "",
                         current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
@@ -162,6 +167,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 wa_broadcast = WsBroadcast(
                     type="update",
                     grid=game.grid,
+                    timer=game.timer,
                     players=[player.get_data() for player in game.players],
                     current_player=game.players[game.current_player_index].player_id if game.players else "",
                     current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",

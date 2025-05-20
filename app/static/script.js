@@ -54,14 +54,16 @@ async function createGame() {
     console.log("Create Game button clicked");
     const playerNameElem = document.getElementById("player-name")
     const roomNameElem = document.getElementById("room-name");
+    const timerCountElem = document.getElementById("timer-count");
     const playerName = playerNameElem.value;
     const roomName = roomNameElem.value;
+    const timerCount = timerCountElem.value;
 
     if (!playerName || playerName.length < 2) {
         showNotification("'Имя' должно быть более 2х символов", true);
         playerNameElem.classList.add("shake");
         playerNameElem.focus();
-        document.getElementById("message").textContent = _info;
+        document.getElementById("message").textContent = "'Имя' должно быть более 2х символов";
         setTimeout(() => playerNameElem.classList.remove("shake"), 300);
         return;
     }
@@ -70,7 +72,17 @@ async function createGame() {
         showNotification("'Название комнаты' должно быть более 2х символов", true);
         roomNameElem.classList.add("shake");
         roomNameElem.focus();
+        document.getElementById("message").textContent = "'Название комнаты' должно быть более 2х символов";
         setTimeout(() => roomNameElem.classList.remove("shake"), 300);
+        return;
+    }
+
+    if (!timerCount || Number(timerCount) < 10 || Number(timerCount) > 300 ) {
+        showNotification("Время на принятие решения должно быть от 10 до 300 секунд", true);
+        timerCountElem.classList.add("shake");
+        timerCountElem.focus();
+        document.getElementById("message").textContent = "Время на принятие решения должно быть от 10 до 300 секунд";
+        setTimeout(() => timerCountElem.classList.remove("shake"), 300);
         return;
     }
 
@@ -80,7 +92,7 @@ async function createGame() {
         const response = await fetch(rootPath + "/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ player_name: playerName, room_name: roomName})
+            body: JSON.stringify({ player_name: playerName, room_name: roomName, timer_count: timerCount})
         });
         console.log("Fetch response status:", response.status);
         if (!response.ok) {
@@ -363,6 +375,7 @@ function handleMessage(event) {
     const data = JSON.parse(event.data);
     console.log("WebSocket message:", data);
     console.log("Current player name:", data.current_player_name);
+
     if (data.type === "init" || data.type === "update" || data.type === "start") {
         currentPlayerId = data.current_player;
         isGameStarted = data.is_started;
@@ -371,10 +384,14 @@ function handleMessage(event) {
         renderPlayers(data.players);
         renderStats(data.players);
         document.getElementById("timer-word").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
+
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
+        document.getElementById("toggle-buttons").style.display = isGameStarted ? "flex" : "none";
         updateStartButton(data.players.length);
+
         if (data.type === "start") {
             document.getElementById("message").textContent = data.message || "Игра началась!";
+
         } else if (data.type === "update") {
             selectedCells = [];
             document.getElementById("current-word").value = "";
@@ -387,25 +404,29 @@ function handleMessage(event) {
                 showNotification(message);
             }
         }
+
         if (data.game_over) {
             clearInterval(timerInterval);
             document.getElementById("timer").style.display = "none";
             const winner = data.players.reduce((a, b) => a.score > b.score ? a : b);
             document.getElementById("message").textContent = `Игра окончена! Победитель: ${winner.name} с ${winner.score} очками`;
         } else {
-            startTimer();
+            startTimer(data.timer);
         }
+
     } else if (data.type === "click_update") {
         const cell = document.querySelector(`.hex[data-row="${data.row}"][data-col="${data.col}"]`);
         if (cell) {
             cell.querySelector(".clicks").textContent = data.clicks;
         }
+
     } else if (data.type === "info") {
         document.getElementById("message").textContent = data.message;
         renderPlayers(data.players || []);
         renderStats(data.players || []);
         const playersCount = data.players ? data.players.length : document.getElementById("players-info").children.length;
         updateStartButton(playersCount);
+
     } else if (data.type === "error") {
         document.getElementById("message").textContent = `Ошибка: ${data.message}`;
         if (data.message.includes("Only the creator") || data.message.includes("two players")) {
@@ -616,19 +637,18 @@ function clearWord() {
     console.log("Word and selection cleared");
 }
 
-function startTimer() {
+function startTimer(_time) {
     console.log("Starting timer");
     const timerDiv = document.getElementById("timer");
     timerDiv.style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
     clearInterval(timerInterval);
     if (currentPlayerId === myPlayerId && isGameStarted) {
-        let time = 30;
-        timerDiv.textContent = time;
+        timerDiv.textContent = _time;
         document.getElementById("message").textContent = "Ваш ход!";
         timerInterval = setInterval(() => {
-            time--;
-            timerDiv.textContent = time;
-            if (time <= 0) {
+            _time--;
+            timerDiv.textContent = _time;
+            if (_time <= 0) {
                 clearInterval(timerInterval);
                 timerDiv.style.display = "none";
                 if (ws && ws.readyState === WebSocket.OPEN) {

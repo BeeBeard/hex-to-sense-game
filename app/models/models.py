@@ -44,6 +44,7 @@ class Rooms(BaseModel):
 class CreateGameRequest(BaseModel):
     player_name: str
     room_name: str = ""
+    timer_count: int = 30
 
 class JoinGameRequest(BaseModel):
     game_id: str
@@ -75,6 +76,7 @@ class WsBroadcast(BaseModel):
     type: str
     grid: List[List[Union[Hex, None]]] = []
     message:Optional[str] = ""
+    timer: int = 30
 
     players: List[Union[PlayerModel, None]] = []
     current_player: Optional[str] = ""

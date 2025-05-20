@@ -229,8 +229,9 @@ BASE_WORDS = [
 
 
 class Game:
-    def __init__(self, creator_id: str, room_name: str, radius: int = 7):
+    def __init__(self, creator_id: str, room_name: str, timer: int = 70, radius: int = 7):
         self.min_player_count = 2                           # Минимальное количество игроков
+        self.timer = timer
         self.players: List[Player] = []
         self.used_words = []  # USED_WORDS = set()
         self.current_player_index = 0
@@ -243,10 +244,8 @@ class Game:
         self.room_name = room_name
         self.radius = self.prepare_radius(radius)
         self.center = int((self.radius + 1) / 2) - 1
-        # self.grid: List[List[Union[dict, Hex]]] = []
         self.grid: List[List[Hex]] = []
         self.words = []
-        # self.letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЧЦШЩЪЫЬЭЮЯ"
         self.generate_grid()
         self.base_words = [BASE_WORDS[random.randint(0, len(BASE_WORDS) - 1)] for _ in range(15)]
         self.fill_grid()
@@ -266,7 +265,6 @@ class Game:
 
         if _r < 5:
             _r = 5
-        # print(f"{_r=}")
         return _r
 
     def generate_grid(self):
@@ -466,17 +464,7 @@ class Game:
             self.add_word(word)
             self.get_grid_info(key="letter")
 
-        print("RESULT")
         self.get_grid_info(key="letter")
-
-
-        # # Расстановка весов
-        # for row in self.grid:
-        #     for i in row:
-        #         if i.show:
-        #             i.weight = self.weights[i.letter]
-
-
 
         _grid = []
         for row in self.grid:

@@ -26,6 +26,7 @@
             </div>
 
             <div id="create-form" style="display: none;">
+                <input type="text" id="timer-count" placeholder="Время на ход" value="30">
                 <input type="text" id="player-name" placeholder="Ваше имя">
                 <input type="text" id="room-name" placeholder="Название комнаты">
                 <button onclick="createGame()">Создать игру</button>
@@ -69,6 +70,10 @@
                 <div id="word-buttons" style="display: none;">
                     <button onclick="submitWord()">Отправить</button>
                     <button onclick="clearWord()">Очистить</button>
+
+                </div>
+
+                <div id="toggle-buttons" style="display: none;">
                     <button id="toggle-players" onclick="togglePlayersInfo()">Статистика игроков</button>
                 </div>
 
