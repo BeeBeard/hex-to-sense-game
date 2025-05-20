@@ -1,18 +1,17 @@
 # Модель игры
 import pprint
 import random
+import traceback
 import uuid
-from typing import List
-from typing import Union
+from typing import List, Union
 
 from fastapi import WebSocket
 from loguru import logger
 from pyexpat.errors import messages
 
-from app.worker import word_checker
 from app.classes.player import Player
-from app.models.game import Hex, SubmitWordResult, StartGameResponce
-
+from app.models.models import Hex, SubmitWordResult, GameResponce
+from app.worker import word_checker
 
 # Простой словарь для проверки слов
 
@@ -244,11 +243,12 @@ class Game:
         self.room_name = room_name
         self.radius = self.prepare_radius(radius)
         self.center = int((self.radius + 1) / 2) - 1
-        self.grid: List[List[Union[dict, Hex]]] = []
+        # self.grid: List[List[Union[dict, Hex]]] = []
+        self.grid: List[List[Hex]] = []
         self.words = []
         # self.letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЧЦШЩЪЫЬЭЮЯ"
         self.generate_grid()
-        self.base_words = [BASE_WORDS[random.randint(0, len(BASE_WORDS) - 1)] for i in range(15)]
+        self.base_words = [BASE_WORDS[random.randint(0, len(BASE_WORDS) - 1)] for _ in range(15)]
         self.fill_grid()
         self.game_id = str(uuid.uuid4())
         self.is_started = False
@@ -469,20 +469,24 @@ class Game:
         print("RESULT")
         self.get_grid_info(key="letter")
 
+
+        # # Расстановка весов
+        # for row in self.grid:
+        #     for i in row:
+        #         if i.show:
+        #             i.weight = self.weights[i.letter]
+
+
+
         _grid = []
         for row in self.grid:
             _row = []
             for i in row:
                 if i.show:
-                    # i.letter = f"{i.number}"
                     i.weight = self.weights[i.letter]
-                    _row.append(i.model_dump())
+                    _row.append(i)
                 else:
                     _row.append(None)
-            # _row = [i.model_dump() for i in row]
-            # print(_row)
-            _r = [i["letter"] for i in _row if i]
-            print(_r)
             _grid.append(_row)
 
         self.grid = _grid
@@ -512,32 +516,35 @@ class Game:
 
     def start_game(self, player_id: str):
 
-        logger.info(
-            f"Attempting to start game: game_id={self.game_id}, player_id={player_id}, creator_id={self.creator_id}, players_count={len(self.players)}")
+        message = (
+            f"Ожидание начала игры.\n"
+            f"Комната: {self.room_name=}\nИгрок: {player_id=}\nСоздатель: {self.creator_id=}\nКоличество игроков: {len(self.players)}"
+        )
+        logger.info(message)
+
         player = next((p for p in self.players if p.player_id == player_id), None)
 
         if not player:
-            logger.warning(f"Start game failed: player_id={player_id} not found in game {self.game_id}")
-            return {"error": f"Player {player_id} not found in game"}
+
+            error = f"Не удалось запустить игру. Игрок {player_id} не найден для комнаты {self.room_name}"
+            message = f"Игрок {player_id} не найден."
+            return GameResponce(success=False, message=message, error=error)
 
         if player_id != self.creator_id:
 
-            logger.warning(f"Не удалось запустить игру. Игрок {player_id} не создатель комнаты {self.room_name}")
-
-            error = f"Только создатель может начать игру."
-            return StartGameResponce(success=False, error=error)
+            error = f"Не удалось запустить игру. Игрок {player_id} не создатель комнаты {self.room_name}"
+            message = f"Только создатель может начать игру."
+            return GameResponce(success=False, message=message, error=error)
 
 
         if len(self.players) < self.min_player_count:
-            logger.warning(f"Start game failed: not enough players in game {self.game_id}")
-            response = StartGameResponce(success=False, error=f"Требуется минимум {self.min_player_count} игрока.")
-            return response.model_dump()
+            error = f"Не удалось запустить игру. Недостаточно игроков для начала. {self.game_id=} | {self.room_name}"
+            message = f"Требуется минимум {self.min_player_count} игрока."
+            return GameResponce(success=False, message=message, error=error)
 
         self.is_started = True
-        message = f"Игра успешно создана: game_id={self.game_id}"
-        logger.info(message)
-        response = StartGameResponce(success=True, message=f"Игра успешно создана").model_dump()
-        return response.model_dump()
+        message = f"Игра успешно создана"
+        return GameResponce(success=True, message=message)
 
 
     def is_valid_path(self, path: List[List[int]]):
@@ -556,47 +563,51 @@ class Game:
 
         current_player = self.players[self.current_player_index]
         if current_player.player_id != player_id:
-            logger.warning(f"Invalid click: player_id={player_id} is not current player={current_player.player_id}")
-            return {"valid": False, "reason": "Not your turn"}
+            error = f"Ход другого игрока.\nТекущий игрок: {current_player.player_id}\nНажавший игрок:{player_id}"
+            message = f"Ход другого игрока."
+            return GameResponce(success=False, message=message, error=error)
 
         if 0 <= row < self.radius and 0 <= col < self.radius and self.grid[row][col] is not None:
-            self.grid[row][col]["clicks"] += 1
-            logger.info(
-                f"Click incremented: game_id={self.game_id}, player_id={player_id}, row={row}, col={col}, clicks={self.grid[row][col]['clicks']}")
-            return {"valid": True}
+            self.grid[row][col].clicks += 1
+            # logger.info(f"Click incremented: game_id={self.game_id}, player_id={player_id}, row={row}, col={col}, clicks={self.grid[row][col]['clicks']}")
+            message = f"Нажатие засчитано"
+            return GameResponce(success=True, message=message)
 
-        logger.warning(f"Invalid cell: game_id={self.game_id}, row={row}, col={col}")
-        return {"valid": False, "reason": "Invalid cell"}
+        # logger.warning(f"Invalid cell: game_id={self.game_id}, row={row}, col={col}")
+        error = f"Эту ячейку нельзя использовать.\nКомната: {self.room_name}"
+        message = f"Эту ячейку нельзя использовать."
+        return GameResponce(success=False, message=message, error=error)
 
-    def submit_word(self, player_id: str, word: str, path: List[List[int]]):
+
+    def submit_word(self, player_id: str, word: str, path: List[List[int]]) -> SubmitWordResult:
 
         # Обнуляем нажатия
         for r in range(self.radius):
             for c in range(self.radius):
                 if self.grid[r][c] is not None:
-                    self.grid[r][c]["clics"] = 0
+                    self.grid[r][c].clicks = 0
 
         word = word.upper()
 
         for i in self.players:
-            pprint.pprint(i.get_data())
+            pprint.pprint(i.get_data().model_dump())
 
         current_player = self.players[self.current_player_index]
         # logger.error(f"{player_id=}")
         # logger.error(f"{current_player.get_data()=}")
 
         if current_player.player_id != player_id or not self.is_started:
-            return SubmitWordResult(word=word, valid=False, reason="Не ваша очередь ходить").model_dump()
+            return SubmitWordResult(word=word, valid=False, reason="Не ваша очередь ходить")
 
         if len(word) < 2:
             current_player.lives -= 1
-            return SubmitWordResult(word=word, valid=False, reason="Слово слишком короткое").model_dump()
+            return SubmitWordResult(word=word, valid=False, reason="Слово слишком короткое")
 
         # if not self.is_valid_path(path):
-        #     return SubmitWordResult(word=word, valid=False, reason="Invalid path").model_dump()
+        #     return SubmitWordResult(word=word, valid=False, reason="Invalid path")
 
         if len(path) != len(word):
-            return SubmitWordResult(word=word, valid=False, reason="Длина пути не равна длине слова").model_dump()
+            return SubmitWordResult(word=word, valid=False, reason="Длина пути не равна длине слова")
 
         # Проверяем существует ли слово
         ya_result = word_checker.check_word(word)
@@ -604,19 +615,19 @@ class Game:
 
         if not ya_result.is_exist:
             current_player.lives -= 1
-            return SubmitWordResult(word=word, valid=False, reason="Такое слово не найдено").model_dump()
+            return SubmitWordResult(word=word, valid=False, reason="Такое слово не найдено")
 
         if word in self.used_words:
             current_player.lives -= 1
-            return SubmitWordResult(word=word, valid=False, reason="Слово уже было найдено").model_dump()
+            return SubmitWordResult(word=word, valid=False, reason="Слово уже было найдено")
 
-        score = sum(self.grid[r][c]["weight"] for r, c in path)
+        score = sum(self.grid[r][c].weight for r, c in path)
         current_player.score += score
 
         current_player.words.append(word)
         self.used_words.append(word)
 
-        return SubmitWordResult(word=word, valid=True, reason="Слово засчитано", score=score).model_dump()
+        return SubmitWordResult(word=word, valid=True, reason="Слово засчитано", score=score)
 
     def next_turn(self):
         if not self.players:
@@ -636,11 +647,12 @@ class Game:
         for player in self.players:
             if player.websocket:
                 try:
+                    logger.error(message)
                     await player.websocket.send_json(message)
                     logger.info(f"Broadcast sent to player {player.player_id}, name={player.name}: {message.get('type')}")
 
                 except Exception as e:
-                    logger.error(f"Broadcast error to player {player.player_id}: {e}")
+                    logger.error(f"Broadcast error to player {player.player_id}: {e} {traceback.format_exc()}")
                     player.websocket = None
 
 
