@@ -386,8 +386,8 @@ function handleMessage(event) {
         console.log(`Current player: ${currentPlayerId}, My player: ${myPlayerId}, Game started: ${isGameStarted}, Players count: ${data.players.length}, Creator ID: ${creatorId}`);
         renderGrid(data.grid);
         renderPlayers(data.players);
-        renderStats(data.players);
-//        document.getElementById("timer-word").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
+//        renderStats(data.players);
+
         document.getElementById("timer-word").style.display = isGameStarted ? "flex" : "none";
 
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
@@ -428,7 +428,7 @@ function handleMessage(event) {
     } else if (data.type === "info") {
         document.getElementById("message").textContent = data.message;
         renderPlayers(data.players || []);
-        renderStats(data.players || []);
+//        renderStats(data.players || []);
         const playersCount = data.players ? data.players.length : document.getElementById("players-info").children.length;
         updateStartButton(playersCount);
 
