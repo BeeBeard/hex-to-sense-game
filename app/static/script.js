@@ -107,30 +107,37 @@ async function createGame() {
 
 async function joinGame() {
     console.log("Join Game button clicked");
+
     const playerNameInput = document.getElementById("player-name-join");
     const gameIdInput = document.getElementById("game-id");
+
     if (!playerNameInput || !gameIdInput) {
         console.error("Input elements not found", { playerNameInput, gameIdInput });
         document.getElementById("message").textContent = "Ошибка: элементы формы не найдены";
         return;
     }
+
     const playerName = playerNameInput.value.trim();
     const inputGameId = gameIdInput.value.trim();
     console.log("joinGame inputs:", { playerName, inputGameId });
+
     if (!inputGameId) {
         console.error("No game ID provided");
         document.getElementById("message").textContent = "Ошибка: введите код игры";
         gameIdInput.focus();
         return;
     }
+
     if (!playerName || playerName.length < 2) {
         console.error("No valid player name provided", { playerName, length: playerName.length });
         document.getElementById("message").textContent = "Ошибка: введите имя (минимум 2 символа)";
         playerNameInput.focus();
         return;
     }
+
     console.log("Attempting to join game:", inputGameId, "as", playerName);
     document.getElementById("message").textContent = "Присоединение к игре...";
+
     try {
         const response = await fetch(rootPath + "/join", {
             method: "POST",
@@ -138,15 +145,18 @@ async function joinGame() {
             body: JSON.stringify({ game_id: inputGameId, player_name: playerName })
         });
         console.log("Fetch response status:", response.status, "Response:", response);
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
         }
+
         const data = await response.json();
         if (data.error) {
             console.error("Server error:", data.error);
             throw new Error(data.error);
         }
+
         console.log("Join game response:", data);
         gameId = data.game_id;
         myPlayerId = data.player_id;

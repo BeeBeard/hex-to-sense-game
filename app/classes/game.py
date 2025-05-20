@@ -644,10 +644,11 @@ class Game:
         return len(self.players) <= 1 or sum(1 for p in self.players if p.lives > 0) <= 1
 
     async def broadcast(self, message: dict):
+        """Рассылка сообщения"""
+
         for player in self.players:
             if player.websocket:
                 try:
-                    logger.error(message)
                     await player.websocket.send_json(message)
                     logger.info(f"Broadcast sent to player {player.player_id}, name={player.name}: {message.get('type')}")
 

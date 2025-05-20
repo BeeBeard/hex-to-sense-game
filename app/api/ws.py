@@ -15,33 +15,27 @@ async def test():
 
 @r_ws.websocket("/ws/{game_id}/{player_id}")
 async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str):
+
     await websocket.accept()
-    logger.info(f"WebSocket connected: game_id={game_id}, player_id={player_id}")
+
+    logger.info(f"Подключаем WebSocket:\n{game_id=}\n{player_id=}")
     game = GM.games.get(game_id)
     if not game:
-        logger.error(f"WebSocket error: Game {game_id} not found")
-        await websocket.send_json({"type": "error", "message": "Game not found"})
+        logger.error(f"WebSocket error. Игра не найдена:\n{game_id=}")
+        await websocket.send_json({"type": "error", "message": "Игра не найдена."})
         await websocket.close()
         return
 
     player = next((p for p in game.players if p.player_id == player_id), None)
     if not player:
-        logger.error(f"WebSocket error: Player {player_id} not found in game {game_id}")
-        await websocket.send_json({"type": "error", "message": f"Player {player_id} not found"})
+        logger.error(f"WebSocket error. Игрок {player_id} отсутствует в игре {game_id}")
+        await websocket.send_json({"type": "error", "message": f"Игрок {player_id} не найден"})
         await websocket.close()
         return
 
     player.websocket = websocket
-    try:
-        # await game.broadcast({
-        #     "type": "init",
-        #     "grid": game.grid,
-        #     "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-        #     "current_player": game.players[game.current_player_index].player_id if game.is_started and game.players else None,
-        #     "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
-        #     "is_started": game.is_started
-        # })
 
+    try:
         wa_broadcast = WsBroadcast(
             type="init",
             grid=game.grid,
@@ -51,7 +45,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
             is_started=game.is_started
         )
 
-        pprint.pprint(wa_broadcast)
         await game.broadcast(wa_broadcast.model_dump())
 
         while True:
@@ -70,16 +63,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
 
                 else:
                     game.is_started = True
-                    # logger.info(f"Game started successfully: game_id={game_id}")
-                    # await game.broadcast({
-                    #     "type": "start",
-                    #     "grid": game.grid,
-                    #     "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-                    #     "current_player": game.players[game.current_player_index].player_id if game.players else None,
-                    #     "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
-                    #     "is_started": True,
-                    #     "message": "Игра началась!"
-                    # })
 
                     wa_broadcast = WsBroadcast(
                         type="start",
@@ -93,23 +76,11 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
 
                     await game.broadcast(wa_broadcast.model_dump())
 
-
-
             elif action == "submit_word":
                 word = data.get("word")
                 path = data.get("path")
                 result = game.submit_word(player_id, word, path)
                 game.next_turn()
-                # await game.broadcast({
-                #     "type": "update",
-                #     "result": result,
-                #     "grid": game.grid,
-                #     "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-                #     "current_player": game.players[game.current_player_index].player_id if game.players else None,
-                #     "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
-                #     "is_started": True,
-                #     "message": f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
-                # })
 
                 wa_broadcast = WsBroadcast(
                     type="update",
@@ -129,15 +100,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 row = data.get("row")
                 col = data.get("col")
                 result = game.increment_click(player_id, row, col)
-                if not result.success:
-                    # await game.broadcast({
-                    #     "type": "click_update",
-                    #     "grid": game.grid,
-                    #     "row": row,
-                    #     "col": col,
-                    #     "clicks": game.grid[row][col].clicks
-                    # })
 
+                if not result.success:
                     wa_broadcast = WsClickBroadcast(
                         type="click_update",
                         grid=game.grid,
@@ -149,7 +113,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
 
                     await game.broadcast(wa_broadcast.model_dump())
 
-
                 else:
                     await websocket.send_json({
                         "type": "error",
@@ -158,18 +121,9 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
 
             elif action == "timeout":
                 if game.players and game.players[game.current_player_index].player_id == player_id:
+
                     game.players[game.current_player_index].lives -= 1
                     game.next_turn()
-                    # await game.broadcast({
-                    #     "type": "update",
-                    #     "result": {"valid": False, "reason": "Time out"},
-                    #     "grid": game.grid,
-                    #     "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-                    #     "current_player": game.players[game.current_player_index].player_id if game.players else None,
-                    #     "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
-                    #     "is_started": True,
-                    #     "message": f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
-                    # })
 
                     wa_broadcast = WsBroadcast(
                         type="update",
@@ -183,7 +137,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     )
 
                     await game.broadcast(wa_broadcast.model_dump())
-
 
 
     except WebSocketDisconnect:
@@ -203,16 +156,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 return
 
             if game.is_started and game.players and game.current_player_index < len(game.players) and game.players[game.current_player_index].player_id == player_id:
+
                 game.next_turn()
-                # await game.broadcast({
-                #     "type": "update",
-                #     "grid": game.grid,
-                #     "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players],
-                #     "current_player": game.players[game.current_player_index].player_id if game.players else None,
-                #     "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
-                #     "is_started": True,
-                #     "message": f"{message}. Ход игрока {game.players[game.current_player_index].name}" if game.players else message
-                # })
 
                 wa_broadcast = WsBroadcast(
                     type="update",
@@ -227,12 +172,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 await game.broadcast(wa_broadcast.model_dump())
 
             else:
-                # await game.broadcast({
-                #     "type": "info",
-                #     "message": message,
-                #     "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
-                # })
-
                 wa_broadcast = WsInfoBroadcast(
                     type="info",
                     message=message,
@@ -241,11 +180,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 await game.broadcast(wa_broadcast.model_dump())
 
             if len(game.players) == 1 and game.is_started:
-                # await game.broadcast({
-                #     "type": "info",
-                #     "message": "Вы остались один. Продолжить игру?",
-                #     "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in game.players]
-                # })
                 wa_broadcast = WsInfoBroadcast(
                     type="info",
                     message=f"Вы остались один. Продолжить игру?",
@@ -255,7 +189,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
 
     except Exception as e:
         logger.error(f"WebSocket error: game_id={game_id}, player_id={player_id}, error={e} {traceback.format_exc()}")
-        await websocket.send_json({"type": "error", "message": f"Server error: {str(e)}"})
+        await websocket.send_json({"type": "error", "message": f"Ошибка сервера: {str(e)}"})
         await websocket.close()
 
 if __name__ == "__main__":

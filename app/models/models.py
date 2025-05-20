@@ -29,6 +29,15 @@ class Hex(BaseModel):
     clicks: int = 0
     show: bool = True
 
+# ROOM
+class Room(BaseModel):
+    game_id: str
+    room_name: str
+    players: int = 0
+
+class Rooms(BaseModel):
+    rooms: List[Room]
+
 
 
 # Настройка логирования
@@ -59,6 +68,8 @@ class GameResponce(BaseModel):
 
 
 
+
+# BROADCAST
 class WsBroadcast(BaseModel):
 
     type: str
@@ -76,25 +87,10 @@ class WsClickBroadcast(WsBroadcast):
     col: int
     clicks: int
 
-class WsInfoBroadcast(WsBroadcast):
+class WsInfoBroadcast(BaseModel):
     type: str
     message:Optional[str] = ""
     players: List[Union[PlayerModel, None]] = []
-
-
-    # "players": [{"id": p.player_id, "name": p.name, "score": p.score, "lives": p.lives, "words": p.words} for p in
-    #             game.players],
-    # "current_player": game.players[game.current_player_index].player_id if game.players else None,
-    # "current_player_name": game.players[game.current_player_index].name if game.is_started and game.players else None,
-    # "is_started": True,
-    # "message": f"{message}. Ход игрока {game.players[game.current_player_index].name}" if game.players else message
-    #
-    #
-    #
-    # "result": {"valid": False, "reason": "Time out"},
-    #
-    # "row": row,
-    # "col": col,
 
 
 

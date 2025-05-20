@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 from loguru import logger
 
 from app.classes import Game
-
+from app.models.models import Room
 
 class GameManager:
     def __init__(self):
@@ -19,14 +19,10 @@ class GameManager:
     def get_game(self, game_id: str) -> Optional[Game]:
         return self.games.get(game_id)
 
-    def get_active_rooms(self) -> List[dict]:
-
-        logger.error(f"! WARNING ! {self.games.items()}")
-
+    def get_active_rooms(self) -> List[Room]:
         return [
-            {"game_id": game_id, "room_name": game.room_name, "players": len(game.players)}
-            for game_id, game in self.games.items()
-            if not game.is_started
+            Room(game_id=game_id, room_name=game.room_name, players=len(game.players))
+            for game_id, game in self.games.items() if not game.is_started
         ]
 
 
