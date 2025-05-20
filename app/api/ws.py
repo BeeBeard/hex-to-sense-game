@@ -73,7 +73,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                         current_player=game.players[game.current_player_index].player_id if game.players else "",
                         current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
                         is_started=True,
-                        message=f"Игра началась!"
+                        message=f"Ход игрока {game.players[game.current_player_index].name}"
                     )
 
                     await game.broadcast(wa_broadcast.model_dump())
