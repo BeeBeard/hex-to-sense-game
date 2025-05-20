@@ -299,7 +299,7 @@ function startWebSocket() {
     document.getElementById("game-screen").style.display = "flex";
 
 
-    const wsUrl = `wss://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
+    const wsUrl = `ws://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
     console.log("WebSocket URL:", wsUrl);
     ws = new WebSocket(wsUrl);
     ws.onmessage = handleMessage;

@@ -28,15 +28,15 @@
             <div id="create-form" style="display: none;">
                 <input type="text" id="lives-count" placeholder="Жизни" value="3">
                 <input type="text" id="timer-count" placeholder="Время на ход" value="30">
-                <input type="text" id="player-name" placeholder="Ваше имя">
-                <input type="text" id="room-name" placeholder="Название комнаты">
+                <input type="text" id="player-name" placeholder="Ваше имя" value="Игрок 1">
+                <input type="text" id="room-name" placeholder="Название комнаты" value="Комната 1">
                 <button onclick="createGame()">Создать игру</button>
                 <button onclick="showMainMenu()">Назад</button>
             </div>
 
             <div id="join-form" style="display: none;">
-                <input type="text" id="player-name-join" placeholder="Ваше имя">
-                <input type="text" id="game-id" placeholder="Код игры">
+                <input type="text" id="player-name-join" placeholder="Ваше имя" value="Игрок 1">
+                <input type="text" id="game-id" placeholder="Код игры" value="Комната 1">
                 <button onclick="joinGame()">Войти</button>
                 <button onclick="showRoomsForm()">Все комнаты</button>
                 <button onclick="showMainMenu()">Назад</button>
@@ -74,7 +74,7 @@
 
                 </div>
 
-                <div id="toggle-buttons" style="display: none;">
+                <div id="toggle-buttons" style="display: flex;">
                     <button id="toggle-players" onclick="togglePlayersInfo()">Статистика игроков</button>
                 </div>
 
