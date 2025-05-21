@@ -15,11 +15,6 @@ window.onload = () => {
     const pathParts = url.pathname.split('/');
 
     // Расчет высоты окна, для того что бы не мешала нижняя панель
-    window.addEventListener('resize', updateViewportHeight);
-    window.addEventListener('orientationchange', updateViewportHeight);
-    updateViewportHeight();
-
-
 
     if (pathParts[1] === 'join' && pathParts[2]) {
         console.log("Join URL detected, game_id:", pathParts[2]);
