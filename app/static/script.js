@@ -13,6 +13,14 @@ window.onload = () => {
     console.log("Window loaded, checking URL");
     const url = new URL(window.location.href);
     const pathParts = url.pathname.split('/');
+
+    // Расчет высоты окна, для того что бы не мешала нижняя панель
+    window.addEventListener('resize', updateViewportHeight);
+    window.addEventListener('orientationchange', updateViewportHeight);
+    updateViewportHeight();
+
+
+
     if (pathParts[1] === 'join' && pathParts[2]) {
         console.log("Join URL detected, game_id:", pathParts[2]);
         const gameIdInput = document.getElementById("game-id");
@@ -38,6 +46,13 @@ window.onload = () => {
         }
     }
 };
+
+
+function updateViewportHeight() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
 
 
 function showNotification(message) {

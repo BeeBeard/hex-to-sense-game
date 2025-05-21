@@ -49,7 +49,8 @@ body {
 /* Container */
 .container {
 
-    height: calc(100vh - 20px - env(safe-area-inset-bottom));
+
+    height: calc(var(--vh, 1vh) * 100); /* вместо 100vh */
     width: 90%;
     max-width: var(--general-max-width);
     margin: 10px auto;
