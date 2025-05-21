@@ -58,6 +58,7 @@ body {
     background-color: var(--background-light);
     padding-bottom: env(safe-area-inset-bottom); /* Отступ для шторки */
     box-sizing: border-box;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
 
 /* Screens */
