@@ -506,9 +506,7 @@ function renderPlayers(players) {
         const nameHeader = document.createElement("h3");
 
              nameHeader.innerHTML = `
-            <span>${p.name}</span>
-            <span>✨ ${p.score}</span><br>
-            <span>${'❤️'.repeat(p.lives)}</span>
+            <span>${p.name}</span><span>✨ ${p.score}</span><span>${'❤️'.repeat(p.lives)}</span>
         `;
 
 //        nameHeader.textContent = `${p.name} (${p.score} очков, ${p.lives} жизней)`;

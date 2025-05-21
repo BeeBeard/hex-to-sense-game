@@ -368,7 +368,15 @@ button:disabled {
 
 #players-panel {
     display: none;
-    position: absolute;
+
+
+    height: calc(100vh - 20px);
+    width: 90%;
+    max-width: var(--general-max-width);
+
+
+
+    position: relative;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -376,12 +384,17 @@ button:disabled {
     max-width: 480px; /* Соответствует ширине #app-name (с учетом border в контейнере) */
     border: 1px solid var(--primary-color);
     border-radius: 15px;
-    top: 80px;
+    top: 0px;
     background-color: var(--background-light);
     box-shadow: -2px 0 5px var(--shadow-color);
     z-index: 1000;
     padding: 10px;
     box-sizing: border-box;
+
+
+
+
+
 }
 
 #players-panel.show {
