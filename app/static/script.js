@@ -48,18 +48,6 @@ window.onload = () => {
 };
 
 
-function updateViewportHeight() {
-    document.querySelector(".container").style.height = document.documentElement.clientHeight + "px";
-      const vh = document.documentElement.clientHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-//    alert(document.documentElement.clientHeight)
-//  const vh = window.innerHeight * 0.1;
-//
-//  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
-
-
-
 function showNotification(message) {
     // Модалка для оповещений
     console.log("Показать уведомление:", message);
