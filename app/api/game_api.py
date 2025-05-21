@@ -54,7 +54,14 @@ async def create_game(request: CreateGameRequest):
     game.add_player(player_id=player_id, name=request.player_name)
     # GM.games[game.game_id] = game
     logger.info(f"Game created: game_id={game.game_id}, room_name={room_name}, player_id={player_id}, creator_id={player_id}, player_name={player_name}")
-    return {"game_id": game.game_id, "room_name": room_name, "player_id": player_id, "creator_id": player_id}
+    return {
+        "game_id": game.game_id,
+        "room_name": room_name,
+        "player_id": player_id,
+        "creator_id": player_id,
+        "min_players":min_players,
+        "max_players": max_players
+    }
 
 
 @r_game.get("/join/{game_id}", response_class=HTMLResponse)

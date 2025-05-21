@@ -49,6 +49,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
             type="init",
             grid=game.grid,
             timer=game.timer,
+            min_players=game.min_players,
+            max_players=game.max_players,
             players=[player.get_data() for player in game.players],
             current_player=game.players[game.current_player_index].player_id if game.is_started and game.players else "",
             current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
@@ -79,6 +81,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                         type="start",
                         grid=game.grid,
                         timer=game.timer,
+                        min_players=game.min_players,
+                        max_players=game.max_players,
                         players=[player.get_data() for player in game.players],
                         current_player=game.players[game.current_player_index].player_id if game.players else "",
                         current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
@@ -94,26 +98,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 path = data.get("path")
                 result = game.submit_word(player_id, word, path)    # Проверка слова
 
-                # if not result.valid:
-                #     if not game.players[game.current_player_index].lives:
-                #
-                #         wa_broadcast = WsBroadcast(
-                #             type="update",
-                #             result=result,
-                #             grid=game.grid,
-                #             timer=game.timer,
-                #             players=[player.get_data() for player in game.players],
-                #             current_player=game.players[game.current_player_index].player_id if game.players else "",
-                #             current_player_name=game.players[
-                #                 game.current_player_index].name if game.is_started and game.players else "",
-                #             is_started=True,
-                #             message=f"Игрок {game.players[game.current_player_index].name} потерял все жизни"
-                #         )
-                #
-                #         await game.broadcast(message=wa_broadcast.model_dump())
-                #
-
-
                 game.next_turn()
 
                 wa_broadcast = WsBroadcast(
@@ -121,6 +105,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     result=result,
                     grid=game.grid,
                     timer=game.timer,
+                    min_players=game.min_players,
+                    max_players=game.max_players,
                     players=[player.get_data() for player in game.players],
                     current_player=game.players[game.current_player_index].player_id if game.players else "",
                     current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
@@ -166,6 +152,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                         result=SubmitWordResult(valid=False, reason="Время вышло"),
                         grid=game.grid,
                         timer=game.timer,
+                        min_players=game.min_players,
+                        max_players=game.max_players,
                         players=[player.get_data() for player in game.players],
                         current_player=game.players[game.current_player_index].player_id if game.players else "",
                         current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
@@ -206,6 +194,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     type="update",
                     grid=game.grid,
                     timer=game.timer,
+                    min_players=game.min_players,
+                    max_players=game.max_players,
                     players=[player.get_data() for player in game.players],
                     current_player=game.players[game.current_player_index].player_id if game.players else "",
                     current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",

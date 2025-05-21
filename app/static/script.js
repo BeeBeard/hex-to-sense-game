@@ -96,7 +96,7 @@ async function createGame() {
     }
 
 
-    console.log("Creating game for:", playerName);
+//    console.log("Creating game for:", playerName);
     try {
         const response = await fetch(rootPath + "/create", {
             method: "POST",
@@ -110,7 +110,7 @@ async function createGame() {
                 min_players: minPlayerCount,
             })
         });
-        console.log("Fetch response status:", response.status);
+//        console.log("Fetch response status:", response.status);
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
@@ -127,14 +127,15 @@ async function createGame() {
         creatorId = data.creator_id;
         console.log("Creator ID set:", creatorId, "My Player ID:", myPlayerId, "Match:", myPlayerId === creatorId);
         startWebSocket();
+
     } catch (error) {
-        console.error("Error creating game:", error);
+        console.error("Ошибка при создании игры:", error.message);
         document.getElementById("message").textContent = `Ошибка при создании игры: ${error.message}`;
     }
 }
 
 async function joinGame() {
-    console.log("Join Game button clicked");
+    console.log("Нажали кнопку присоединиться к игре");
 
     const playerNameInput = document.getElementById("player-name-join");
     const gameIdInput = document.getElementById("game-id");
@@ -172,6 +173,7 @@ async function joinGame() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ game_id: inputGameId, player_name: playerName })
         });
+
         console.log("Fetch response status:", response.status, "Response:", response);
 
         if (!response.ok) {
@@ -311,20 +313,19 @@ function startWebSocket() {
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "flex";
 
-
-    const wsUrl = `wss://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
+    const wsUrl = `ws://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
     console.log("WebSocket URL:", wsUrl);
     ws = new WebSocket(wsUrl);
     ws.onmessage = handleMessage;
     ws.onopen = () => {
-        console.log("WebSocket opened");
+        console.log("WebSocket открыт.");
     };
     ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        console.error("Ошибка соединения с сервером:", error);
         document.getElementById("message").textContent = "Ошибка соединения с сервером";
     };
     ws.onclose = () => {
-        console.log("WebSocket closed, attempting to reconnect");
+        console.log("Соединение с сервером потеряно, пытаемся переподключиться...");
         document.getElementById("message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
         reconnectWebSocket();
     };
@@ -360,9 +361,9 @@ function reconnectWebSocket() {
 //    });
 //}
 
-function updateStartButton(playersCount) {
+function updateStartButton(playersCount, min_players) {
 ///// ТУТ МИНИМАЛЬНОЕ КОЛИЧЕСТВО ИГРОКОВ
-    const min_players = 2;
+//    const min_players = 2;
     const showStartButton = myPlayerId === creatorId && !isGameStarted && playersCount >= min_players;
     console.log("Updating start button:", showStartButton, "Conditions:", {
         isCreator: myPlayerId === creatorId,
@@ -372,6 +373,8 @@ function updateStartButton(playersCount) {
         myPlayerId,
         creatorId
     });
+
+    console.log("Updating start min_players:", min_players)
     if (myPlayerId === creatorId) {
         if (!showStartButton) {
             let reason = "";
@@ -408,7 +411,7 @@ function handleMessage(event) {
 
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
         document.getElementById("toggle-buttons").style.display = isGameStarted ? "flex" : "none";
-        updateStartButton(data.players.length);
+        updateStartButton(data.players.length, data.min_players);
 
         if (data.type === "start") {
             document.getElementById("message").textContent = data.message || "Игра началась!";
@@ -450,12 +453,15 @@ function handleMessage(event) {
         renderPlayers(data.players || []);
 //        renderStats(data.players || []);
         const playersCount = data.players ? data.players.length : document.getElementById("players-info").children.length;
-        updateStartButton(playersCount);
+        updateStartButton(playersCount, data.min_players);
 
     } else if (data.type === "error") {
         document.getElementById("message").textContent = `Ошибка: ${data.message}`;
         if (data.message.includes("Only the creator") || data.message.includes("two players")) {
-            updateStartButton(data.players?.length || document.getElementById("players-info").children.length);
+            updateStartButton(
+                data.players?.length || document.getElementById("players-info").children.length,
+                data.min_players
+            );
         }
     }
 }

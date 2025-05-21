@@ -536,7 +536,7 @@ class Game:
             return GameResponce(success=False, message=message, error=error)
 
 
-        if len(self.players) <= self.min_players:
+        if len(self.players) < self.min_players:
             error = f"Не удалось запустить игру. Недостаточно игроков для начала. {self.game_id=} | {self.room_name}"
             message = f"Требуется минимум {self.min_players} игрока."
             return GameResponce(success=False, message=message, error=error)

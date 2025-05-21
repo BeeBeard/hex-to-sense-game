@@ -80,6 +80,8 @@ class WsBroadcast(BaseModel):
     grid: List[List[Union[Hex, None]]] = []
     message:Optional[str] = ""
     timer: int = 30
+    max_players: int = 4
+    min_players: int  = 1
 
     players: List[Union[PlayerModel, None]] = []
     current_player: Optional[str] = ""

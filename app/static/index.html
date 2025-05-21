@@ -12,7 +12,7 @@
             <h1>Hex To Sense</h1>
             <div id="message"></div>
         </div>
-<!--         class="hidden"-->
+
         <div id="players-panel">
             <div id="players-info"></div>
             <button id="close-players" onclick="togglePlayersInfo()">Закрыть</button>
@@ -25,13 +25,36 @@
                 <button onclick="showJoinForm()">Присоединиться</button>
             </div>
 
+
             <div id="create-form" style="display: none;">
-                <input type="text" id="min-player-count" placeholder="Минимум игроков" value="1">
-                <input type="text" id="max-player-count" placeholder="Максимум игроков" value="10">
-                <input type="text" id="lives-count" placeholder="Жизни" value="3">
-                <input type="text" id="timer-count" placeholder="Время на ход" value="30">
-                <input type="text" id="player-name" placeholder="Ваше имя" value="Игрок 1">
-                <input type="text" id="room-name" placeholder="Название комнаты" value="Комната 1">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="min-player-count">Минимум игроков</label>
+                        <input type="text" id="min-player-count" placeholder="Минимум игроков" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-player-count">Максимум игроков</label>
+                        <input type="text" id="max-player-count" placeholder="Максимум игроков" value="10">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="lives-count">Жизни</label>
+                        <input type="text" id="lives-count" placeholder="Жизни" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="timer-count">Время на ход</label>
+                        <input type="text" id="timer-count" placeholder="Время на ход" value="30">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="player-name">Ваше имя</label>
+                    <input type="text" id="player-name" placeholder="Ваше имя" value="Игрок 1">
+                </div>
+                <div class="form-group">
+                    <label for="room-name">Название комнаты</label>
+                    <input type="text" id="room-name" placeholder="Название комнаты" value="Комната 1">
+                </div>
                 <button onclick="createGame()">Создать игру</button>
                 <button onclick="showMainMenu()">Назад</button>
             </div>
@@ -62,12 +85,6 @@
                 </div>
 
 
-<!--                <div id="stats-container">-->
-<!--                    <div id="stats-left"></div>-->
-
-<!--                    <div id="stats-right"></div>-->
-<!--                </div>-->
-
                 <div id="grid"></div>
 
                 <div id="word-buttons" class="word-buttons" style="display: none;">
@@ -94,7 +111,6 @@
 
 
         </div>
-
 
 
     </div>
