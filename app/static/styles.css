@@ -50,7 +50,7 @@ body {
 .container {
 
 
-    height: calc(var(--vh, 1vh) * 100); /* вместо 100vh */
+    height: 90vh; /* вместо 100vh */
     width: 90%;
     max-width: var(--general-max-width);
     margin: 10px auto;
