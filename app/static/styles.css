@@ -60,6 +60,7 @@ body {
     padding-bottom: env(safe-area-inset-bottom); /* Отступ для шторки */
     box-sizing: border-box;
     padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    height: calc(var(--vh, 1vh) * 100);
 }
 
 /* Screens */

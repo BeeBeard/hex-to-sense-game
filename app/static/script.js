@@ -50,6 +50,8 @@ window.onload = () => {
 
 function updateViewportHeight() {
     document.querySelector(".container").style.height = document.documentElement.clientHeight + "px";
+      const vh = document.documentElement.clientHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
 //    alert(document.documentElement.clientHeight)
 //  const vh = window.innerHeight * 0.1;
 //
