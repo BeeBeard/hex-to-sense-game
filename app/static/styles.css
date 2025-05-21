@@ -81,18 +81,42 @@ body {
 
 /* Forms */
 #create-form, #join-form, #rooms-form, #main-form {
+
+    justify-content: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     max-width: 300px;
+
 }
 
 .form-row {
     display: flex;
     width: 100%;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: center;
+    margin: auto;
+
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+
+}
+
+.form-group label {
+    font-size: 14px;
+    color: var(--text-color);
+    margin-bottom: 5px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.form-row input {
+    max-width: 135px; /* Половина от 280px с учетом gap для парного расположения */
+
 }
 
 input, #player-name, #room-name, #current-word {
@@ -106,6 +130,7 @@ input, #player-name, #room-name, #current-word {
     background-color: var(--background-dark);
     color: var(--text-color);
     margin: 10px 0;
+    text-align: center;
 }
 
 #rooms-list {
@@ -185,7 +210,7 @@ button:disabled {
 }
 
 .hex {
-    flex: 0 0 calc((100% - 8 * var(--hex-side-margin)) / 7);
+    flex: 0 0 calc((100% - 16 * var(--hex-side-margin)) / 7);
     aspect-ratio: 1 / 1.155;
     background: var(--primary-color);
     margin: 0 var(--hex-side-margin);
@@ -245,6 +270,8 @@ button:disabled {
     display: flex;
     min-height: 20px;
     margin: auto;
+    justify-content: center;
+    align-items: center;
 }
 
 #timer {
@@ -302,9 +329,33 @@ button:disabled {
 /* Word Buttons */
 #word-buttons {
     display: flex;
-    align-items: center;
-    margin: 10px 0;
+    justify-content: center; /* Центрирование кнопок по горизонтали */
+    align-items: center; /* Центрирование кнопок по вертикали */
+    margin: 10px auto; /* Центрирование контейнера относительно родителя */
+    gap: 10px;
+    width: 100%;
+    max-width: 280px; /* Соответствует ширине кнопки в #toggle-buttons */
 }
+
+#word-buttons button {
+    background-color: var(--primary-color);
+    color: var(--text-dark);
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1; /* Кнопки делят пространство поровну */
+    max-width: 135px; /* Половина от 280px с учетом gap */
+    text-align: center;
+    box-sizing: border-box;
+    transition: background-color 0.3s;
+}
+
+#word-buttons button:hover {
+    background-color: var(--hover-color);
+}
+
 
 /* Panels */
 #info-panel {
@@ -321,26 +372,48 @@ button:disabled {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-width: 470px;
+    width: 100%;
+    max-width: 480px; /* Соответствует ширине #app-name (с учетом border в контейнере) */
     border: 1px solid var(--primary-color);
     border-radius: 15px;
-    top: 100px;
+    top: 80px;
     background-color: var(--background-light);
     box-shadow: -2px 0 5px var(--shadow-color);
     z-index: 1000;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 #players-panel.show {
-    display: block;
+    display: flex;
 }
 
 #close-players {
+    background-color: var(--secondary-color);
+    color: var(--text-dark);
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+    box-sizing: border-box;
+    transition: background-color 0.3s;
     margin: 10px auto;
+}
+
+#close-players:hover {
+    background-color: var(--secondary-hover);
 }
 
 #players-info {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 450px; /* Чуть меньше, чтобы учесть padding и border */
+    flex-grow: 1;
 }
 
 #players-info div {

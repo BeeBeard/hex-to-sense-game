@@ -313,7 +313,7 @@ function startWebSocket() {
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "flex";
 
-    const wsUrl = `ws://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
+    const wsUrl = `wss://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
     console.log("WebSocket URL:", wsUrl);
     ws = new WebSocket(wsUrl);
     ws.onmessage = handleMessage;
@@ -503,7 +503,7 @@ function renderPlayers(players) {
     playersDiv.innerHTML = "";
     players.forEach(p => {
         const playerDiv = document.createElement("div");
-        const nameHeader = document.createElement("h2");
+        const nameHeader = document.createElement("h3");
 
              nameHeader.innerHTML = `
             <span>${p.name}</span>
