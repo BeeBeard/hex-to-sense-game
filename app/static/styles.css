@@ -42,18 +42,22 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    height: calc(100vh - 20px - env(safe-area-inset-bottom));
+
+
 }
 
 /* Container */
 .container {
-    height: calc(100vh - 20px);
+
+    height: calc(100vh - 20px - env(safe-area-inset-bottom));
     width: 90%;
     max-width: var(--general-max-width);
     margin: 10px auto;
     border: 1px solid var(--primary-color);
     border-radius: 15px;
     background-color: var(--background-light);
+    padding-bottom: env(safe-area-inset-bottom); /* Отступ для шторки */
+    box-sizing: border-box;
 }
 
 /* Screens */
