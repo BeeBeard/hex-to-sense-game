@@ -39,8 +39,10 @@ window.onload = () => {
     }
 };
 
+
 function showNotification(message) {
-    console.log("Showing notification:", message);
+    // Модалка для оповещений
+    console.log("Показать уведомление:", message);
     const notification = document.getElementById("notification");
     notification.textContent = message;
     notification.classList.add("show");
@@ -56,11 +58,15 @@ async function createGame() {
     const roomNameElem = document.getElementById("room-name");
     const timerCountElem = document.getElementById("timer-count");
     const livesCountElem = document.getElementById("lives-count");
+    const maxPlayerCountElem = document.getElementById("max-player-count");
+    const minPlayerCountElem = document.getElementById("min-player-count");
 
     const playerName = playerNameElem.value;
     const roomName = roomNameElem.value;
     const timerCount = timerCountElem.value;
     const livesCount = livesCountElem.value;
+    const maxPlayerCount = maxPlayerCountElem.value;
+    const minPlayerCount = minPlayerCountElem.value;
 
     if (!playerName || playerName.length < 2) {
         showNotification("'Имя' должно быть более 2х символов", true);
@@ -95,7 +101,14 @@ async function createGame() {
         const response = await fetch(rootPath + "/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ player_name: playerName, room_name: roomName, timer: timerCount, lives: livesCount})
+            body: JSON.stringify({
+                player_name: playerName,
+                room_name: roomName,
+                timer: timerCount,
+                lives: livesCount,
+                max_players: maxPlayerCount,
+                min_players: minPlayerCount,
+            })
         });
         console.log("Fetch response status:", response.status);
         if (!response.ok) {
@@ -299,7 +312,7 @@ function startWebSocket() {
     document.getElementById("game-screen").style.display = "flex";
 
 
-    const wsUrl = `ws://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
+    const wsUrl = `wss://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
     console.log("WebSocket URL:", wsUrl);
     ws = new WebSocket(wsUrl);
     ws.onmessage = handleMessage;
@@ -334,20 +347,21 @@ function reconnectWebSocket() {
     }, 3000);
 }
 
-function shareGame() {
-    console.log("Share Game button clicked");
-    const shareUrl = `${window.location.origin}${rootPath}/join/${gameId}`;
-    console.log("Share URL:", shareUrl);
-    navigator.clipboard.writeText(shareUrl).then(() => {
-        document.getElementById("message").textContent = "Ссылка скопирована!";
-        setTimeout(() => document.getElementById("message").textContent = "", 2000);
-    }).catch(err => {
-        console.error("Error copying link:", err);
-        document.getElementById("message").textContent = "Ошибка при копировании ссылки";
-    });
-}
+//function shareGame() {
+//    console.log("Share Game button clicked");
+//    const shareUrl = `${window.location.origin}${rootPath}/join/${gameId}`;
+//    console.log("Share URL:", shareUrl);
+//    navigator.clipboard.writeText(shareUrl).then(() => {
+//        document.getElementById("message").textContent = "Ссылка скопирована!";
+//        setTimeout(() => document.getElementById("message").textContent = "", 2000);
+//    }).catch(err => {
+//        console.error("Error copying link:", err);
+//        document.getElementById("message").textContent = "Ошибка при копировании ссылки";
+//    });
+//}
 
 function updateStartButton(playersCount) {
+///// ТУТ МИНИМАЛЬНОЕ КОЛИЧЕСТВО ИГРОКОВ
     const min_players = 2;
     const showStartButton = myPlayerId === creatorId && !isGameStarted && playersCount >= min_players;
     console.log("Updating start button:", showStartButton, "Conditions:", {
@@ -378,7 +392,7 @@ function updateStartButton(playersCount) {
 function handleMessage(event) {
     const data = JSON.parse(event.data);
     console.log("WebSocket message:", data);
-    console.log("Current player name:", data.current_player_name);
+    console.log("Имя текущего игрока:", data.current_player_name);
 
     if (data.type === "init" || data.type === "update" || data.type === "start") {
         currentPlayerId = data.current_player;
@@ -387,6 +401,8 @@ function handleMessage(event) {
         renderGrid(data.grid);
         renderPlayers(data.players);
 //        renderStats(data.players);
+
+//        showNotification(data.current_player_name)
 
         document.getElementById("timer-word").style.display = isGameStarted ? "flex" : "none";
 
@@ -406,6 +422,10 @@ function handleMessage(event) {
                 const message = data.result.valid ?
                     `Слово "${data.result.word}" принято!` :
                     `Слово "${data.result.word}" неверно: ${data.result.reason}`;
+
+                // Обнуляем таймер при смене хода
+                const timerDiv = document.getElementById("timer").textContent = 0;
+
                 showNotification(message);
             }
         }
@@ -441,6 +461,8 @@ function handleMessage(event) {
 }
 
 function renderGrid(grid) {
+
+    // Отрисовка игрового поля
     console.log("Rendering grid", grid);
     const gridDiv = document.getElementById("grid");
     gridDiv.innerHTML = "";
@@ -467,6 +489,7 @@ function renderGrid(grid) {
     });
     console.log("Grid rendered, clickable:", isGameStarted && currentPlayerId === myPlayerId);
 }
+
 
 function renderPlayers(players) {
     console.log("Rendering players:", players);
@@ -496,6 +519,7 @@ function renderPlayers(players) {
         playersDiv.appendChild(playerDiv);
     });
 }
+
 
 function renderStats(players) {
     console.log("Rendering stats:", players);
@@ -674,6 +698,8 @@ function startTimer(_time) {
 }
 
 function togglePlayersInfo() {
+    // Кнопка отображения статистики игроков
+
     console.log("Toggle Players button clicked");
     const playersPanel = document.getElementById("players-panel");
     const toggleButton = document.getElementById("toggle-players");

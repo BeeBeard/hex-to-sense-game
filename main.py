@@ -21,7 +21,7 @@ def main():
             host=CONFIG.api.ip,
             port=CONFIG.api.port,
             log_level="debug",
-            reload=True
+            # reload=True
         )
 
     except KeyboardInterrupt:

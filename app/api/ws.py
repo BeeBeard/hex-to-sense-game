@@ -7,11 +7,18 @@ from loguru import logger
 from app.models.models import WsBroadcast, WsClickBroadcast, SubmitWordResult, WsInfoBroadcast
 from app.storage import GM
 
+from fastapi.responses import HTMLResponse
+import os
+
+
 r_ws = APIRouter(tags=['WEB SOCKET'])
+index_path = os.path.join("app", "static", "index.html")
+
 
 @r_ws.get("/test")
 async def test():
     return {"message": "ok"}
+
 
 @r_ws.websocket("/ws/{game_id}/{player_id}")
 async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str):
@@ -21,10 +28,12 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
     logger.info(f"Подключаем WebSocket:\n{game_id=}\n{player_id=}")
     game = GM.games.get(game_id)
     if not game:
+        # TODO если игра не найдена - перекинуть игроков в меню
         logger.error(f"WebSocket error. Игра не найдена:\n{game_id=}")
         await websocket.send_json({"type": "error", "message": "Игра не найдена."})
         await websocket.close()
         return
+
 
     player = next((p for p in game.players if p.player_id == player_id), None)
     if not player:
@@ -43,9 +52,10 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
             players=[player.get_data() for player in game.players],
             current_player=game.players[game.current_player_index].player_id if game.is_started and game.players else "",
             current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
-            is_started=game.is_started
+            is_started=game.is_started,
+            message=f"Игрок {game.players[game.current_player_index].name} присоединился."
         )
-
+        logger.debug(f"{wa_broadcast=}")
         await game.broadcast(wa_broadcast.model_dump())
 
         while True:
@@ -79,9 +89,31 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     await game.broadcast(wa_broadcast.model_dump())
 
             elif action == "submit_word":
+
                 word = data.get("word")
                 path = data.get("path")
-                result = game.submit_word(player_id, word, path)
+                result = game.submit_word(player_id, word, path)    # Проверка слова
+
+                # if not result.valid:
+                #     if not game.players[game.current_player_index].lives:
+                #
+                #         wa_broadcast = WsBroadcast(
+                #             type="update",
+                #             result=result,
+                #             grid=game.grid,
+                #             timer=game.timer,
+                #             players=[player.get_data() for player in game.players],
+                #             current_player=game.players[game.current_player_index].player_id if game.players else "",
+                #             current_player_name=game.players[
+                #                 game.current_player_index].name if game.is_started and game.players else "",
+                #             is_started=True,
+                #             message=f"Игрок {game.players[game.current_player_index].name} потерял все жизни"
+                #         )
+                #
+                #         await game.broadcast(message=wa_broadcast.model_dump())
+                #
+
+
                 game.next_turn()
 
                 wa_broadcast = WsBroadcast(
@@ -160,7 +192,13 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 del GM.games[game_id]
                 return
 
-            if game.is_started and game.players and game.current_player_index < len(game.players) and game.players[game.current_player_index].player_id == player_id:
+            if (
+                game.is_started and
+                game.players and
+                game.current_player_index < len(game.players) and
+                game.players[game.current_player_index].player_id == player_id
+            ):
+
 
                 game.next_turn()
 

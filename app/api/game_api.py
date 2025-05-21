@@ -32,6 +32,8 @@ async def create_game(request: CreateGameRequest):
     room_name = request.room_name.strip()
     timer = request.timer
     lives = request.lives
+    min_players = request.min_players
+    max_players = request.max_players
     logger.info(f"Processing create_game request for player: {player_name}")
     player_id = str(uuid.uuid4())
 
@@ -41,7 +43,14 @@ async def create_game(request: CreateGameRequest):
             # return HTMLResponse(content="Такая комната уже существует", status_code=500)
             return {"error": "Такая комната уже существует"}
 
-    game = GM.create_game(creator_id=player_id, room_name=room_name, lives=lives, timer=timer, radius=7)
+    game = GM.create_game(
+        creator_id=player_id,
+        room_name=room_name,
+        lives=lives,
+        timer=timer,
+        min_players=min_players,
+        max_players=max_players,
+        radius=7)
     game.add_player(player_id=player_id, name=request.player_name)
     # GM.games[game.game_id] = game
     logger.info(f"Game created: game_id={game.game_id}, room_name={room_name}, player_id={player_id}, creator_id={player_id}, player_name={player_name}")
@@ -54,6 +63,7 @@ async def join_game_page(game_id: str):
     try:
         with open(index_path, encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
+
     except Exception as e:
         logger.error(f"Error reading index.html: {e}")
         return HTMLResponse(content="Error loading page", status_code=500)

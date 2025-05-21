@@ -229,8 +229,18 @@ BASE_WORDS = [
 
 
 class Game:
-    def __init__(self, creator_id: str, room_name: str, lives: int, timer: int = 70, radius: int = 7):
-        self.min_player_count = 2                           # Минимальное количество игроков
+    def __init__(
+            self,
+            creator_id: str,
+            room_name: str,
+            lives: int,
+            max_players: int = 10,
+            min_players: int = 1,
+            timer: int = 70,
+            radius: int = 7):
+
+        self.max_players = max_players                           # Минимальное количество игроков
+        self.min_players = min_players                           # Минимальное количество игроков
         self.timer = timer
         self.lives = lives
         self.players: List[Player] = []
@@ -482,7 +492,7 @@ class Game:
 
     def add_player(self, player_id: str, name: str, websocket: Union[WebSocket, None] = None):
 
-        if len(self.players) < 4 and not self.is_started:
+        if len(self.players) < self.max_players and not self.is_started:
             player = Player(player_id=player_id, name=name, lives=self.lives)
             player.websocket = websocket
             self.players.append(player)
@@ -526,9 +536,9 @@ class Game:
             return GameResponce(success=False, message=message, error=error)
 
 
-        if len(self.players) < self.min_player_count:
+        if len(self.players) <= self.min_players:
             error = f"Не удалось запустить игру. Недостаточно игроков для начала. {self.game_id=} | {self.room_name}"
-            message = f"Требуется минимум {self.min_player_count} игрока."
+            message = f"Требуется минимум {self.min_players} игрока."
             return GameResponce(success=False, message=message, error=error)
 
         self.is_started = True
@@ -612,7 +622,6 @@ class Game:
 
         score = sum(self.grid[r][c].weight for r, c in path)
         current_player.score += score
-
         current_player.words.append(word)
         self.used_words.append(word)
 

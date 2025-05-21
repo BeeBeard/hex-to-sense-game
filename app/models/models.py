@@ -46,6 +46,8 @@ class CreateGameRequest(BaseModel):
     room_name: str = ""
     timer: int = 30
     lives: int = 5
+    min_players: int = 1
+    max_players: int = 4
 
 class JoinGameRequest(BaseModel):
     game_id: str

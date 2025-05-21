@@ -11,8 +11,26 @@ class GameManager:
     def __init__(self):
         self.games: Dict[str, Game] = {}
 
-    def create_game(self, creator_id: str, room_name: str, lives:int, timer: int, radius: int = 7) -> Game:
-        game = Game(creator_id=creator_id, room_name=room_name, lives=lives, timer=timer, radius=radius)
+    def create_game(
+            self,
+            creator_id: str,
+            room_name: str,
+            lives:int,
+            timer: int,
+            min_players: int = 1,
+            max_players: int = 4,
+            radius: int = 7) -> Game:
+
+        game = Game(
+            creator_id=creator_id,
+            room_name=room_name,
+            lives=lives,
+            timer=timer,
+            radius=radius,
+            min_players=min_players,
+            max_players=max_players,
+
+        )
         self.games[game.game_id] = game
         return game
 
