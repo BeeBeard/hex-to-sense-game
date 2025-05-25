@@ -68,7 +68,7 @@ input, #current-word {
 /* Container */
 .container {
     height: calc(100vh - 20px);
-    width: 90%;
+    width: 90vw;
     max-width: var(--general-max-width);
     margin: 10px auto;
     border: 1px solid var(--primary-color);
@@ -419,9 +419,6 @@ button:disabled {
     height: calc(100vh - 20px);
     width: 90%;
     max-width: var(--general-max-width);
-
-
-
     position: relative;
     flex-direction: column;
     align-items: center;
@@ -436,10 +433,6 @@ button:disabled {
     z-index: 1000;
     padding: 10px;
     box-sizing: border-box;
-
-
-
-
 
 }
 
