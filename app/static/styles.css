@@ -21,7 +21,7 @@
 }
 /* Global Styles */
 body {
-user-select: none; /* Запрещает выделение текста */
+    user-select: none; /* Запрещает выделение текста */
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -86,7 +86,7 @@ input, #current-word {
     flex-direction: column;
     align-items: center;
     height: 86vh;
-    width: 100%;
+    width: 90%;
 }
 
 #start-screen h1, #main-screen h1 {
@@ -194,7 +194,7 @@ input, #current-word {
 button, #rooms-list button {
     padding: 10px;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 400;
     background-color: var(--primary-color);
     color: var(--text-dark);
     border: none;
@@ -568,7 +568,7 @@ h1 {
     font-size: 2.5rem;
     color: #FFC107; /* Желтый цвет для заголовка */
     margin-bottom: 20px;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.2;
 }
 
@@ -578,7 +578,7 @@ button {
     background-color: #FFC107; /* Желтый цвет кнопок */
     color: #1E1E1E; /* Темный текст для контраста */
     font-size: 1.1rem;
-    font-weight: 100;
+    font-weight: 400;
     border: none;
     border-radius: 4px; /* Закругленные углы */
     cursor: pointer;
