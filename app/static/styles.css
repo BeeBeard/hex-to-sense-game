@@ -22,12 +22,11 @@
 /* Global Styles */
 body {
     user-select: none; /* Запрещает выделение текста */
-    margin: 0;
+    margin: 10px    ;
     padding: 0;
 
     /*font-family: 'Roboto', sans-serif;*/
     font-family: 'Lato', sans-serif;
-
     background-color: var(--background-dark);
     color: var(--text-color);
     display: flex;
@@ -70,7 +69,8 @@ input, #current-word {
     height: calc(100vh - 20px);
     width: 90vw;
     max-width: var(--general-max-width);
-    margin: 10px auto;
+    margin: auto    ;
+    padding: auto;
     border: 1px solid var(--primary-color);
     border-radius: 8px;
     background-color: var(--background-light);
@@ -87,6 +87,7 @@ input, #current-word {
     align-items: center;
     height: 86vh;
     width: 90%;
+        margin: auto;
 }
 
 #start-screen h1, #main-screen h1 {
@@ -245,7 +246,7 @@ button:disabled {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 20px 0;
+    margin: auto;
 }
 
 .row {
@@ -258,7 +259,7 @@ button:disabled {
 }
 
 .hex {
-    flex: 0 0 calc((100% - 16 * var(--hex-side-margin)) / 7);
+    flex: 0 0 calc((100% - 4    * var(--hex-side-margin)) / 7);
     aspect-ratio: 1 / 1.155;
     background: var(--primary-color);
     margin: 0 var(--hex-side-margin);
@@ -310,8 +311,10 @@ button:disabled {
 #game-container {
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 100%;
     max-width: 800px;
+    margin: 20px;
 }
 
 #timer-word {
@@ -558,9 +561,9 @@ body {
 
 /* Стили для заголовков */
 h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: #FFC107; /* Желтый цвет для заголовка */
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-weight: 400;
     line-height: 1.2;
 }
