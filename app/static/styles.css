@@ -21,6 +21,7 @@
 }
 /* Global Styles */
 body {
+user-select: none; /* Запрещает выделение текста */
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -103,7 +104,7 @@ input, #current-word {
     width: 100%;
 }
 
-#create-form label {
+#create-form label, #join-form label{
 
     margin: auto;
     padding: auto;

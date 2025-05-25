@@ -65,8 +65,18 @@
             </div>
 
             <div id="join-form" style="display: none;">
-                <input type="text" id="player-name-join" placeholder="Ваше имя" value="Игрок 1">
-                <input type="text" id="game-id" placeholder="Код игры" value="Комната 1">
+                <div class="form-group">
+                    <label for="player-name">Ваше имя</label>
+                    <input type="text" id="player-name-join" placeholder="Ваше имя" value="Игрок 1">
+                </div>
+
+                <div class="form-group">
+<!--                     style="display: none;"-->
+
+                    <label for="player-name">Код игры</label>
+                    <input type="text" id="game-id" placeholder="Код игры" value="Код игры">
+                </div>
+
                 <button onclick="joinGame()">Войти</button>
                 <button onclick="showRoomsForm()">Все комнаты</button>
                 <button onclick="showMainMenu()">Назад</button>

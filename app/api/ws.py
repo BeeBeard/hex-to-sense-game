@@ -34,7 +34,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         await websocket.close()
         return
 
-
     player = next((p for p in game.players if p.player_id == player_id), None)
     if not player:
         logger.error(f"WebSocket error. Игрок {player_id} отсутствует в игре {game_id}")
@@ -61,11 +60,13 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         await game.broadcast(wa_broadcast.model_dump())
 
         while True:
+
             data = await websocket.receive_json()
             action = data.get("action")
             logger.info(f"Received WebSocket action: {action}, from player_id={player_id}, game_id={game_id}")
 
             if action == "start_game":
+
                 received_player_id = data.get("player_id", player_id)
                 logger.info(f"Processing start_game: received_player_id={received_player_id}, websocket_player_id={player_id}")
                 result = game.start_game(received_player_id)
@@ -98,24 +99,44 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 path = data.get("path")
                 result = game.submit_word(player_id, word, path)    # Проверка слова
 
-                game.next_turn()
+                if game.players[game.current_player_index].lives:
 
-                wa_broadcast = WsBroadcast(
-                    type="update",
-                    result=result,
-                    grid=game.grid,
-                    timer=game.timer,
-                    min_players=game.min_players,
-                    max_players=game.max_players,
-                    players=[player.get_data() for player in game.players],
-                    current_player=game.players[game.current_player_index].player_id if game.players else "",
-                    current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
-                    is_started=True,
-                    message=f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
-                )
+                    game.next_turn()
 
-                await game.broadcast(wa_broadcast.model_dump())
+                    wa_broadcast = WsBroadcast(
+                        type="update",
+                        result=result,
+                        grid=game.grid,
+                        timer=game.timer,
+                        min_players=game.min_players,
+                        max_players=game.max_players,
+                        players=[player.get_data() for player in game.players],
+                        current_player=game.players[game.current_player_index].player_id if game.players else "",
+                        current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
+                        is_started=True,
+                        message=f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
+                    )
 
+                    await game.broadcast(wa_broadcast.model_dump())
+
+                else:
+
+                    wa_broadcast = WsBroadcast(
+                        type="update",
+                        game_over=True,
+                        result=result,
+                        grid=game.grid,
+                        timer=game.timer,
+                        min_players=game.min_players,
+                        max_players=game.max_players,
+                        players=[player.get_data() for player in game.players],
+                        current_player=game.players[game.current_player_index].player_id if game.players else "",
+                        current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
+                        is_started=True,
+                        message=f"Конец игры"
+                    )
+
+                    await game.broadcast(wa_broadcast.model_dump())
 
             elif action == "increment_click":
                 row = data.get("row")
@@ -163,30 +184,31 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
 
                     await game.broadcast(wa_broadcast.model_dump())
 
-
     except WebSocketDisconnect:
 
         logger.info(f"WebSocket disconnected: player_id={player_id}, game_id={game_id}")
+
+        creator_out = True if game.creator_id == game.players[game.current_player_index].player_id else False  # Если вышел создатель игры
+        # find_player = game.find_player(player_id)
+
         disconnected_player = game.remove_player(player_id)
 
         if disconnected_player:
 
             message = f"Игрок {disconnected_player.name} покинул игру"
-
             if not game.players:
-
                 message = f"В игре не осталось игроков. Удаляем комнату.\nID игры: {game_id}"
                 logger.info(message)
                 del GM.games[game_id]
                 return
 
             if (
-                game.is_started and
-                game.players and
-                game.current_player_index < len(game.players) and
-                game.players[game.current_player_index].player_id == player_id
+                    (game.is_started and game.players) and
+                    (
+                            (game.current_player_index < len(game.players) and game.players[game.current_player_index].player_id == player_id) or
+                            creator_out
+                    )
             ):
-
 
                 game.next_turn()
 
@@ -222,9 +244,10 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 await game.broadcast(wa_broadcast.model_dump())
 
     except Exception as e:
-        logger.error(f"WebSocket error: game_id={game_id}, player_id={player_id}, error={e} {traceback.format_exc()}")
+        logger.error(f"!! WebSocket error: game_id={game_id}, player_id={player_id}, error={e} {traceback.format_exc()}")
         await websocket.send_json({"type": "error", "message": f"Ошибка сервера: {str(e)}"})
         await websocket.close()
+
 
 if __name__ == "__main__":
     pass

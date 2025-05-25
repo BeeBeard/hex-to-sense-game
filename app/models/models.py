@@ -58,12 +58,10 @@ class SubmitWordResult(BaseModel):
     word: str = ""
     valid: bool = False
     reason: str = ""
-    score: int  = 0
+    score: int = 0
 
 
-
-
-class GameResponce(BaseModel):
+class GameResponse(BaseModel):
     """Ответ на создание игры и взаимодействие с полем"""
 
     message: Optional[str] = ""     # То что увидят игроки
@@ -71,18 +69,16 @@ class GameResponce(BaseModel):
     error: Optional[str] = ""       # То что уйдет в логи
 
 
-
-
 # BROADCAST
 class WsBroadcast(BaseModel):
 
     type: str
     grid: List[List[Union[Hex, None]]] = []
+    game_over: bool = False
     message:Optional[str] = ""
     timer: int = 30
     max_players: int = 4
-    min_players: int  = 1
-
+    min_players: int = 1
     players: List[Union[PlayerModel, None]] = []
     current_player: Optional[str] = ""
     current_player_name: Optional[str] = ""

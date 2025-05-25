@@ -10,7 +10,7 @@ from loguru import logger
 from pyexpat.errors import messages
 
 from app.classes.player import Player
-from app.models.models import Hex, SubmitWordResult, GameResponce
+from app.models.models import Hex, SubmitWordResult, GameResponse
 from app.worker import word_checker
 
 # Простой словарь для проверки слов
@@ -245,7 +245,7 @@ class Game:
         self.lives = lives
         self.players: List[Player] = []
         self.used_words = []  # USED_WORDS = set()
-        self.current_player_index = 0
+        self.current_player_index = 0  # Чей сейчас ход
         self.weights = {
             'Ч': 3, 'Е': 1, 'Л': 2, 'О': 1, 'В': 2, 'К': 2, 'Г': 3, 'Д': 2, 'Р': 2,
             'М': 3, 'Я': 3, 'Н': 2, 'Ь': 3, 'Ж': 3, 'И': 1, 'З': 3, 'А': 1, 'Б': 3,
@@ -503,6 +503,13 @@ class Game:
             f"Failed to add player: game_id={self.game_id}, players_count={len(self.players)}, is_started={self.is_started}")
         return None
 
+    def find_player(self, player_id: str):
+        player = next((p for p in self.players if p.player_id == player_id), None)
+        if player:
+            return player
+
+        return None
+
     def remove_player(self, player_id: str):
 
         player = next((p for p in self.players if p.player_id == player_id), None)
@@ -527,23 +534,23 @@ class Game:
 
             error = f"Не удалось запустить игру. Игрок {player_id} не найден для комнаты {self.room_name}"
             message = f"Игрок {player_id} не найден."
-            return GameResponce(success=False, message=message, error=error)
+            return GameResponse(success=False, message=message, error=error)
 
         if player_id != self.creator_id:
 
             error = f"Не удалось запустить игру. Игрок {player_id} не создатель комнаты {self.room_name}"
             message = f"Только создатель может начать игру."
-            return GameResponce(success=False, message=message, error=error)
+            return GameResponse(success=False, message=message, error=error)
 
 
         if len(self.players) < self.min_players:
             error = f"Не удалось запустить игру. Недостаточно игроков для начала. {self.game_id=} | {self.room_name}"
             message = f"Требуется минимум {self.min_players} игрока."
-            return GameResponce(success=False, message=message, error=error)
+            return GameResponse(success=False, message=message, error=error)
 
         self.is_started = True
         message = f"Игра успешно создана"
-        return GameResponce(success=True, message=message)
+        return GameResponse(success=True, message=message)
 
 
     def is_valid_path(self, path: List[List[int]]):
@@ -564,19 +571,18 @@ class Game:
         if current_player.player_id != player_id:
             error = f"Ход другого игрока.\nТекущий игрок: {current_player.player_id}\nНажавший игрок:{player_id}"
             message = f"Ход другого игрока."
-            return GameResponce(success=False, message=message, error=error)
+            return GameResponse(success=False, message=message, error=error)
 
         if 0 <= row < self.radius and 0 <= col < self.radius and self.grid[row][col] is not None:
             self.grid[row][col].clicks += 1
             # logger.info(f"Click incremented: game_id={self.game_id}, player_id={player_id}, row={row}, col={col}, clicks={self.grid[row][col]['clicks']}")
             message = f"Нажатие засчитано"
-            return GameResponce(success=True, message=message)
+            return GameResponse(success=True, message=message)
 
         # logger.warning(f"Invalid cell: game_id={self.game_id}, row={row}, col={col}")
         error = f"Эту ячейку нельзя использовать.\nКомната: {self.room_name}"
         message = f"Эту ячейку нельзя использовать."
-        return GameResponce(success=False, message=message, error=error)
-
+        return GameResponse(success=False, message=message, error=error)
 
     def submit_word(self, player_id: str, word: str, path: List[List[int]]) -> SubmitWordResult:
 
