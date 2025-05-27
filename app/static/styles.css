@@ -81,16 +81,16 @@ input, #current-word {
 }
 
 /* Screens */
-#start-screen, #game-screen, #main-screen {
+#start-screen, #game-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 86vh;
     width: 90%;
-        margin: auto;
+    margin: auto;
 }
 
-#start-screen h1, #main-screen h1 {
+#start-screen h1 {
     font-size: 30px;
     color: var(--primary-color);
 }
@@ -103,6 +103,7 @@ input, #current-word {
     color: var(--primary-color);
     margin-top: 5px;
     width: 100%;
+    max-height: 10vh;
 }
 
 #create-form label, #join-form label{
@@ -247,6 +248,8 @@ button:disabled {
     justify-content: center;
     align-items: center;
     margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .row {
@@ -314,7 +317,7 @@ button:disabled {
     justify-content: center;
     width: 100%;
     max-width: 800px;
-    margin: 20px;
+    margin: auto;
 }
 
 #timer-word {
