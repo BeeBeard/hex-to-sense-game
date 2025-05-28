@@ -658,6 +658,8 @@ button:active {
     top: 0;
     margin: auto;
     margin-top: 1.5vh;
+    word-break: break-word; /* или break-all */
+    white-space: normal;
 }
 
 

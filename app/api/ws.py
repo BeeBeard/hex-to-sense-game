@@ -186,62 +186,66 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
 
     except WebSocketDisconnect:
 
-        logger.info(f"WebSocket disconnected: player_id={player_id}, game_id={game_id}")
+        try:
+            logger.info(f"WebSocket disconnected: player_id={player_id}, game_id={game_id}")
 
-        creator_out = True if game.creator_id == game.players[game.current_player_index].player_id else False  # Если вышел создатель игры
-        # find_player = game.find_player(player_id)
+            creator_out = True if game.creator_id == game.players[game.current_player_index].player_id else False  # Если вышел создатель игры
+            # find_player = game.find_player(player_id)
 
-        disconnected_player = game.remove_player(player_id)
+            disconnected_player = game.remove_player(player_id)
 
-        if disconnected_player:
+            if disconnected_player:
 
-            message = f"Игрок {disconnected_player.name} покинул игру"
-            if not game.players:
-                message = f"В игре не осталось игроков. Удаляем комнату.\nID игры: {game_id}"
-                logger.info(message)
-                del GM.games[game_id]
-                return
+                message = f"Игрок {disconnected_player.name} покинул игру"
+                if not game.players:
+                    message = f"В игре не осталось игроков. Удаляем комнату.\nID игры: {game_id}"
+                    logger.info(message)
+                    del GM.games[game_id]
+                    return
 
-            if (
-                    (game.is_started and game.players) and
-                    (
-                            (game.current_player_index < len(game.players) and game.players[game.current_player_index].player_id == player_id) or
-                            creator_out
+                if (
+                        (game.is_started and game.players) and
+                        (
+                                (game.current_player_index < len(game.players) and game.players[game.current_player_index].player_id == player_id) or
+                                creator_out
+                        )
+                ):
+
+                    game.next_turn()
+
+                    wa_broadcast = WsBroadcast(
+                        type="update",
+                        grid=game.grid,
+                        timer=game.timer,
+                        min_players=game.min_players,
+                        max_players=game.max_players,
+                        players=[player.get_data() for player in game.players],
+                        current_player=game.players[game.current_player_index].player_id if game.players else "",
+                        current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
+                        is_started=True,
+                        message=f"{message}. Ход игрока {game.players[game.current_player_index].name}" if game.players else message
                     )
-            ):
 
-                game.next_turn()
+                    await game.broadcast(wa_broadcast.model_dump())
 
-                wa_broadcast = WsBroadcast(
-                    type="update",
-                    grid=game.grid,
-                    timer=game.timer,
-                    min_players=game.min_players,
-                    max_players=game.max_players,
-                    players=[player.get_data() for player in game.players],
-                    current_player=game.players[game.current_player_index].player_id if game.players else "",
-                    current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
-                    is_started=True,
-                    message=f"{message}. Ход игрока {game.players[game.current_player_index].name}" if game.players else message
-                )
+                else:
+                    wa_broadcast = WsInfoBroadcast(
+                        type="info",
+                        message=message,
+                        players=[player.get_data() for player in game.players],
+                    )
+                    await game.broadcast(wa_broadcast.model_dump())
 
-                await game.broadcast(wa_broadcast.model_dump())
+                if len(game.players) == 1 and game.is_started:
+                    wa_broadcast = WsInfoBroadcast(
+                        type="info",
+                        message=f"Вы остались один. Продолжить игру?",
+                        players=[player.get_data() for player in game.players],
+                    )
+                    await game.broadcast(wa_broadcast.model_dump())
 
-            else:
-                wa_broadcast = WsInfoBroadcast(
-                    type="info",
-                    message=message,
-                    players=[player.get_data() for player in game.players],
-                )
-                await game.broadcast(wa_broadcast.model_dump())
-
-            if len(game.players) == 1 and game.is_started:
-                wa_broadcast = WsInfoBroadcast(
-                    type="info",
-                    message=f"Вы остались один. Продолжить игру?",
-                    players=[player.get_data() for player in game.players],
-                )
-                await game.broadcast(wa_broadcast.model_dump())
+        except Exception as e:
+            logger.error(f"Ошибка! Конец игры! {e} {traceback.format_exc()}")
 
     except Exception as e:
         logger.error(f"!! WebSocket error: game_id={game_id}, player_id={player_id}, error={e} {traceback.format_exc()}")
