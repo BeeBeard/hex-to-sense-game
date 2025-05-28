@@ -315,6 +315,8 @@ function startWebSocket() {
     console.log("Starting WebSocket for game:", gameId, "player:", myPlayerId);
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "flex";
+    document.getElementById("app-title").style.display = "none";
+    document.getElementById("message").style.display =  "flex";
 
     const wsUrl = `wss://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
     console.log("WebSocket URL:", wsUrl);
@@ -412,6 +414,7 @@ function handleMessage(event) {
 
         document.getElementById("timer-word").style.display = isGameStarted ? "flex" : "none";
 
+
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
         document.getElementById("toggle-buttons").style.display = isGameStarted ? "flex" : "none";
         updateStartButton(data.players.length, data.min_players);
@@ -430,7 +433,7 @@ function handleMessage(event) {
                     `Слово "${data.result.word}" неверно: ${data.result.reason}`;
 
                 // Обнуляем таймер при смене хода
-                const timerDiv = document.getElementById("timer").textContent = 0;
+//                const timerDiv = document.getElementById("timer").textContent = 0;
 
                 showNotification(message);
             }
@@ -681,21 +684,61 @@ function clearWord() {
     console.log("Word and selection cleared");
 }
 
+//function startTimer(_time) {
+//    console.log("Starting timer");
+//
+//
+//    const timerDiv = document.getElementById("timer");
+////    timerDiv.style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
+//    timerDiv.style.display = isGameStarted ? "block" : "none";
+//    clearInterval(timerInterval);
+//    if (currentPlayerId === myPlayerId && isGameStarted) {
+//        timerDiv.textContent = _time;
+//        document.getElementById("message").textContent = "Ваш ход!";
+//        timerInterval = setInterval(() => {
+//            _time--;
+//            timerDiv.textContent = _time;
+//            if (_time <= 0) {
+//                clearInterval(timerInterval);
+//                timerDiv.style.display = "none";
+//                if (ws && ws.readyState === WebSocket.OPEN) {
+//                    ws.send(JSON.stringify({ action: "timeout" }));
+//                }
+//            }
+//        }, 1000);
+//    }
+//}
+
+
 function startTimer(_time) {
-    console.log("Starting timer");
+
+
     const timerDiv = document.getElementById("timer");
-//    timerDiv.style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
-    timerDiv.style.display = isGameStarted ? "block" : "none";
+    timerDiv.style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
+    let width = 100; // Начальная ширина (в %)
+    let tyt = 100 / _time;
+    const progressBar = document.getElementById('progressBar');
+    progressBar.style.width = width + '%';
+    console.log("Starting timer");
+
+
+
     clearInterval(timerInterval);
     if (currentPlayerId === myPlayerId && isGameStarted) {
-        timerDiv.textContent = _time;
+
         document.getElementById("message").textContent = "Ваш ход!";
         timerInterval = setInterval(() => {
             _time--;
-            timerDiv.textContent = _time;
+            width = width - tyt;
+            if (width <= 0) {
+                width = 0;
+                clearInterval(interval);
+            }
+
+            progressBar.style.width = width + '%';
             if (_time <= 0) {
                 clearInterval(timerInterval);
-                timerDiv.style.display = "none";
+
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({ action: "timeout" }));
                 }

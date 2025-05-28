@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
 
-
-
 <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com/">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
     <link href="./Hex to Sense_files/css2" rel="stylesheet">
@@ -17,59 +16,68 @@
 
 <body>
 
-    <div  class="container">
+    <div class="container">
 
         <div id="players-panel">
             <div id="players-info"></div>
             <button id="close-players" onclick="togglePlayersInfo()">Закрыть</button>
         </div>
 
-        <div id="app-name">
-            <h1>Hex To Sense</h1>
-            <div id="message"></div>
+            <div class="app-name m-top test">
+                <h1 id="app-title" style="display: block">Hex To Sense</h1>
+                <div id="message" style="display: none"></div>
+                <div id="timer" style="display: none;" class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
         </div>
 
 
 
-        <div id="start-screen">
+        <div id="start-screen"  class="test">
 
-            <div id="main-form" style="display: flex;">
+            <div id="main-form" class="test m-bot" style="display: flex;">
+                <div class="test m-center"></div>
                 <button onclick="showCreateForm()">Новая игра</button>
                 <button onclick="showJoinForm()">Присоединиться</button>
             </div>
 
 
             <div id="create-form" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="min-player-count">min. игроков</label>
-                        <input type="text" id="min-player-count" placeholder="Минимум игроков" value="1">
+                <div class="test m-center">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="min-player-count">min. игроков</label>
+                            <input type="text" id="min-player-count" placeholder="Минимум игроков" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="max-player-count">max. игроков</label>
+                            <input type="text" id="max-player-count" placeholder="Максимум игроков" value="10">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lives-count">Жизни</label>
+                            <input type="text" id="lives-count" placeholder="Жизни" value="3">
+                        </div>
+                        <div class="form-group">
+                            <label for="timer-count">Время на ход</label>
+                            <input type="text" id="timer-count" placeholder="Время на ход" value="30">
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="max-player-count">max. игроков</label>
-                        <input type="text" id="max-player-count" placeholder="Максимум игроков" value="10">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="lives-count">Жизни</label>
-                        <input type="text" id="lives-count" placeholder="Жизни" value="3">
+                        <label for="player-name">Ваше имя</label>
+                        <input type="text" id="player-name" placeholder="Ваше имя" value="Игрок 1">
                     </div>
                     <div class="form-group">
-                        <label for="timer-count">Время на ход</label>
-                        <input type="text" id="timer-count" placeholder="Время на ход" value="30">
+                        <label for="room-name">Название комнаты</label>
+                        <input type="text" id="room-name" placeholder="Название комнаты" value="Комната 1">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="player-name">Ваше имя</label>
-                    <input type="text" id="player-name" placeholder="Ваше имя" value="Игрок 1">
+
+                <div class="test m-bot">
+                    <button onclick="createGame()">Создать игру</button>
+                    <button onclick="showMainMenu()">Назад</button>
                 </div>
-                <div class="form-group">
-                    <label for="room-name">Название комнаты</label>
-                    <input type="text" id="room-name" placeholder="Название комнаты" value="Комната 1">
-                </div>
-                <button onclick="createGame()">Создать игру</button>
-                <button onclick="showMainMenu()">Назад</button>
             </div>
 
             <div id="join-form" style="display: none;">
@@ -97,16 +105,18 @@
 
         </div>
 
-        <div id="game-screen" style="display: none;">
-
-            <div id="game-container">
-
-
-                <div id="timer" style="display: none;">0</div>
+        <div id="game-screen"  style="display: none;">
 
 
 
-                <div id="grid"></div>
+            <div id="grid" class="m-center"></div>
+
+            <div id="game-buttons" class="test m-menu">
+
+
+
+
+
 
                 <div id="timer-word" style="display: none;">
                     <input type="text" id="current-word" readonly>

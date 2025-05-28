@@ -1,5 +1,5 @@
 :root {
-    --general-max-width: 460px;
+    --general-max-width: 480px;
     --hex-width: 50px;
     --hex-height: 57.74px;
     --hex-width2: 42px;
@@ -18,13 +18,14 @@
     --text-color: #f5f5f5;
     --text-dark: #2d2d2d;
     --shadow-color: rgba(0, 0, 0, 0.3);
+    
+    --max-border-radius: 8px;
+    --min-border-radius: 8px;
 }
 /* Global Styles */
 body {
     user-select: none; /* Запрещает выделение текста */
-    margin: 10px    ;
-    padding: 0;
-
+    margin: auto;
     /*font-family: 'Roboto', sans-serif;*/
     font-family: 'Lato', sans-serif;
     background-color: var(--background-dark);
@@ -35,6 +36,8 @@ body {
 
 
 }
+
+
 
 
 /* Animations */
@@ -54,7 +57,7 @@ input, #current-word {
     padding: 10px;
     font-size: 16px;
     border: 1px solid var(--primary-color);
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     box-sizing: border-box;
     background-color: var(--background-dark);
     color: var(--text-color);
@@ -66,13 +69,13 @@ input, #current-word {
 
 /* Container */
 .container {
-    height: calc(100vh - 20px);
+    height: 100vh;
     width: 90vw;
+    text-align: center;
     max-width: var(--general-max-width);
-    margin: auto    ;
-    padding: auto;
+    margin: auto;
     border: 1px solid var(--primary-color);
-    border-radius: 8px;
+    border-radius: var(--max-border-radius);
     background-color: var(--background-light);
     padding-bottom: env(safe-area-inset-bottom); /* Отступ для шторки */
     box-sizing: border-box;
@@ -80,14 +83,16 @@ input, #current-word {
 
 }
 
+
+
+
+
 /* Screens */
 #start-screen, #game-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 86vh;
-    width: 90%;
-    margin: auto;
+
 }
 
 #start-screen h1 {
@@ -95,15 +100,15 @@ input, #current-word {
     color: var(--primary-color);
 }
 
-#app-name {
+.app-name {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: var(--primary-color);
-    margin-top: 5px;
-    width: 100%;
-    max-height: 10vh;
+    width: 80%;
+    margin: auto;
+    height: 100%;
 }
 
 #create-form label, #join-form label{
@@ -126,12 +131,13 @@ input, #current-word {
 /* Forms */
 #create-form, #join-form, #rooms-form, #main-form {
 
-    justify-content: center;
+    /*justify-content: center;*/
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 300px;
+    max-width: 280px; /* Половина от 280px с учетом gap для парного расположения */
+    margin: 0px;
 
 }
 
@@ -162,7 +168,6 @@ input, #current-word {
 }
 
 
-
 .form-group {
     display: flex;
     flex-direction: column;
@@ -178,9 +183,6 @@ input, #current-word {
 
 
 
-
-
-
 #rooms-list {
     display: flex;
     flex-direction: column;
@@ -193,14 +195,14 @@ input, #current-word {
 }
 
 /* Buttons */
-button, #rooms-list button {
+button, #rooms-list button, .m-bot button{
     padding: 10px;
     font-size: 16px;
     font-weight: 400;
     background-color: var(--primary-color);
     color: var(--text-dark);
     border: none;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     cursor: pointer;
     width: 100%;
     max-width: 280px;
@@ -248,8 +250,7 @@ button:disabled {
     justify-content: center;
     align-items: center;
     margin: auto;
-    margin-top: 10px;
-    margin-bottom: 10px;
+
 }
 
 .row {
@@ -262,7 +263,7 @@ button:disabled {
 }
 
 .hex {
-    flex: 0 0 calc((100% - 4    * var(--hex-side-margin)) / 7);
+    flex: 0 0 calc((100% - 16    * var(--hex-side-margin)) / 7);
     aspect-ratio: 1 / 1.155;
     background: var(--primary-color);
     margin: 0 var(--hex-side-margin);
@@ -311,10 +312,11 @@ button:disabled {
 }
 
 /* Game Container */
-#game-container {
+#game-buttons {
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /*justify-content: center;
+    justify-content: flex-start;*/
     width: 100%;
     max-width: 800px;
     margin: auto;
@@ -357,7 +359,7 @@ button:disabled {
     min-width: 100px;
     padding: 10px;
     margin: 10px;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     box-shadow: 0 2px 4px var(--shadow-color);
     font-size: 14px;
     color: var(--text-color);
@@ -397,7 +399,7 @@ button:disabled {
     padding: 10px;
     font-size: 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     cursor: pointer;
     flex: 1; /* Кнопки делят пространство поровну */
     max-width: 135px; /* Половина от 280px с учетом gap */
@@ -432,7 +434,7 @@ button:disabled {
     width: 100%;
     max-width: 480px; /* Соответствует ширине #app-name (с учетом border в контейнере) */
     border: 1px solid var(--primary-color);
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     top: 0px;
     background-color: var(--background-light);
     box-shadow: -2px 0 5px var(--shadow-color);
@@ -452,7 +454,7 @@ button:disabled {
     padding: 10px;
     font-size: 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     cursor: pointer;
     width: 100%;
     max-width: 280px;
@@ -476,7 +478,7 @@ button:disabled {
 
 #players-info div {
     border: 1px solid var(--primary-color);
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     padding: 5px 10px;
     margin: 5px;
     color: var(--text-color);
@@ -492,7 +494,7 @@ button:disabled {
     background-color: var(--background-light);
     color: var(--text-color);
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     opacity: 0;
     transition: opacity 0.3s;
     z-index: 10000;
@@ -506,7 +508,7 @@ button:disabled {
 .stats {
     background-color: var(--background-light);
     padding: 15px;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     margin: 20px 0;
     box-shadow: 0 4px 6px var(--shadow-color);
 }
@@ -532,7 +534,7 @@ button:disabled {
 .word {
     background-color: var(--background-light);
     padding: 10px;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     color: var(--text-color);
     font-weight: bold;
 }
@@ -556,17 +558,12 @@ body {
 }
 
 /* Контейнер для контента */
-.container {
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-}
 
 /* Стили для заголовков */
 h1 {
     font-size: 2rem;
     color: #FFC107; /* Желтый цвет для заголовка */
-    margin-bottom: 10px;
+    margin-bottom: auto;
     font-weight: 400;
     line-height: 1.2;
 }
@@ -579,7 +576,7 @@ button {
     font-size: 1.1rem;
     font-weight: 400;
     border: none;
-    border-radius: 4px; /* Закругленные углы */
+    border-radius: var(--min-border-radius); /* Закругленные углы */
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -606,7 +603,7 @@ button:active {
 .info-section div {
     background-color: #2A2A2A; /* Темный фон для блоков */
     padding: 15px;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     color: #FFFFFF;
     font-size: 1rem;
 }
@@ -615,7 +612,7 @@ button:active {
 .chat-container {
     background-color: #2A2A2A;
     padding: 20px;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     margin-top: 20px;
 }
 
@@ -628,7 +625,61 @@ button:active {
     margin-top: 20px;
     padding: 15px;
     background-color: #2A2A2A;
-    border-radius: 4px;
+    border-radius: var(--min-border-radius);
     color: #FFFFFF;
 }
 
+
+.progress-container {
+    width: 300px;
+    height: 20px;
+    /*background-color: #ddd;*/
+    position: relative;
+    overflow: hidden;
+
+}
+
+.progress-bar {
+    height: 2vh;
+    background-color: #e60000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    margin-bottom: 1.5vh;
+    border-radius: 4px;
+}
+
+#message {
+    height: 2vh;
+    position: absolute;
+    top: 0;
+    margin: auto;
+    margin-top: 1.5vh;
+}
+
+
+
+
+.test {
+    border:1px solid red;
+}
+
+.m-top {height: 10vh;}
+
+.m-center {
+    height: 60vh;
+    width: 100%;
+    border:1px solid blue;
+    align-items: center;
+}
+
+.m-menu {width: 100%;}
+
+
+#create-form .m-bot {
+    width: 100%;
+    max-width: 280px; /* Половина от 280px с учетом gap для парного расположения */
+    margin: 0px;
+}
