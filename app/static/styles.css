@@ -674,6 +674,7 @@ button:active {
     width: 100%;
    /* border:1px solid blue;*/
     align-items: center;
+    margin: auto;
 }
 
 .m-menu {width: 100%;}
