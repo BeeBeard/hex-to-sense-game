@@ -51,7 +51,7 @@ function showNotification(message) {
     notification.classList.add("show");
     setTimeout(() => {
         notification.classList.remove("show");
-        notification.textContent = "";
+//        notification.textContent = "";
     }, 3000);
 }
 
@@ -413,6 +413,7 @@ function handleMessage(event) {
 //        showNotification(data.current_player_name)
 
         document.getElementById("timer-word").style.display = isGameStarted ? "flex" : "none";
+        document.getElementById("notification").style.display = isGameStarted ? "flex" : "none";
 
 
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";

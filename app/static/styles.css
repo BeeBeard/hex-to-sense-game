@@ -487,21 +487,22 @@ button:disabled {
 /* Notification */
 #notification {
     position: fixed;
-    bottom: 50%;
+    top: 5vh;
     left: 50%;
-    max-width: 470px;
+    max-width: 200px;
     transform: translateX(-50%);
     background-color: var(--background-light);
-    color: var(--text-color);
+    color: #e60000;
     padding: 10px 20px;
     border-radius: var(--min-border-radius);
+    border: 1px solid var(--primary-color);
     opacity: 0;
     transition: opacity 0.3s;
     z-index: 10000;
 }
 
 #notification.show {
-    opacity: 1;
+    opacity: 0.8;
 }
 
 /* Stats and Words */
@@ -663,7 +664,7 @@ button:active {
 
 
 .test {
-    border:1px solid red;
+    /*border:1px solid red;*/
 }
 
 .m-top {height: 10vh;}
@@ -671,7 +672,7 @@ button:active {
 .m-center {
     height: 60vh;
     width: 100%;
-    border:1px solid blue;
+   /* border:1px solid blue;*/
     align-items: center;
 }
 
