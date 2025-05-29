@@ -686,8 +686,9 @@ button:active {
 
 
 #create-form .m-bot {
+position:absolute;
     width: 100%;
     max-width: 280px; /* Половина от 280px с учетом gap для парного расположения */
     margin: auto;
-
+    bottom: 0px;
 }
