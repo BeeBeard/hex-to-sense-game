@@ -674,7 +674,7 @@ button:active {
 .m-center {
     height: 60vh;
     width: 100%;
-   /* border:1px solid blue;*/
+    /*border:1px solid blue;*/
     align-items: center;
     margin: auto;
 }
@@ -685,5 +685,5 @@ button:active {
 #create-form .m-bot {
     width: 100%;
     max-width: 280px; /* Половина от 280px с учетом gap для парного расположения */
-    margin: 0px;
+    margin: auto;
 }
