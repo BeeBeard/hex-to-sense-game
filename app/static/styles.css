@@ -683,8 +683,8 @@ button:active {
     /*border:1px solid blue;*/
     align-items: center;
     margin: auto;
-    padding-top: 3vh;
-    padding-bottom: 3vh;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 .m-menu {width: 100%;}
