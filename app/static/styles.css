@@ -123,6 +123,10 @@ input, #current-word {
     height: 100%;
 }
 
+.game-head h1 {
+    color: var(--accent-color);
+}
+
 #create-form label, #join-form label{
 
     margin: auto;
@@ -158,12 +162,13 @@ input, #current-word {
     width: 100%;
     justify-content: center;
     margin: auto;
+    gap: 10px;
 
 }
 
 .form-row input {
-    max-width: 135px; /* Половина от 280px с учетом gap для парного расположения */
-    margin: 0px;
+    max-width: 85px; /* Половина от 280px с учетом gap для парного расположения */
+    margin:auto;
 }
 
 
@@ -174,8 +179,8 @@ input, #current-word {
 }
 
 .form-row .form-group label {
-    max-width: 135px; /* Половина от 280px с учетом gap для парного расположения */
-
+    max-width: 85px; /* Половина от 280px с учетом gap для парного расположения */
+    margin:auto;
 
 }
 
@@ -463,7 +468,7 @@ button:disabled {
 #players-info {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 300px; /* Чуть меньше, чтобы учесть padding и border */
     max-width: 450px; /* Чуть меньше, чтобы учесть padding и border */
     flex-grow: 1;
 }
@@ -471,10 +476,16 @@ button:disabled {
 #players-info div {
     border: 1px solid var(--primary-color);
     border-radius: var(--min-border-radius);
+    background-color: var(--background-dark);
     padding: 5px 10px;
     margin: 5px;
     color: var(--text-color);
 }
+
+#players-info div div{
+    background-color: var(--background-light);
+}
+
 
 /* game-notification */
 #game-notification {
@@ -661,7 +672,7 @@ button:active {
 
 
 .test {
-    border:1px solid red;
+    /*border:1px solid red;*/
 }
 
 .m-top {height: 10vh;}

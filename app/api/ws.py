@@ -245,6 +245,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     await game.broadcast(wa_broadcast.model_dump())
 
         except Exception as e:
+            del GM.games[game_id]
             logger.error(f"Ошибка! Конец игры! {e} {traceback.format_exc()}")
 
     except Exception as e:
