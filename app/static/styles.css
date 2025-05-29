@@ -45,8 +45,6 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-
-
 }
 
 
@@ -81,22 +79,19 @@ input, #current-word {
 
 /* Container */
 .container {
-    height: 100vh;
+    height: calc(100vh - 20px);
     width: 90vw;
-    text-align: center;
     max-width: var(--general-max-width);
+    text-align: center;
     margin: auto;
     border: 1px solid var(--primary-color);
     border-radius: var(--max-border-radius);
     background-color: var(--background-light);
-    padding-bottom: env(safe-area-inset-bottom); /* Отступ для шторки */
+    padding-bottom: env(safe-area-inset-bottom); /* Отступ для шторки */*/
     box-sizing: border-box;
     padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 
 }
-
-
-
 
 
 /* Screens */
@@ -106,6 +101,32 @@ input, #current-word {
     align-items: center;
 
 }
+
+#game-statistic {
+    display: none;
+    height: calc(100vh - 6px);
+    width: 90vw;
+    width: 99%;
+    max-width: var(--general-max-width);
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--primary-color);
+    border-radius: var(--min-border-radius);
+    top: 0px;
+    background-color: var(--background-light);
+    box-shadow: -2px 0 5px var(--shadow-color);
+    z-index: 1000;
+
+}
+
+#game-statistic.show {
+    display: flex;
+}
+
+
 
 #start-screen h1 {
     font-size: 30px;
@@ -439,30 +460,6 @@ button:disabled {
     width: 100%;
 }
 
-#game-statistic {
-    display: none;
-    height: 100%;
-    width: 90%;
-    max-width: var(--general-max-width);
-    position: absolute;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 480px; /* Соответствует ширине #game-head (с учетом border в контейнере) */
-    border: 1px solid var(--primary-color);
-    border-radius: var(--min-border-radius);
-    top: 0px;
-    background-color: var(--background-light);
-    box-shadow: -2px 0 5px var(--shadow-color);
-    z-index: 1000;
-
-
-}
-
-#game-statistic.show {
-    display: flex;
-}
 
 
 #players-info {
@@ -675,7 +672,10 @@ button:active {
     /*border:1px solid red;*/
 }
 
-.m-top {height: 10vh;}
+.m-top {
+    height: 10vh;
+    top: 0px;
+}
 
 .m-center {
     height: 60vh;
@@ -694,4 +694,5 @@ button:active {
     width: 100%;
     max-width: 280px; /* Половина от 280px с учетом gap для парного расположения */
     margin: auto;
+    bottom: 0px;
 }
