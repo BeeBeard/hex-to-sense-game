@@ -37,7 +37,7 @@ window.onload = () => {
             });
         } else {
             console.error("player-name-join input not found");
-            document.getElementById("message").textContent = "Ошибка: поле имени не найдено";
+            document.getElementById("game-message").textContent = "Ошибка: поле имени не найдено";
         }
     }
 };
@@ -46,7 +46,7 @@ window.onload = () => {
 function showNotification(message) {
     // Модалка для оповещений
     console.log("Показать уведомление:", message);
-    const notification = document.getElementById("notification");
+    const notification = document.getElementById("game-notification");
     notification.textContent = message;
     notification.classList.add("show");
     setTimeout(() => {
@@ -75,7 +75,7 @@ async function createGame() {
         showNotification("'Имя' должно быть более 2х символов", true);
         playerNameElem.classList.add("shake");
         playerNameElem.focus();
-        document.getElementById("message").textContent = "'Имя' должно быть более 2х символов";
+        document.getElementById("game-message").textContent = "'Имя' должно быть более 2х символов";
         setTimeout(() => playerNameElem.classList.remove("shake"), 300);
         return;
     }
@@ -84,7 +84,7 @@ async function createGame() {
         showNotification("'Название комнаты' должно быть более 2х символов", true);
         roomNameElem.classList.add("shake");
         roomNameElem.focus();
-        document.getElementById("message").textContent = "'Название комнаты' должно быть более 2х символов";
+        document.getElementById("game-message").textContent = "'Название комнаты' должно быть более 2х символов";
         setTimeout(() => roomNameElem.classList.remove("shake"), 300);
         return;
     }
@@ -93,7 +93,7 @@ async function createGame() {
         showNotification("Время на принятие решения должно быть от 10 до 300 секунд", true);
         timerCountElem.classList.add("shake");
         timerCountElem.focus();
-        document.getElementById("message").textContent = "Время на принятие решения должно быть от 10 до 300 секунд";
+        document.getElementById("game-message").textContent = "Время на принятие решения должно быть от 10 до 300 секунд";
         setTimeout(() => timerCountElem.classList.remove("shake"), 300);
         return;
     }
@@ -121,7 +121,7 @@ async function createGame() {
         const data = await response.json();
 
         if (data.error) {
-            document.getElementById("message").textContent = "Такое название комнаты уже существует";
+            document.getElementById("game-message").textContent = "Такое название комнаты уже существует";
             return
         }
         console.log("Create game response:", data);
@@ -133,7 +133,7 @@ async function createGame() {
 
     } catch (error) {
         console.error("Ошибка при создании игры:", error.message);
-        document.getElementById("message").textContent = `Ошибка при создании игры: ${error.message}`;
+        document.getElementById("game-message").textContent = `Ошибка при создании игры: ${error.message}`;
     }
 }
 
@@ -145,7 +145,7 @@ async function joinGame() {
 
     if (!playerNameInput || !gameIdInput) {
         console.error("Input elements not found", { playerNameInput, gameIdInput });
-        document.getElementById("message").textContent = "Ошибка: элементы формы не найдены";
+        document.getElementById("game-message").textContent = "Ошибка: элементы формы не найдены";
         return;
     }
 
@@ -155,20 +155,20 @@ async function joinGame() {
 
     if (!inputGameId) {
         console.error("No game ID provided");
-        document.getElementById("message").textContent = "Ошибка: введите код игры";
+        document.getElementById("game-message").textContent = "Ошибка: введите код игры";
         gameIdInput.focus();
         return;
     }
 
     if (!playerName || playerName.length < 2) {
         console.error("No valid player name provided", { playerName, length: playerName.length });
-        document.getElementById("message").textContent = "Ошибка: введите имя (минимум 2 символа)";
+        document.getElementById("game-message").textContent = "Ошибка: введите имя (минимум 2 символа)";
         playerNameInput.focus();
         return;
     }
 
     console.log("Attempting to join game:", inputGameId, "as", playerName);
-    document.getElementById("message").textContent = "Присоединение к игре...";
+    document.getElementById("game-message").textContent = "Присоединение к игре...";
 
     try {
         const response = await fetch(rootPath + "/join", {
@@ -198,7 +198,7 @@ async function joinGame() {
 
     } catch (error) {
         console.error("Error joining game:", error);
-        document.getElementById("message").textContent = `Ошибка: ${error.message}`;
+        document.getElementById("game-message").textContent = `Ошибка: ${error.message}`;
     }
 }
 
@@ -208,7 +208,7 @@ function showJoinForm() {
     const createForm = document.getElementById("create-form");
     const joinForm = document.getElementById("join-form");
     const roomsForm = document.getElementById("rooms-form");
-    const message = document.getElementById("message");
+    const message = document.getElementById("game-message");
     if (!joinForm) {
         console.error("join-form not found");
         message.textContent = "Ошибка: форма присоединения не найдена";
@@ -228,7 +228,7 @@ function showCreateForm() {
     const createForm = document.getElementById("create-form");
     const joinForm = document.getElementById("join-form");
     const roomsForm = document.getElementById("rooms-form");
-    const message = document.getElementById("message");
+    const message = document.getElementById("game-message");
 
     if (!joinForm) {
         console.error("join-form not found");
@@ -249,7 +249,7 @@ function showMainMenu() {
     document.getElementById("create-form").style.display = "none";
     document.getElementById("join-form").style.display = "none";
     document.getElementById("rooms-form").style.display = "none";
-    document.getElementById("message").textContent = "";
+    document.getElementById("game-message").textContent = "";
 }
 
 async function showRoomsForm() {
@@ -257,7 +257,7 @@ async function showRoomsForm() {
     document.getElementById("create-form").style.display = "none";
     document.getElementById("join-form").style.display = "none";
     document.getElementById("rooms-form").style.display = "flex";
-    document.getElementById("message").textContent = "";
+    document.getElementById("game-message").textContent = "";
 
     try {
         const response = await fetch(rootPath + "/api/rooms");
@@ -285,7 +285,7 @@ async function showRoomsForm() {
         }
     } catch (error) {
         console.error("Error fetching rooms:", error);
-        document.getElementById("message").textContent = `Ошибка при загрузке комнат: ${error.message}`;
+        document.getElementById("game-message").textContent = `Ошибка при загрузке комнат: ${error.message}`;
     }
 }
 
@@ -303,10 +303,10 @@ async function startGame() {
     console.log("Start Game button clicked, WebSocket state:", ws?.readyState, "myPlayerId:", myPlayerId, "creatorId:", creatorId);
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ action: "start_game", player_id: myPlayerId }));
-        document.getElementById("message").textContent = "Запуск игры...";
+        document.getElementById("game-message").textContent = "Запуск игры...";
     } else {
         console.error("WebSocket is not open");
-        document.getElementById("message").textContent = "Ошибка: соединение с сервером не установлено";
+        document.getElementById("game-message").textContent = "Ошибка: соединение с сервером не установлено";
         reconnectWebSocket();
     }
 }
@@ -315,8 +315,8 @@ function startWebSocket() {
     console.log("Starting WebSocket for game:", gameId, "player:", myPlayerId);
     document.getElementById("start-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "flex";
-    document.getElementById("app-title").style.display = "none";
-    document.getElementById("message").style.display =  "flex";
+    document.getElementById("game-title").style.display = "none";
+    document.getElementById("game-message").style.display =  "flex";
 
     const wsUrl = `wss://${location.host}${rootPath}/ws/${gameId}/${myPlayerId}`;
     console.log("WebSocket URL:", wsUrl);
@@ -327,11 +327,11 @@ function startWebSocket() {
     };
     ws.onerror = (error) => {
         console.error("Ошибка соединения с сервером:", error);
-        document.getElementById("message").textContent = "Ошибка соединения с сервером";
+        document.getElementById("game-message").textContent = "Ошибка соединения с сервером";
     };
     ws.onclose = () => {
         console.log("Соединение с сервером потеряно, пытаемся переподключиться...");
-        document.getElementById("message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
+        document.getElementById("game-message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
         reconnectWebSocket();
     };
 //    const shareButtonDiv = document.getElementById("share-button");
@@ -345,7 +345,7 @@ function reconnectWebSocket() {
     setTimeout(() => {
         if (!gameId || !myPlayerId) {
             console.error("Cannot reconnect: gameId or myPlayerId missing");
-            document.getElementById("message").textContent = "Ошибка: невозможно переподключиться";
+            document.getElementById("game-message").textContent = "Ошибка: невозможно переподключиться";
             return;
         }
         console.log("Reconnecting WebSocket for game:", gameId, "player:", myPlayerId);
@@ -358,11 +358,11 @@ function reconnectWebSocket() {
 //    const shareUrl = `${window.location.origin}${rootPath}/join/${gameId}`;
 //    console.log("Share URL:", shareUrl);
 //    navigator.clipboard.writeText(shareUrl).then(() => {
-//        document.getElementById("message").textContent = "Ссылка скопирована!";
-//        setTimeout(() => document.getElementById("message").textContent = "", 2000);
+//        document.getElementById("game-message").textContent = "Ссылка скопирована!";
+//        setTimeout(() => document.getElementById("game-message").textContent = "", 2000);
 //    }).catch(err => {
 //        console.error("Error copying link:", err);
-//        document.getElementById("message").textContent = "Ошибка при копировании ссылки";
+//        document.getElementById("game-message").textContent = "Ошибка при копировании ссылки";
 //    });
 //}
 
@@ -385,14 +385,14 @@ function updateStartButton(playersCount, min_players) {
             let reason = "";
             if (isGameStarted) reason = "Игра уже началась";
             else if (playersCount < min_players) reason = "Ожидаем игроков";
-            document.getElementById("message").textContent = reason ? `${reason}` : "";
+            document.getElementById("game-message").textContent = reason ? `${reason}` : "";
         } else {
-            document.getElementById("message").textContent = "Готово к началу игры";
+            document.getElementById("game-message").textContent = "Готово к началу игры";
         }
     } else {
-        document.getElementById("message").textContent = isGameStarted ? "" : "Ожидание начала игры";
+        document.getElementById("game-message").textContent = isGameStarted ? "" : "Ожидание начала игры";
     }
-    document.getElementById("start-game-button").style.display = showStartButton ? "block" : "none";
+    document.getElementById("info-panel").style.display = showStartButton ? "block" : "none";
 }
 
 
@@ -413,7 +413,7 @@ function handleMessage(event) {
 //        showNotification(data.current_player_name)
 
         document.getElementById("timer-word").style.display = isGameStarted ? "flex" : "none";
-        document.getElementById("notification").style.display = isGameStarted ? "flex" : "none";
+        document.getElementById("game-notification").style.display = isGameStarted ? "flex" : "none";
 
 
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
@@ -421,12 +421,12 @@ function handleMessage(event) {
         updateStartButton(data.players.length, data.min_players);
 
         if (data.type === "start") {
-            document.getElementById("message").textContent = data.message || "Игра началась!";
+            document.getElementById("game-message").textContent = data.message || "Игра началась!";
 
         } else if (data.type === "update") {
             selectedCells = [];
             document.getElementById("current-word").value = "";
-            document.getElementById("message").textContent = data.message || data.result?.reason || "";
+            document.getElementById("game-message").textContent = data.message || data.result?.reason || "";
             if (data.result && data.result.word) {
                 console.log("Backend response:", JSON.stringify(data.result));
                 const message = data.result.valid ?
@@ -444,7 +444,7 @@ function handleMessage(event) {
             clearInterval(timerInterval);
             document.getElementById("timer").style.display = "none";
             const winner = data.players.reduce((a, b) => a.score > b.score ? a : b);
-            document.getElementById("message").textContent = `Игра окончена! Победитель: ${winner.name} с ${winner.score} очками`;
+            document.getElementById("game-message").textContent = `Игра окончена! Победитель: ${winner.name} с ${winner.score} очками`;
         } else {
             startTimer(data.timer);
         }
@@ -456,14 +456,14 @@ function handleMessage(event) {
         }
 
     } else if (data.type === "info") {
-        document.getElementById("message").textContent = data.message;
+        document.getElementById("game-message").textContent = data.message;
         renderPlayers(data.players || []);
 //        renderStats(data.players || []);
         const playersCount = data.players ? data.players.length : document.getElementById("players-info").children.length;
         updateStartButton(playersCount, data.min_players);
 
     } else if (data.type === "error") {
-        document.getElementById("message").textContent = `Ошибка: ${data.message}`;
+        document.getElementById("game-message").textContent = `Ошибка: ${data.message}`;
         if (data.message.includes("Only the creator") || data.message.includes("two players")) {
             updateStartButton(
                 data.players?.length || document.getElementById("players-info").children.length,
@@ -476,8 +476,8 @@ function handleMessage(event) {
 function renderGrid(grid) {
 
     // Отрисовка игрового поля
-    console.log("Rendering grid", grid);
-    const gridDiv = document.getElementById("grid");
+    console.log("Rendering game-grid", grid);
+    const gridDiv = document.getElementById("game-grid");
     gridDiv.innerHTML = "";
     grid.forEach((row, r) => {
         const rowDiv = document.createElement("div");
@@ -500,7 +500,7 @@ function renderGrid(grid) {
         });
         gridDiv.appendChild(rowDiv);
     });
-    console.log("Grid rendered, clickable:", isGameStarted && currentPlayerId === myPlayerId);
+    console.log("Game-grid rendered, clickable:", isGameStarted && currentPlayerId === myPlayerId);
 }
 
 
@@ -585,7 +585,7 @@ function selectCell(row, col, letter) {
     console.log(`Attempting to select cell: row=${row}, col=${col}, letter=${letter}, ws.readyState=${ws?.readyState}, isGameStarted=${isGameStarted}, isMyTurn=${currentPlayerId === myPlayerId}`);
     if (!isGameStarted || currentPlayerId !== myPlayerId) {
         console.log("Cannot select cell: game not started or not my turn");
-        document.getElementById("message").textContent = "Ошибка: игра не началась или не ваш ход";
+        document.getElementById("game-message").textContent = "Ошибка: игра не началась или не ваш ход";
         return;
     }
 
@@ -614,12 +614,12 @@ function selectCell(row, col, letter) {
             console.log(`Sent increment_click: row=${row}, col=${col}, word=${wordInput.value}`);
         } else {
             console.log("WebSocket not open, queuing click");
-            document.getElementById("message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
+            document.getElementById("game-message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
             reconnectWebSocket();
         }
     } else {
         console.log("Cannot select cell: not a neighbor");
-        document.getElementById("message").textContent = "Ошибка: выберите соседнюю ячейку";
+        document.getElementById("game-message").textContent = "Ошибка: выберите соседнюю ячейку";
     }
 }
 
@@ -653,12 +653,12 @@ function submitWord() {
             console.log("Word submitted:", word, "Path:", selectedCells);
         } else {
             console.log("WebSocket not open, cannot submit word");
-            document.getElementById("message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
+            document.getElementById("game-message").textContent = "Соединение с сервером потеряно, пытаемся переподключиться...";
             reconnectWebSocket();
         }
     } else {
         console.log("Cannot submit word: no word, game not started, or not my turn");
-        document.getElementById("message").textContent = "Ошибка: нет слова, игра не началась или не ваш ход";
+        document.getElementById("game-message").textContent = "Ошибка: нет слова, игра не началась или не ваш ход";
     }
 }
 
@@ -695,7 +695,7 @@ function clearWord() {
 //    clearInterval(timerInterval);
 //    if (currentPlayerId === myPlayerId && isGameStarted) {
 //        timerDiv.textContent = _time;
-//        document.getElementById("message").textContent = "Ваш ход!";
+//        document.getElementById("game-message").textContent = "Ваш ход!";
 //        timerInterval = setInterval(() => {
 //            _time--;
 //            timerDiv.textContent = _time;
@@ -718,7 +718,7 @@ function startTimer(_time) {
     timerDiv.style.display = currentPlayerId === myPlayerId && isGameStarted ? "block" : "none";
     let width = 100; // Начальная ширина (в %)
     let tyt = 100 / _time;
-    const progressBar = document.getElementById('progressBar');
+    const progressBar = document.getElementById('progress-bar');
     progressBar.style.width = width + '%';
     console.log("Starting timer");
 
@@ -727,7 +727,7 @@ function startTimer(_time) {
     clearInterval(timerInterval);
     if (currentPlayerId === myPlayerId && isGameStarted) {
 
-        document.getElementById("message").textContent = "Ваш ход!";
+        document.getElementById("game-message").textContent = "Ваш ход!";
         timerInterval = setInterval(() => {
             _time--;
             width = width - tyt;
@@ -752,7 +752,7 @@ function togglePlayersInfo() {
     // Кнопка отображения статистики игроков
 
     console.log("Toggle Players button clicked");
-    const playersPanel = document.getElementById("players-panel");
+    const playersPanel = document.getElementById("game-statistic");
     const toggleButton = document.getElementById("toggle-players");
     if (playersPanel.classList.contains("show")) {
         playersPanel.classList.remove("show");
