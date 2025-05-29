@@ -108,14 +108,12 @@ display: none;
     height: calc(100vh - 6px);
     width: 100%;
     max-width: var(--general-max-width);
-    position: absolute;
     margin:auto;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     border: 1px solid var(--primary-color);
     border-radius: var(--min-border-radius);
-    top: 0px;
     background-color: var(--background-light);
     z-index: 1000;
 
