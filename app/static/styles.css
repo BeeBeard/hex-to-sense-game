@@ -105,21 +105,17 @@ input, #current-word {
 #game-statistic {
     display: none;
     height: calc(100vh - 6px);
-    width: 90vw;
-    width: 99%;
+    width: 100%;
     max-width: var(--general-max-width);
     position: absolute;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     border: 1px solid var(--primary-color);
     border-radius: var(--min-border-radius);
     top: 0px;
     background-color: var(--background-light);
-    box-shadow: -2px 0 5px var(--shadow-color);
     z-index: 1000;
-
 }
 
 #game-statistic.show {
