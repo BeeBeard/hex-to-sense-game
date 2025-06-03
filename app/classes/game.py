@@ -403,8 +403,8 @@ class Game:
             return SubmitWordResult(word=word, valid=False, reason="Длина пути не равна длине слова")
 
         # Проверяем существует ли слово
-        ya_result = word_checker.check_word(word)
-        logger.error(f"Данные от яндекс {ya_result}")
+        # ya_result = word_checker.check_word(word)
+        # logger.error(f"Данные от яндекс {ya_result}")
         result = sql.check_update_word(word)
         # result = False
 
