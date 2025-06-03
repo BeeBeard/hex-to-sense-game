@@ -372,7 +372,7 @@ class Game:
         message = f"Эту ячейку нельзя использовать."
         return GameResponse(success=False, message=message, error=error)
 
-    async def submit_word(self, player_id: str, word: str, path: List[List[int]]) -> SubmitWordResult:
+    def submit_word(self, player_id: str, word: str, path: List[List[int]]) -> SubmitWordResult:
 
         # Обнуляем нажатия
         for r in range(self.radius):
@@ -403,12 +403,12 @@ class Game:
             return SubmitWordResult(word=word, valid=False, reason="Длина пути не равна длине слова")
 
         # Проверяем существует ли слово
-        ya_result = word_checker.check_word(word)
-        logger.error(f"Данные от яндекс {ya_result}")
-        # result = sql.check_update_word(word)
+        # ya_result = word_checker.check_word(word)
+        # logger.error(f"Данные от яндекс {ya_result}")
+        result = sql.check_update_word(word)
         # result = False
 
-        if not ya_result.is_exist:
+        if not result:
             current_player.lives -= 1
             return SubmitWordResult(word=word, valid=False, reason="Такое слово не найдено")
 
