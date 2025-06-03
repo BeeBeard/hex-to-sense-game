@@ -3,7 +3,7 @@ from loguru import logger
 
 from app.config import CONFIG
 from app.models import YaAnswer
-
+from loguru import logger
 
 def check_word(word: str, lang: str = "ru-ru") -> YaAnswer:
 
@@ -14,9 +14,9 @@ def check_word(word: str, lang: str = "ru-ru") -> YaAnswer:
 
         responce = requests.get(url)
 
-        print(responce)
+        logger.debug(responce)
         content = responce.content.decode("utf-8")
-        print(content)
+        logger.debug(content)
         ya_answer = YaAnswer.model_validate_json(responce.content)
 
         return ya_answer

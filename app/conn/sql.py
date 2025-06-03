@@ -1,16 +1,15 @@
 # Модуль с запросами к базе данных
 
 from datetime import datetime
-from typing import Union, List
 
 from loguru import logger
+from sqlalchemy import func
 from sqlalchemy import select, update
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept as Dai
 
 from app.conn import CONN, tables
-
 
 engine = CONN.engine
 async_engine = CONN.async_engine
@@ -45,7 +44,7 @@ async def to_table(table: Dai = None, **kwargs):
             return False
 #
 # #
-# async def get_message_by_task_id(task_id: str) -> MessageAiBase:
+# async def check_word(task_id: str) -> MessageAiBase:
 #
 #     if not task_id:
 #         return MessageAiBase()
@@ -90,31 +89,61 @@ async def to_table(table: Dai = None, **kwargs):
 
 
 
+def get_random_rows(limit=20):
+    with engine.connect() as session:
+
+        try:
+            stmt = (
+                select(tables.Dictionary)
+                .where(tables.Dictionary.length >= 4)
+                .order_by(func.random()).limit(limit)
+            )
+            result = session.execute(stmt)
+            data = result.all()
+            if data:
+                return [i.word for i in data]
+
+            return []
+
+        except Exception as e:
+            return []
 
 
-# async def update_image_url(_id: str, new_image_url: str) -> bool:
-#     if not _id:
-#         return False
-#
-#     async with async_engine.connect() as session:
-#
-#         try:
-#
-#             stmt = (
-#                 update(tables.AiMessage)
-#                 .where(tables.AiMessage.id == _id)
-#                 .values(image_url=new_image_url)
-#             )
-#             await session.execute(stmt)
-#             await session.commit()
-#             return True
-#
-#         except SQLAlchemyError as e:
-#
-#             await session.rollback()
-#             logger.error(e)
-#
-#             return False
+async def check_update_word(word: str) -> bool:
+
+    if not word:
+        return False
+
+    async with async_engine.connect() as session:
+
+        try:
+            stmt = (
+                select(tables.Dictionary)
+                .filter(tables.Dictionary.word == word)
+            )
+
+            _result = await session.execute(stmt)
+            data = _result.one_or_none()
+            if data:
+                stmt = (
+                    update(tables.Dictionary)
+                    .where(tables.Dictionary.word == word)
+                    .values(found_times=data.found_times + 1)
+                )
+
+                await session.execute(stmt)
+                await session.commit()
+
+                return True
+
+            return False
+
+        except SQLAlchemyError as e:
+
+            await session.rollback()
+            logger.error(e)
+
+            return False
 
 if __name__ == '__main__':
     pass
