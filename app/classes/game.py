@@ -405,7 +405,7 @@ class Game:
         # Проверяем существует ли слово
         ya_result = word_checker.check_word(word)
         logger.error(f"Данные от яндекс {ya_result}")
-        result = await sql.check_update_word(word)
+        result = sql.check_update_word(word)
         # result = False
 
         if not result:

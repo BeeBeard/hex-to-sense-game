@@ -109,12 +109,12 @@ def get_random_rows(limit=20):
             return []
 
 
-async def check_update_word(word: str) -> bool:
+def check_update_word(word: str) -> bool:
 
     if not word:
         return False
 
-    async with async_engine.connect() as session:
+    with engine.connect() as session:
 
         try:
             stmt = (
@@ -122,7 +122,7 @@ async def check_update_word(word: str) -> bool:
                 .filter(tables.Dictionary.word == word)
             )
 
-            _result = await session.execute(stmt)
+            _result = session.execute(stmt)
             data = _result.one_or_none()
             if data:
                 stmt = (
@@ -131,8 +131,8 @@ async def check_update_word(word: str) -> bool:
                     .values(found_times=data.found_times + 1)
                 )
 
-                await session.execute(stmt)
-                await session.commit()
+                session.execute(stmt)
+                session.commit()
 
                 return True
 
@@ -140,7 +140,7 @@ async def check_update_word(word: str) -> bool:
 
         except SQLAlchemyError as e:
 
-            await session.rollback()
+            session.rollback()
             logger.error(e)
 
             return False
