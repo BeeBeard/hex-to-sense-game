@@ -1,0 +1,120 @@
+# Модуль с запросами к базе данных
+
+from datetime import datetime
+from typing import Union, List
+
+from loguru import logger
+from sqlalchemy import select, update
+from sqlalchemy.dialects.mysql import insert
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept as Dai
+
+from app.conn import CONN, tables
+
+
+engine = CONN.engine
+async_engine = CONN.async_engine
+async_session = CONN.async_session
+
+
+# # Добавляем данные к выбранной таблице
+async def to_table(table: Dai = None, **kwargs):
+    if not table or not kwargs:
+        return False
+
+    async with async_engine.connect() as session:
+
+        try:
+            logger.info(f"Добавляем/Обновляем данные для таблицы: {table.__name__}")
+            kwargs["updated"] = datetime.now()
+            clear_kwargs = {i: kwargs[i] for i in kwargs if i in table.__table__.columns.keys()}  # type: ignore
+            # pprint.pprint(clear_kwargs)
+            stmt = insert(table).values(**clear_kwargs)
+            # print(stmt.compile(compile_kwargs={"literal_binds": True}))
+            stmt = stmt.on_duplicate_key_update(**clear_kwargs)  # вставляем и возвращаем строку
+            await session.execute(stmt)
+            await session.commit()
+
+            logger.info(f"Успешно добавили/обновили данные для таблицы: {table.__name__}")
+            return True
+
+        except SQLAlchemyError as e:
+
+            await session.rollback()
+            logger.error(f"Не удалось обновить данные для  таблицы: {table.__name__} {e}")
+            return False
+#
+# #
+# async def get_message_by_task_id(task_id: str) -> MessageAiBase:
+#
+#     if not task_id:
+#         return MessageAiBase()
+#
+#     async with async_engine.connect() as session:
+#
+#         try:
+#             # noinspection PyTypeChecker
+#             stmt = (
+#                 select(tables.AiMessage)
+#                 .filter(tables.AiMessage.task_id == task_id)
+#             )
+#
+#             result = await session.execute(stmt)
+#             data = result.one_or_none()
+#             if data:
+#                 return MessageAiBase(
+#                     uid=data.uid,
+#                     task_id=data.task_id,
+#                     id=data.id,
+#                     model=data.model,
+#                     role=data.role,
+#                     content=data.content,
+#                     username=data.username,
+#                     user_id=data.user_id,
+#                     prompt_tokens=data.prompt_tokens,
+#                     completion_tokens=data.completion_tokens,
+#                     total_tokens=data.total_tokens,
+#                     revised_prompt=data.revised_prompt,
+#                     image_url=data.image_url,
+#                 )
+#
+#             return MessageAiBase()
+#
+#
+#         except SQLAlchemyError as e:
+#
+#             await session.rollback()
+#             logger.error(e)
+#
+#             return MessageAiBase()
+
+
+
+
+
+# async def update_image_url(_id: str, new_image_url: str) -> bool:
+#     if not _id:
+#         return False
+#
+#     async with async_engine.connect() as session:
+#
+#         try:
+#
+#             stmt = (
+#                 update(tables.AiMessage)
+#                 .where(tables.AiMessage.id == _id)
+#                 .values(image_url=new_image_url)
+#             )
+#             await session.execute(stmt)
+#             await session.commit()
+#             return True
+#
+#         except SQLAlchemyError as e:
+#
+#             await session.rollback()
+#             logger.error(e)
+#
+#             return False
+
+if __name__ == '__main__':
+    pass

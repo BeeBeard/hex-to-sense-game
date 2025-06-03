@@ -108,7 +108,15 @@ class WsInfoBroadcast(BaseModel):
 #     current_player_name: Optional[str] = None
 #     game_over: Optional[bool] = False
 
-
+class RowDictionary(BaseModel):
+    uid: Optional[int] = None
+    word: Optional[str] = ""
+    found_times: Optional[int] = 0
+    active: Optional[bool] = True
+    type: Optional[str] = ""
+    weight: Optional[int] = 0
+    length: int
+    language_code: Optional[str] = "ru"
 
 if __name__ == "__main__":
     pass

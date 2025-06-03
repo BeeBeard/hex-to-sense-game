@@ -4,6 +4,7 @@ import ipaddress
 from typing import Optional, Union
 
 from pydantic import Field, SecretStr, EmailStr
+from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -83,6 +84,33 @@ class YaDictConfig(ConfigBase):
     token: str
 
 
+class DatabaseConfig(ConfigBase):
+    model_config = SettingsConfigDict(env_prefix="db_")
+
+    ip: str
+    port: int
+    name: SecretStr
+    user: SecretStr
+    password: SecretStr
+
+    dialect: str
+    async_dialect: str
+    driver: Optional[str] = ""
+
+    def pre_conn(self):  # Подготавливаем строку для создания conn
+        return (
+            f"{self.user.get_secret_value()}:{self.password.get_secret_value()}@"
+            f"{self.ip}:{self.port}/{self.name.get_secret_value()}{self.driver}"
+        )
+
+    @computed_field
+    def async_conn(self) -> SecretStr:
+        return SecretStr(f"{self.async_dialect}://{self.pre_conn()}")
+
+    @computed_field
+    def conn(self) -> SecretStr:
+        return SecretStr(f"{self.dialect}://{self.pre_conn()}")
+
 class Config(BaseSettings):
     model_config = SettingsConfigDict()
 
@@ -90,6 +118,7 @@ class Config(BaseSettings):
     author: Author = Field(default_factory=Author)
     api: ApiConfig = Field(default_factory=ApiConfig)
     yandex: YaDictConfig = Field(default_factory=YaDictConfig)
+    db: DatabaseConfig = Field(default_factory=DatabaseConfig)
 
     @classmethod
     def load(cls) -> "Config":
