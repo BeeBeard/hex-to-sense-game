@@ -46,7 +46,7 @@ class Game:
         self.grid: List[List[Hex]] = []
         self.words = []
         self.generate_grid()
-        self.base_words = sql.get_random_rows(limit=20, _type="Страна")
+        self.base_words = sql.get_random_rows(limit=20)  # , _type="Страна"
         self.fill_grid()
         self.game_id = str(uuid.uuid4())
         self.is_started = False
@@ -137,9 +137,11 @@ class Game:
     def get_neighbors(self, x: int, y: int):
 
         if y % 2 == 0:
-            directions = [(0, -1), (1, 0),  (0, 1),  (1, -1), (-1, -1), (-1, 0),]
+            # directions = [(0, -1), (1, 0),  (0, 1),  (1, -1), (-1, -1), (-1, 0),]
+            directions = [(0, -1), (1, 0),  (0, 1),  (-1, 1), (-1, -1), (-1, 0),]
         else:
-            directions = [(-1, 1), (1, 0), (1, 1),  (0, 1), (-1, 0), (0, -1), ]
+            # directions = [(-1, 1), (1, 0), (1, 1),  (0, 1), (-1, 0), (0, -1), ]
+            directions = [(1, -1), (1, 0), (1, 1),  (0, 1), (-1, 0), (0, -1), ]
 
         neighbors: List[Hex] = []
         for dr, dc in directions:
@@ -419,10 +421,20 @@ class Game:
         current_player.score += score
         current_player.words.append(word)
         self.used_words.append(word)
+
+
+        text = ["Слово засчитано."]
+        if word in self.base_words:
+            score *= 2
+            text.append(f"Бонус X2 - Базовое слово.")
+
         if result.type == "Страна":
-            return SubmitWordResult(word=word, valid=True, reason=f"Страна засчитана.\nБонус X2.\n{score} балла(ов)", score=score)
-        else:
-            return SubmitWordResult(word=word, valid=True, reason=f"Слово засчитано.\n{score} балла(ов)", score=score)
+            text.append(f"Бонус X2 - Найдена страна.")
+
+        text.append(f"Очки: {score}")
+        text = "\n".join(text)
+
+        return SubmitWordResult(word=word, valid=True, reason=text, score=score)
 
     def next_turn(self):
         if not self.players:

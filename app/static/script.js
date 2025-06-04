@@ -48,6 +48,7 @@ function showNotification(message) {
     console.log("Показать уведомление:", message);
     const notification = document.getElementById("game-notification");
     notification.textContent = message;
+    notification.style.whiteSpace = "pre"
     notification.classList.add("show");
     setTimeout(() => {
         notification.classList.remove("show");
@@ -429,9 +430,7 @@ function handleMessage(event) {
             document.getElementById("game-message").textContent = data.message || data.result?.reason || "";
             if (data.result && data.result.word) {
                 console.log("Backend response:", JSON.stringify(data.result));
-                const message = data.result.valid ?
-                    `Слово "${data.result.word}" принято!` :
-                    `Слово "${data.result.word}" неверно: ${data.result.reason}`;
+                const message = `${data.result.reason}`;
 
                 // Обнуляем таймер при смене хода
 //                const timerDiv = document.getElementById("timer").textContent = 0;
@@ -753,12 +752,16 @@ function togglePlayersInfo() {
 
     console.log("Toggle Players button clicked");
     const playersPanel = document.getElementById("game-statistic");
+    const gameStatistic = document.getElementById("game-screen");
+
     const toggleButton = document.getElementById("toggle-players");
     if (playersPanel.classList.contains("show")) {
         playersPanel.classList.remove("show");
+        gameStatistic.classList.add("show");
         toggleButton.textContent = "Показать статистику";
     } else {
         playersPanel.classList.add("show");
+        gameStatistic.classList.remove("show");
         toggleButton.textContent = "Скрыть статистику";
     }
 }
