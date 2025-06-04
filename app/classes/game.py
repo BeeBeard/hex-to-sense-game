@@ -422,8 +422,7 @@ class Game:
         current_player.words.append(word)
         self.used_words.append(word)
 
-
-        text = ["Слово засчитано."]
+        text = [f"Слово {word} засчитано."]
         if word in self.base_words:
             score *= 2
             text.append(f"Бонус X2 - Базовое слово.")

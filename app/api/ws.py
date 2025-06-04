@@ -126,7 +126,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     await game.broadcast(wa_broadcast.model_dump())
 
 
-
                 elif not alive_players:  # Если не осталось игроков с жизнями
                     wa_broadcast = WsBroadcast(
                         type="update",
@@ -166,7 +165,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     )
 
                     await game.broadcast(wa_broadcast.model_dump())
-
 
             elif action == "increment_click":
                 row = data.get("row")
