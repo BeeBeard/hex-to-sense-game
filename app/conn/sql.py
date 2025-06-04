@@ -136,6 +136,7 @@ def check_update_word(word: str) -> Union[RowDictionary, bool]:
                 session.execute(stmt)
                 session.commit()
 
+                logger.debug(f"!! {data=}")
                 result = RowDictionary(
                     uid=data.uid,
                     word=data.word,
@@ -146,6 +147,7 @@ def check_update_word(word: str) -> Union[RowDictionary, bool]:
                     length=data.length,
                     language_code=data.language_code,
                 )
+                logger.debug(f"!! {result=}")
 
                 return result
 
