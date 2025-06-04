@@ -46,7 +46,7 @@ class Game:
         self.grid: List[List[Hex]] = []
         self.words = []
         self.generate_grid()
-        self.base_words = sql.get_random_rows(20)
+        self.base_words = sql.get_random_rows(limit=20, _type="Страна")
         self.fill_grid()
         self.game_id = str(uuid.uuid4())
         self.is_started = False

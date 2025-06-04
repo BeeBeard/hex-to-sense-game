@@ -91,15 +91,25 @@ async def to_table(table: Dai = None, **kwargs):
 
 
 
-def get_random_rows(limit=20):
+def get_random_rows(limit=20, _type: str = None):
     with engine.connect() as session:
 
         try:
             stmt = (
                 select(tables.Dictionary)
-                .where(tables.Dictionary.length >= 4)
-                .order_by(func.random()).limit(limit)
+
+
             )
+            if not _type:
+                stmt = stmt.where(tables.Dictionary.length >= 4)
+            else:
+                stmt = stmt.filter(
+                    tables.Dictionary.length >= 4,
+                    tables.Dictionary.type == _type,
+                )
+
+            stmt = stmt.order_by(func.random()).limit(limit)
+
             result = session.execute(stmt)
             data = result.all()
             if data:
