@@ -38,7 +38,7 @@ class Game:
             'Ч': 3, 'Е': 1, 'Л': 2, 'О': 1, 'В': 2, 'К': 2, 'Г': 3, 'Д': 2, 'Р': 2,
             'М': 3, 'Я': 3, 'Н': 2, 'Ь': 3, 'Ж': 3, 'И': 1, 'З': 3, 'А': 1, 'Б': 3,
             'Т': 2, 'У': 3, 'П': 2, 'С': 2, 'Ё': 4, 'Й': 4, 'Ц': 3, 'Щ': 4, 'Ш': 4,
-            'Ы': 3, 'Ф': 3, 'Ю': 4, 'Х': 4, 'Ъ': 4, 'Э': 4
+            'Ы': 3, 'Ф': 3, 'Ю': 4, 'Х': 4, 'Ъ': 4, 'Э': 4, '-': 5, ' ': 5
         }
         self.room_name = room_name
         self.radius = self.prepare_radius(radius)
@@ -406,7 +406,6 @@ class Game:
         # ya_result = word_checker.check_word(word)
         # logger.error(f"Данные от яндекс {ya_result}")
         result = sql.check_update_word(word)
-        # result = False
 
         if not result:
             current_player.lives -= 1
@@ -416,12 +415,14 @@ class Game:
             current_player.lives -= 1
             return SubmitWordResult(word=word, valid=False, reason="Слово уже было найдено")
 
-        score = sum(self.grid[r][c].weight for r, c in path)
+        score = sum(self.grid[r][c].weight for r, c in path) * result.weight
         current_player.score += score
         current_player.words.append(word)
         self.used_words.append(word)
-
-        return SubmitWordResult(word=word, valid=True, reason="Слово засчитано", score=score)
+        if result.type == "Страна":
+            return SubmitWordResult(word=word, valid=True, reason=f"Страна засчитана.\nБонус X2.\n{score} балла(ов)", score=score)
+        else:
+            return SubmitWordResult(word=word, valid=True, reason=f"Слово засчитано.\n{score} балла(ов)", score=score)
 
     def next_turn(self):
         if not self.players:

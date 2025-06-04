@@ -8,8 +8,10 @@ from sqlalchemy import select, update
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept as Dai
-
+from app.models.models import RowDictionary
 from app.conn import CONN, tables
+from typing import Union
+
 
 engine = CONN.engine
 async_engine = CONN.async_engine
@@ -109,7 +111,7 @@ def get_random_rows(limit=20):
             return []
 
 
-def check_update_word(word: str) -> bool:
+def check_update_word(word: str) -> Union[RowDictionary, bool]:
 
     if not word:
         return False
@@ -134,7 +136,18 @@ def check_update_word(word: str) -> bool:
                 session.execute(stmt)
                 session.commit()
 
-                return True
+                result = RowDictionary(
+                    uid=data.uid,
+                    word=data.word,
+                    found_times=data.found_times,
+                    active=data.active,
+                    type=data.type,
+                    weight=data.weight,
+                    length=data.length,
+                    language_code=data.language_code,
+                )
+
+                return result
 
             return False
 
