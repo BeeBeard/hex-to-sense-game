@@ -320,26 +320,37 @@ button:disabled {
     background-color: var(--hover-color);
 }
 
-.hex .letter {
+.letter {
     font-size: 22px;
     color: var(--text-dark);
     text-shadow: 1px 1px 2px var(--shadow-color);
     position: relative;
     top: -3px;
+    display: none;
+
+
 }
 
-.hex .weight, .hex .clicks {
+
+.weight, .clicks {
     font-size: 11px;
     position: absolute;
     top: 60%;
     color: var(--text-dark);
+    display: none;
+
 }
 
-.hex .weight {
+
+.h-show, .h-show, .h-show {
+    display: block;
+}
+
+.weight {
     left: 8px;
 }
 
-.hex .clicks {
+.clicks {
     right: 8px;
 }
 

@@ -300,11 +300,31 @@ async function joinRoom(gameId) {
     }
 }
 
+
+function showGrid() {
+    // Выбираем все элементы с классом "hex"
+    const hexElements = document.querySelectorAll('.hex');
+
+
+    // Перебираем элементы "hex"
+    hexElements.forEach(hex => {
+        // Ищем внутри каждого "hex" элементы с классами "weight", "letter", "clicks"
+        const targetElements = hex.querySelectorAll('.weight, .letter, .clicks');
+
+        // Добавляем класс "show" каждому найденному элементу
+        console.log("!!!!23324", targetElements)
+        targetElements.forEach(element => {
+            element.classList.add('h-show');
+        });
+    });
+}
 async function startGame() {
     console.log("Start Game button clicked, WebSocket state:", ws?.readyState, "myPlayerId:", myPlayerId, "creatorId:", creatorId);
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ action: "start_game", player_id: myPlayerId }));
         document.getElementById("game-message").textContent = "Запуск игры...";
+
+
     } else {
         console.error("WebSocket is not open");
         document.getElementById("game-message").textContent = "Ошибка: соединение с сервером не установлено";
@@ -408,6 +428,7 @@ function handleMessage(event) {
         isGameStarted = data.is_started;
         console.log(`Current player: ${currentPlayerId}, My player: ${myPlayerId}, Game started: ${isGameStarted}, Players count: ${data.players.length}, Creator ID: ${creatorId}`);
         renderGrid(data.grid);
+
         renderPlayers(data.players);
 //        renderStats(data.players);
 
@@ -418,13 +439,19 @@ function handleMessage(event) {
 
 
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
+//        if (currentPlayerId === myPlayerId && isGameStarted) {  showGrid(); }
+        if (isGameStarted) { showGrid(); }
+
         document.getElementById("toggle-buttons").style.display = isGameStarted ? "flex" : "none";
         updateStartButton(data.players.length, data.min_players);
 
         if (data.type === "start") {
             document.getElementById("game-message").textContent = data.message || "Игра началась!";
 
+
+
         } else if (data.type === "update") {
+
             selectedCells = [];
             document.getElementById("current-word").value = "";
             document.getElementById("game-message").textContent = data.message || data.result?.reason || "";
@@ -437,6 +464,7 @@ function handleMessage(event) {
 
                 showNotification(message);
             }
+
         }
 
         if (data.game_over) {

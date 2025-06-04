@@ -176,7 +176,7 @@ class Game:
 
         return neighbors
 
-    def get_empty_neighbors(self, x: int, y: int):
+    def get_empty_neighbors(self, x: int, y: int) -> list:
         neighbors = self.get_neighbors(x, y)
         return [i for i in neighbors if i.letter == " " and i.show]
 
@@ -239,10 +239,10 @@ class Game:
             if neighbors:
 
                 # Что бы выбирать случайное направление
-                # cur_neighbors = empty_neighbors[random.randint(0, len(empty_neighbors) - 1)]
+                next_index = random.randint(0, len(neighbors) - 1)
                 # if not len(empty_neighbors) - 1 > next_index:
                 #     next_index = 0
-                next_index = 0
+                # next_index = 0
 
                 cur_neighbors = neighbors[next_index]
 
