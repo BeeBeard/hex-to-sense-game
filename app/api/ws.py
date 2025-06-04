@@ -62,6 +62,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         while True:
 
             data = await websocket.receive_json()
+
+
             action = data.get("action")
             logger.info(f"Received WebSocket action: {action}, from player_id={player_id}, game_id={game_id}")
 
@@ -142,6 +144,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     )
 
                     await game.broadcast(wa_broadcast.model_dump())
+                    del GM.games[game_id]
+                    return
 
                 else:
 
@@ -162,24 +166,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     )
 
                     await game.broadcast(wa_broadcast.model_dump())
-                #
-                #     game.next_turn()
-                #
-                #     wa_broadcast = WsBroadcast(
-                #         type="update",
-                #         result=result,
-                #         grid=game.grid,
-                #         timer=game.timer,
-                #         min_players=game.min_players,
-                #         max_players=game.max_players,
-                #         players=[player.get_data() for player in game.players],
-                #         current_player=game.players[game.current_player_index].player_id if game.players else "",
-                #         current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
-                #         is_started=True,
-                #         message=f"Переход хода"
-                #     )
-                #
-                #     await game.broadcast(wa_broadcast.model_dump())
+
 
             elif action == "increment_click":
                 row = data.get("row")
@@ -290,6 +277,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         except Exception as e:
             del GM.games[game_id]
             logger.error(f"Ошибка! Конец игры! {e} {traceback.format_exc()}")
+            return
 
     except Exception as e:
         logger.error(f"!! WebSocket error: game_id={game_id}, player_id={player_id}, error={e} {traceback.format_exc()}")

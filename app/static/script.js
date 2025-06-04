@@ -29,12 +29,12 @@ window.onload = () => {
         if (playerNameInput) {
             console.log("player-name-join found, focusing");
             playerNameInput.focus();
-            playerNameInput.addEventListener("keypress", (e) => {
-                if (e.key === "Enter" && playerNameInput.value.trim().length >= 2) {
-                    console.log("Enter pressed, calling joinGame with name:", playerNameInput.value);
-                    joinGame();
-                }
-            });
+//            playerNameInput.addEventListener("keypress", (e) => {
+//                if (e.key === "Enter" && playerNameInput.value.trim().length >= 2) {
+//                    console.log("Enter pressed, calling joinGame with name:", playerNameInput.value);
+//                    joinGame();
+//                }
+//            });
         } else {
             console.error("player-name-join input not found");
             document.getElementById("game-message").textContent = "Ошибка: поле имени не найдено";
@@ -138,11 +138,13 @@ async function createGame() {
     }
 }
 
-async function joinGame() {
+
+
+async function joinGame(game_id) {
     console.log("Нажали кнопку присоединиться к игре");
 
     const playerNameInput = document.getElementById("player-name-join");
-    const gameIdInput = document.getElementById("game-id");
+    const gameIdInput = game_id;   //document.getElementById("game-id");
 
     if (!playerNameInput || !gameIdInput) {
         console.error("Input elements not found", { playerNameInput, gameIdInput });
@@ -151,7 +153,7 @@ async function joinGame() {
     }
 
     const playerName = playerNameInput.value.trim();
-    const inputGameId = gameIdInput.value.trim();
+    const inputGameId = gameIdInput;
     console.log("joinGame inputs:", { playerName, inputGameId });
 
     if (!inputGameId) {
@@ -253,6 +255,8 @@ function showMainMenu() {
     document.getElementById("game-message").textContent = "";
 }
 
+
+/// !!!!!!
 async function showRoomsForm() {
     console.log("Show Rooms Form button clicked");
     document.getElementById("create-form").style.display = "none";
@@ -280,7 +284,14 @@ async function showRoomsForm() {
                 const player_num = '👾'.repeat(room.players)
 
                 button.textContent = `${room_name} [${player_num}]`; // Название комнаты и количество игроков
-                button.onclick = () => joinRoom(room.game_id);
+                button.title = room.game_id;
+//                button.onclick = () => joinRoom(room.game_id);
+
+                button.addEventListener('click', function() {
+                    joinGame(room.game_id);
+                });
+
+
                 roomsList.appendChild(button);
             });
         }
@@ -793,3 +804,7 @@ function togglePlayersInfo() {
         toggleButton.textContent = "Скрыть статистику";
     }
 }
+
+
+
+
