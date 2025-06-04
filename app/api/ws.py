@@ -56,7 +56,7 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
             is_started=game.is_started,
             message=f"Игрок {game.players[game.current_player_index].name} присоединился."
         )
-        logger.debug(f"{wa_broadcast=}")
+        # logger.debug(f"{wa_broadcast=}")
         await game.broadcast(wa_broadcast.model_dump())
 
         while True:
@@ -99,6 +99,10 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 path = data.get("path")
                 result = game.submit_word(player_id, word, path)    # Проверка слова
 
+                alive_players = [i.player_id for i in game.players if i.lives]
+                logger.debug(f"{alive_players=}")
+
+
                 if game.players[game.current_player_index].lives:
 
                     game.next_turn()
@@ -119,8 +123,9 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
 
                     await game.broadcast(wa_broadcast.model_dump())
 
-                else:
 
+
+                elif not alive_players:  # Если не осталось игроков с жизнями
                     wa_broadcast = WsBroadcast(
                         type="update",
                         game_over=True,
@@ -137,6 +142,44 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                     )
 
                     await game.broadcast(wa_broadcast.model_dump())
+
+                else:
+
+                    game.next_turn()
+
+                    wa_broadcast = WsBroadcast(
+                        type="update",
+                        result=result,
+                        grid=game.grid,
+                        timer=game.timer,
+                        min_players=game.min_players,
+                        max_players=game.max_players,
+                        players=[player.get_data() for player in game.players],
+                        current_player=game.players[game.current_player_index].player_id if game.players else "",
+                        current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
+                        is_started=True,
+                        message=f"Ход игрока {game.players[game.current_player_index].name}" if game.players else "Игра продолжается"
+                    )
+
+                    await game.broadcast(wa_broadcast.model_dump())
+                #
+                #     game.next_turn()
+                #
+                #     wa_broadcast = WsBroadcast(
+                #         type="update",
+                #         result=result,
+                #         grid=game.grid,
+                #         timer=game.timer,
+                #         min_players=game.min_players,
+                #         max_players=game.max_players,
+                #         players=[player.get_data() for player in game.players],
+                #         current_player=game.players[game.current_player_index].player_id if game.players else "",
+                #         current_player_name=game.players[game.current_player_index].name if game.is_started and game.players else "",
+                #         is_started=True,
+                #         message=f"Переход хода"
+                #     )
+                #
+                #     await game.broadcast(wa_broadcast.model_dump())
 
             elif action == "increment_click":
                 row = data.get("row")
@@ -206,8 +249,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
                 if (
                         (game.is_started and game.players) and
                         (
-                                (game.current_player_index < len(game.players) and game.players[game.current_player_index].player_id == player_id) or
-                                creator_out
+                            (game.current_player_index < len(game.players) and game.players[game.current_player_index].player_id == player_id) or
+                            creator_out
                         )
                 ):
 
