@@ -450,7 +450,7 @@ function handleMessage(event) {
 
 
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
-        if (currentPlayerId === myPlayerId && isGameStarted) {  showGrid(); }
+//        if (currentPlayerId === myPlayerId && isGameStarted) {  showGrid(); }
 //        if (isGameStarted) { showGrid(); }
 
         document.getElementById("toggle-buttons").style.display = isGameStarted ? "flex" : "none";
