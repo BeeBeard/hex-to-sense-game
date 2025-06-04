@@ -326,7 +326,7 @@ button:disabled {
     text-shadow: 1px 1px 2px var(--shadow-color);
     position: relative;
     top: -3px;
-    display: none;
+    /*display: none;*/
 
 
 }
@@ -337,7 +337,7 @@ button:disabled {
     position: absolute;
     top: 60%;
     color: var(--text-dark);
-    display: none;
+    /*display: none;*/
 
 }
 

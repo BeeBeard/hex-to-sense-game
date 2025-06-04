@@ -323,7 +323,7 @@ function showGrid() {
         const targetElements = hex.querySelectorAll('.weight, .letter, .clicks');
 
         // Добавляем класс "show" каждому найденному элементу
-        console.log("!!!!23324", targetElements)
+//        console.log("!!!!23324", targetElements)
         targetElements.forEach(element => {
             element.classList.add('h-show');
         });
@@ -450,7 +450,7 @@ function handleMessage(event) {
 
 
         document.getElementById("word-buttons").style.display = currentPlayerId === myPlayerId && isGameStarted ? "flex" : "none";
-        if (currentPlayerId === myPlayerId && isGameStarted) {  showGrid(); }
+//        if (currentPlayerId === myPlayerId && isGameStarted) {  showGrid(); }
 //        if (isGameStarted) { showGrid(); }
 
         document.getElementById("toggle-buttons").style.display = isGameStarted ? "flex" : "none";
